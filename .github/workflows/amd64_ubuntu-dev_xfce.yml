@@ -27,9 +27,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: git clone tmoe-linux
-        uses: 2moe/tmoe-linux@master
-
-      - name: pwd
-        run: |
-          pwd
-          ls -lah
+        uses: 2moe/tmoe-linux@master/share/docker-build/amd64/ubuntu-dev/xfce
