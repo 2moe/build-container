@@ -44,5 +44,5 @@ jobs:
       #    version: latest
 
       - name: run arm64 container
-        run: docker run -it -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest
+        run: docker run -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest /bin/ash
         # 在--platform后面指定需要兼容的平台列表
