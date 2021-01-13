@@ -27,4 +27,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: git clone tmoe-linux
-        uses: 2moe/tmoe-linux@master/share/docker-build/amd64/ubuntu-dev/xfce
+        run: |
+          cd ~
+          git clone --depth=1 https://github.com/2moe/tmoe-linux git || git clone --depth=1 git://github.com/2moe/tmoe-linux git
+
+      - name: docker build
+        run: |
+          cd git/share/docker-build/amd64/ubuntu-dev/xfce
+          pwd
+          #docker build -t u2 .
+          docker run -t --name u2 ubuntu:latest /bin/bash
