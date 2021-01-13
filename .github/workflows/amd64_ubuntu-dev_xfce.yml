@@ -5,9 +5,7 @@ name: Ubuntu-dev_amd64-xfce
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches: [debug]
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -28,25 +26,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
+      - name: git clone tmoe-linux
+        uses: 2moe/tmoe-linux@master
 
-      - name: Available platforms
-        run: echo ${{ steps.qemu.outputs.platforms }}
-
-      #- name: Install qemu user
-      #run: |
-      #sudo apt update
-      #sudo apt install -y qemu-user-static curl
-      #QEMU_REPO='https://ftp.debian.org/debian/pool/main/q/qemu'
-      #QEMU_VERSION=$(curl -L ${QEMU_REPO} | grep 'qemu-user-static' | grep 'bpo.*deb' | grep $(dpkg --print-architecture) | tail -n 1 | awk -F 'a href=' '{print $2}' | cut -d '"' -f 2)
-      #QEMU_URL="${QEMU_REPO}/${QEMU_VERSION}"
-      #curl -L -o qemu-user-static_amd64.deb ${QEMU_URL}
-      #sudo apt install -y ./qemu-user-static_amd64.deb || sudo dpkg -i qemu-user-static_amd64.deb
-
-      - name: run arm64 container
-        run: docker run -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest /bin/ash
+      - name: pwd
+        run: |
+          pwd
+          ls -lah
