@@ -28,12 +28,12 @@ jobs:
 
       - name: git clone tmoe-linux
         run: |
-          cd ~
+          cd ${HOME}
           git clone --depth=1 https://github.com/2moe/tmoe-linux git || git clone --depth=1 git://github.com/2moe/tmoe-linux git
 
       - name: docker build
         run: |
-          cd git/share/docker-build/amd64/ubuntu-dev/xfce
+          cd ${HOME}/git/share/docker-build/amd64/ubuntu-dev/xfce
           pwd
           #docker build -t u2 .
           docker run -t --name u2 ubuntu:latest /bin/bash
