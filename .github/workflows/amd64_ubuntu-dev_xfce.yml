@@ -46,10 +46,9 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
 
+      - name: print qemu version
+        run: qemu-aarch64-static --version
+
       - name: run arm64 container
-        run: |
-          if [[ $(command -v qemu-aarch64-static) ]];then
-            qemu-aarch64-static --version
-          fi
-          docker run -it -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest
+        run: docker run -it -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest
         # 在--platform后面指定需要兼容的平台列表
