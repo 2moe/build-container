@@ -45,5 +45,5 @@ jobs:
 
         # 可以在这里看到可以兼容哪些平台
       - name: print qemu version
-        run: qemu-aarch64-static --version
+        run: qemu-aarch64 --version
         # 在--platform后面指定需要兼容的平台列表
