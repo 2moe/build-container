@@ -40,13 +40,15 @@ jobs:
 
       - name: Install qemu user
         run: |
-          sudo apt update
+          #sudo apt update
           #sudo apt install -y qemu-user-static curl
           #QEMU_REPO='https://ftp.debian.org/debian/pool/main/q/qemu'
           #QEMU_VERSION=$(curl -L ${QEMU_REPO} | grep 'qemu-user-static' | grep 'bpo.*deb' | grep $(dpkg --print-architecture) | tail -n 1 | awk -F 'a href=' '{print $2}' | cut -d '"' -f 2)
           #QEMU_URL="${QEMU_REPO}/${QEMU_VERSION}"
           #curl -L -o qemu-user-static_amd64.deb ${QEMU_URL}
           #sudo apt install -y ./qemu-user-static_amd64.deb || sudo dpkg -i qemu-user-static_amd64.deb
+          qemu-aarch64-static --version 2>&1 >qemu-version.txt
+          cat qemu-version.txt
 
       #- name: Set up Docker Buildx
       #  id: buildx
