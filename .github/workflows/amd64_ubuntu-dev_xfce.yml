@@ -36,4 +36,7 @@ jobs:
           cd ${HOME}/git/share/docker-build/amd64/ubuntu-dev/xfce
           pwd
           #docker build -t u2 .
+          at now + 1 minutes<<<"docker kill u2;docker stop u2"
           docker run -t --name u2 ubuntu:latest /bin/bash
+          docker export u2 > ubuntu-amd64.tar
+          ls -lah
