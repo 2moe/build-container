@@ -39,7 +39,7 @@ jobs:
           sed -i '/install-gui.sh/d' Dockerfile
           docker build -t u2 .
           at now + 2 minutes<<<"docker stop u2;docker kill u2"
-          docker run -t --name u2 ubuntu:latest /bin/bash
+          docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
         run: |
