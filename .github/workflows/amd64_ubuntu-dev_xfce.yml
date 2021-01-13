@@ -28,21 +28,31 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
+
       - name: Install qemu user
         run: |
           sudo apt update
-          sudo apt install -y qemu-user-static curl
-          QEMU_REPO='https://ftp.debian.org/debian/pool/main/q/qemu'
-          QEMU_VERSION=$(curl -L ${QEMU_REPO} | grep 'qemu-user-static' | grep 'bpo.*deb' | grep $(dpkg --print-architecture) | tail -n 1 | awk -F 'a href=' '{print $2}' | cut -d '"' -f 2)
-          QEMU_URL="${QEMU_REPO}/${QEMU_VERSION}"
-          curl -L -o qemu-user-static_amd64.deb ${QEMU_URL}
-          sudo apt install -y ./qemu-user-static_amd64.deb || sudo dpkg -i qemu-user-static_amd64.deb
+          #sudo apt install -y qemu-user-static curl
+          #QEMU_REPO='https://ftp.debian.org/debian/pool/main/q/qemu'
+          #QEMU_VERSION=$(curl -L ${QEMU_REPO} | grep 'qemu-user-static' | grep 'bpo.*deb' | grep $(dpkg --print-architecture) | tail -n 1 | awk -F 'a href=' '{print $2}' | cut -d '"' -f 2)
+          #QEMU_URL="${QEMU_REPO}/${QEMU_VERSION}"
+          #curl -L -o qemu-user-static_amd64.deb ${QEMU_URL}
+          #sudo apt install -y ./qemu-user-static_amd64.deb || sudo dpkg -i qemu-user-static_amd64.deb
+
       #- name: Set up Docker Buildx
       #  id: buildx
       #  uses: docker/setup-buildx-action@v1
       #  with:
       #    version: latest
-
       - name: run arm64 container
         run: docker run -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static arm64v8/alpine:latest /bin/ash
         # 在--platform后面指定需要兼容的平台列表
