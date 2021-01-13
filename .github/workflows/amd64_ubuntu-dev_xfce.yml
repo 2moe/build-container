@@ -42,11 +42,14 @@ jobs:
           docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
+        continue-on-error: true
         run: |
           cd /tmp
           docker export u2 > ubuntu-amd64.tar
           ls -lah
           mkdir u2
           cd u2
-          tar -xvf ../ubuntu-amd64.tar
-          ls -lah root/.cache/gitstatus
+          tar -xvf ../ubuntu-amd64.tar 2>/dev/null
+
+      - name: view zsh file
+        run: ls -lah /tmp/u2/root/.cache/gitstatus
