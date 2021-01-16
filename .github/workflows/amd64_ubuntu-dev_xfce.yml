@@ -5,7 +5,7 @@ name: amd64/ubuntu-dev/xfce
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [debug] #master
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -33,7 +33,8 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
           START_TIME: $(date +%H:%M)
           ROOTFS_FILE_NAME: ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
-        run: printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME}"
+          ROOTFS_FILE_LITE_NAME: ubuntu-dev_amd64-rootfs
+        run: printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
       - name: git clone tmoe-linux
         run: |
@@ -58,7 +59,7 @@ jobs:
       - name: docker export
         continue-on-error: true
         run: |
-          docker export u2 > ${ROOTFS_FILE_NAME}.tar
+          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
 
       - name: check version of docker-image
@@ -73,7 +74,7 @@ jobs:
         run: |
           printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.conf
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_NAME}.tar
+          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
 
       - name: curl file
@@ -83,4 +84,10 @@ jobs:
           tar -Jxvf upload_to_azure.tar.xz -C /usr/local/bin/
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
-          upload_to_azure -c azure.py -t 5 -s build.conf -r
+          printf "%s\n" "START_UPLOAD_TIME=$(date +%Y%m%d)" >> build.conf
+          upload_to_azure -c azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          sed -i -E 's@^(STATUS)=.*@\1=completed@' build.conf
+          printf "%s\n%s\n%s\n" "END_TIME=$(date +%Y%m%d)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.conf
+          upload_to_azure -c azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          printf "%s\n" "Build Completed."
