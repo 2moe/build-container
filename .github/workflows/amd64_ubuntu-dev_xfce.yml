@@ -1,11 +1,11 @@
 # This is a basic workflow to help you get started with Actions
-name: Ubuntu-dev_amd64-xfce
+name: amd64/ubuntu-dev/xfce
 
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches: [debug] #master
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -26,30 +26,61 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: set environment
+        env:
+          DISTRO_PATH: amd64/ubuntu-dev/xfce
+          TMOE_LINUX_URL: github.com/2moe/tmoe-linux
+          DEBIAN_FRONTEND: noninteractive
+          START_TIME: $(date +%H:%M)
+          ROOTFS_FILE_NAME: ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
+        run: printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME}"
+
       - name: git clone tmoe-linux
         run: |
           cd ${HOME}
-          git clone --depth=1 https://github.com/2moe/tmoe-linux git || git clone --depth=1 git://github.com/2moe/tmoe-linux git
+          git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
       - name: docker build
         continue-on-error: true
         run: |
-          cd ${HOME}/git/share/docker-build/amd64/ubuntu-dev/xfce
+          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           pwd
           sed -i '/install-gui.sh/d' Dockerfile
           docker build -t u2 .
-          at now + 2 minutes<<<"docker stop u2;docker kill u2"
+
+      - name: docker run
+        continue-on-error: true
+        run: |
+          docker images | grep u2
+          at now + 1 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
         continue-on-error: true
         run: |
-          cd /tmp
-          docker export u2 > ubuntu-amd64.tar
-          ls -lah
-          mkdir u2
-          cd u2
-          tar -xvf ../ubuntu-amd64.tar 2>/dev/null
+          docker export u2 > ${ROOTFS_FILE_NAME}.tar
+          ls -lh
 
-      - name: view zsh file
-        run: ls -lah /tmp/u2/root/.cache/gitstatus
+      - name: check version of docker-image
+        run: |
+          export ROOTFS_VERSION=latest02
+          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
+          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
+          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then export ROOTFS_VERSION=latest01; fi
+          printf "%s\n" "${ROOTFS_VERSION}"
+
+      - name: compress docker image
+        run: |
+          printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.conf
+          if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
+          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_NAME}.tar
+          ls -lh
+
+      - name: curl file
+        #continue-on-error: true
+        run: |
+          curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
+          tar -Jxvf upload_to_azure.tar.xz -C /usr/local/bin/
+          curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
+          7za x .debug04 -p${{ secrets.PYTHON_ENV }}
+          upload_to_azure -c azure.py -t 5 -s build.conf -r
