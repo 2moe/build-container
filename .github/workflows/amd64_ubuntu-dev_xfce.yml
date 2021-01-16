@@ -31,10 +31,13 @@ jobs:
           DISTRO_PATH: amd64/ubuntu-dev/xfce
           TMOE_LINUX_URL: github.com/2moe/tmoe-linux
           DEBIAN_FRONTEND: noninteractive
-          START_TIME: $(date +%H:%M)
-          ROOTFS_FILE_NAME: ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
+          #START_TIME: $(date +%H:%M)
+          #ROOTFS_FILE_NAME: ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
           ROOTFS_FILE_LITE_NAME: ubuntu-dev_amd64-rootfs
-        run: printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
+        run: |
+          export START_TIME=$(date +%H:%M)
+          export  ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
+          printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
       - name: git clone tmoe-linux
         run: |
