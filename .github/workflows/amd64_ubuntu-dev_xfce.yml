@@ -48,6 +48,18 @@ jobs:
       - name: Available platforms
         run: echo ${{ steps.qemu.outputs.platforms }}
 
+      - name: check version of docker-image
+        run: |
+          ROOTFS_VERSION=latest02
+          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
+          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
+          if [ -z ${VERSION_01_DATE} ];then VERSION_01_DATE=20210116 ; fi
+          if [ -z ${VERSION_02_DATE} ];then VERSION_01_DATE=20210118 ; fi
+          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
+          printf "%s\n" "${ROOTFS_VERSION}"
+          printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
+          exit
+
       - name: curl azure uploader
         #continue-on-error: true
         run: |
@@ -79,15 +91,6 @@ jobs:
         run: |
           docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
-
-      - name: check version of docker-image
-        run: |
-          ROOTFS_VERSION=latest02
-          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
-          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
-          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
-          printf "%s\n" "${ROOTFS_VERSION}"
-          printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
 
       - name: compress docker image
         run: |
@@ -136,7 +139,7 @@ jobs:
           sed -i -E "s@RUBY_DIR@${{ secrets.RUBY_DIR }}@;s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
           sed -i '/tar.zst/d' .debug05.rb
-          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@" build.txt
+          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@;s@(VERSION=).*@\1latest02@" build.txt
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
 
       - name: check build.txt from azure
