@@ -7,7 +7,7 @@ on:
   #push:
   #branches: [master]
   schedule:
-    - cron: '0 17 * * *'
+    - cron:  '10 17 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
