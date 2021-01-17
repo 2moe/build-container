@@ -76,11 +76,12 @@ jobs:
         run: |
           printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.conf
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
+          #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
+          nice -n -20 zstd -z -10 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
 
       - name: curl file
-        #continue-on-error: true
+        continue-on-error: true
         run: |
           curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
           tar -Jxvf upload_to_azure.tar.xz -C /usr/local/bin/
@@ -93,3 +94,7 @@ jobs:
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%Y%m%d)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.conf
           upload_to_azure -c azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
+
+      - name: check version of rootfs
+        run: |
+        curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.conf 
