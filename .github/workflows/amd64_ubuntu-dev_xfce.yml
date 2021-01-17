@@ -8,8 +8,9 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/amd64_ubuntu-dev_xfce.yml"
-  schedule:
-    - cron: "35 17 * * *"
+  #schedule:
+  #  - cron: "35 17 * * *"
+  #cron不生效？？？
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
