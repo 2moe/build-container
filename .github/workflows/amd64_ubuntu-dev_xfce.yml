@@ -84,7 +84,7 @@ jobs:
         continue-on-error: true
         run: |
           curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
-          tar -Jxvf upload_to_azure.tar.xz -C /usr/local/bin/
+          tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
           printf "%s\n" "START_UPLOAD_TIME=$(date +%Y%m%d)" >> build.conf
@@ -97,4 +97,4 @@ jobs:
 
       - name: check version of rootfs
         run: |
-        curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.conf 
+          curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.conf
