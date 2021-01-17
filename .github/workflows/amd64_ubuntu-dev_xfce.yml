@@ -37,6 +37,12 @@ jobs:
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
+      - name: curl azure uploader
+        #continue-on-error: true
+        run: |
+          curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
+          sudo tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
+
       - name: git clone tmoe-linux
         run: |
           cd ${HOME}
@@ -83,8 +89,6 @@ jobs:
       - name: curl file
         continue-on-error: true
         run: |
-          curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
-          tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
           printf "%s\n" "START_UPLOAD_TIME=$(date +%Y%m%d)" >> build.conf
