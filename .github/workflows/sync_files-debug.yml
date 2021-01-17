@@ -48,5 +48,5 @@ jobs:
           curl -L -o .debug05.rb -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug05
           7za x -so -p${{ secrets.RUBY_ENV }} .ruby-alpha02 | tar -C ${HOME} -xf -
           ls -lah
-          sed -i -E "s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
+          sed -i -E "s@RUBY_DIR@${{ secrets.RUBY_DIR }}@;s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
