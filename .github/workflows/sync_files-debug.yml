@@ -49,4 +49,5 @@ jobs:
           7za x -so -p${{ secrets.RUBY_ENV }} .ruby-alpha02 | tar -C ${HOME} -xf -
           ls -lah
           sed -i -E "s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
+          ls
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
