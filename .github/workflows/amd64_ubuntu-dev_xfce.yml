@@ -65,11 +65,12 @@ jobs:
 
       - name: check version of docker-image
         run: |
-          printf "%s\n" ROOTFS_VERSION=latest02
+          ROOTFS_VERSION=latest02
           VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
           VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
-          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then printf "%s\n" ROOTFS_VERSION=latest01; fi
+          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
           printf "%s\n" "${ROOTFS_VERSION}"
+          printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
 
       - name: compress docker image
         run: |
