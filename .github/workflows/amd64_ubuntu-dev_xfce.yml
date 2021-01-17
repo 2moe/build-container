@@ -60,7 +60,7 @@ jobs:
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
       - name: docker build
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           pwd
@@ -68,7 +68,7 @@ jobs:
           docker build -t u2 .
 
       - name: docker run
-        #continue-on-error: true
+        continue-on-error: true
         run: |
           docker images | grep u2
           at now + 1 minutes<<<"docker stop u2;docker kill u2"
