@@ -4,7 +4,7 @@ name: amd64/ubuntu-dev/xfce
 # Controls when the action will run.
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/3 * * * *"
   # Triggers the workflow on push or pull request events but only for the master branch
   #push:
   #branches: [master]
