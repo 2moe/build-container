@@ -28,13 +28,13 @@ jobs:
 
       - name: set environment
         run: |
-          export DEBIAN_FRONTEND=noninteractive
-          export TMOE_LINUX_URL=github.com/2moe/tmoe-linux
-          export DISTRO_PATH=amd64/ubuntu-dev/xfce
-          export START_TIME=$(date +%H:%M)
-          export  ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs
-          export ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs
-          printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
+          printf "%s\n" DEBIAN_FRONTEND=noninteractive >> ${GITHUB_ENV}
+          printf "%s\n" TMOE_LINUX_URL=github.com/2moe/tmoe-linux >> ${GITHUB_ENV}
+          printf "%s\n" DISTRO_PATH=amd64/ubuntu-dev/xfce >> ${GITHUB_ENV}
+          printf "%s\n" START_TIME=$(date +%H:%M) >> ${GITHUB_ENV} 
+          printf "%s\n"  ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs >> ${GITHUB_ENV}
+          printf "%s\n" ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs >> ${GITHUB_ENV}
+          printf "%s\n" "${GITHUB_ENV} ${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
       - name: git clone tmoe-linux
         run: |
@@ -56,18 +56,18 @@ jobs:
           at now + 1 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
-      - name: docker export
+      - name: docker printf "%s\n"
         #continue-on-error: true
         run: |
-          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          docker printf "%s\n" u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
 
       - name: check version of docker-image
         run: |
-          export ROOTFS_VERSION=latest02
+          printf "%s\n" ROOTFS_VERSION=latest02
           VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
           VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
-          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then export ROOTFS_VERSION=latest01; fi
+          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then printf "%s\n" ROOTFS_VERSION=latest01; fi
           printf "%s\n" "${ROOTFS_VERSION}"
 
       - name: compress docker image
