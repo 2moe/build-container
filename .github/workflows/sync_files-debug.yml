@@ -42,7 +42,7 @@ jobs:
         #continue-on-error: true
         run: |
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
-          echo 666 > ${ROOTFS_FILE_LITE_NAME}.tar.zst
+          echo $(date +%H:%M) > ${ROOTFS_FILE_LITE_NAME}.tar.zst
           mv -fv ${ROOTFS_FILE_LITE_NAME}.tar.zst rootfs.tar.zst
           curl -L -o .ruby-alpha02 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.ruby-alpha02
           curl -L -o .debug05.rb -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug05
