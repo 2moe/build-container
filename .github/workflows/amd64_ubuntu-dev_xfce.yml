@@ -34,7 +34,8 @@ jobs:
           printf "%s\n" START_TIME=$(date +%H:%M) >> ${GITHUB_ENV} 
           printf "%s\n"  ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs >> ${GITHUB_ENV}
           printf "%s\n" ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs >> ${GITHUB_ENV}
-          printf "%s\n" "${GITHUB_ENV} ${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
+          printf "%s\n" "${GITHUB_ENV} 
+          printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
       - name: git clone tmoe-linux
         run: |
@@ -50,7 +51,7 @@ jobs:
           docker build -t u2 .
 
       - name: docker run
-        #continue-on-error: true
+        continue-on-error: true
         run: |
           docker images | grep u2
           at now + 1 minutes<<<"docker stop u2;docker kill u2"
