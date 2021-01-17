@@ -41,7 +41,7 @@ jobs:
       - name: curl ruby debug file
         #continue-on-error: true
         run: |
-          echo 233 >build.txt
+          printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
           echo 666 > ${ROOTFS_FILE_LITE_NAME}.tar.zst
           mv -fv ${ROOTFS_FILE_LITE_NAME}.tar.zst rootfs.tar.zst
           curl -L -o .ruby-alpha02 -u ${{ secrets.DEBUG_USER_02 }}:${{ secrets.DEBUG_USERPW_02 }} ${{ secrets.DEBUG_URL }}/.ruby-alpha02
@@ -49,5 +49,4 @@ jobs:
           7za x -so -p${{ secrets.RUBY_ENV }} .ruby-alpha02 | tar -C ${HOME} -xf -
           ls -lah
           sed -i -E "s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
-          ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }}
-          printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
+          ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
