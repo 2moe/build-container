@@ -60,7 +60,7 @@ jobs:
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
       - name: docker build
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           pwd
@@ -144,5 +144,5 @@ jobs:
         run: |
           curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' |grep '=' > .debug.txt
           cat .debug.txt
-          sudo rm -rf .azure.py .debug* *tar.xz .* ~/.ssh $(command -v upload_to_azure)
+          sudo rm -rf .azure.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
           ls -lah

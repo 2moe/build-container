@@ -5,7 +5,7 @@ name: amd64/ubuntu-dev/xfce
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [debug]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -68,7 +68,7 @@ jobs:
           docker build -t u2 .
 
       - name: docker run
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           docker images | grep u2
           at now + 1 minutes<<<"docker stop u2;docker kill u2"
@@ -144,5 +144,5 @@ jobs:
         run: |
           curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' |grep '=' > .debug.txt
           cat .debug.txt
-          sudo rm -rf .azure.py .debug* *tar.xz .* ~/.ssh $(command -v upload_to_azure)
+          sudo rm -rf .azure.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
           ls -lah
