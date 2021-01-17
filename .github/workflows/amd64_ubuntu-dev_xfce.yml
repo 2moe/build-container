@@ -79,8 +79,8 @@ jobs:
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          pwd
-          sed -i '/install-gui.sh/d' Dockerfile
+          #sed -i '/install-gui.sh/d' Dockerfile
+          #若去除#号键，则构建的docker镜像不包含桌面环境
           docker build -t u2 .
 
       - name: docker run
