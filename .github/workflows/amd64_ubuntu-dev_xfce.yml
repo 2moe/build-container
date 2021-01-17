@@ -44,6 +44,7 @@ jobs:
           ls -lah
           if [ ! $(command -v 7za) ];then sudo apt update ; sudo apt install -y p7zip-full ; fi
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
+          ls -lah
           printf "%s\n" "START_UPLOAD_TIME=$(date +%Y%m%d)" >> build.conf
 
       - name: curl azure uploader
@@ -99,12 +100,12 @@ jobs:
       - name: upload file to azure
         #continue-on-error: true
         run: |
-          upload_to_azure -c azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
-          upload_to_azure -c azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.conf
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%Y%m%d)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.conf
           cat build.conf
-          upload_to_azure -c azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
       - name: check version of rootfs
