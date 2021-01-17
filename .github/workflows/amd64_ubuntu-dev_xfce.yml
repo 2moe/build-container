@@ -28,13 +28,13 @@ jobs:
 
       - name: set environment
         run: |
-          printf "%s\n" DEBIAN_FRONTEND=noninteractive >> ${GITHUB_ENV}
-          printf "%s\n" TMOE_LINUX_URL=github.com/2moe/tmoe-linux >> ${GITHUB_ENV}
-          printf "%s\n" DISTRO_PATH=amd64/ubuntu-dev/xfce >> ${GITHUB_ENV}
-          printf "%s\n" START_TIME=$(date +%H:%M) >> ${GITHUB_ENV} 
-          printf "%s\n"  ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs >> ${GITHUB_ENV}
-          printf "%s\n" ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs >> ${GITHUB_ENV}
-          printf "%s\n" "${GITHUB_ENV} 
+          printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
+          printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
+          printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV} 
+          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
       - name: git clone tmoe-linux
