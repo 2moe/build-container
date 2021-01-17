@@ -57,10 +57,10 @@ jobs:
           at now + 1 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
-      - name: docker printf "%s\n"
+      - name: docker export
         #continue-on-error: true
         run: |
-          docker printf "%s\n" u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
 
       - name: check version of docker-image
