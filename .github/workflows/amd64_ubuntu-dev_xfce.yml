@@ -5,7 +5,7 @@ name: amd64/ubuntu-dev/xfce
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches: [debug]
 
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
@@ -31,7 +31,8 @@ jobs:
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
           printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
-          printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV} 
+          printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
           printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
@@ -80,7 +81,8 @@ jobs:
 
       - name: compress docker image
         run: |
-          printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
+          printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
+          printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
           zstd -z -10 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
@@ -95,7 +97,7 @@ jobs:
           if [ ! $(command -v 7za) ];then sudo apt update ; sudo apt install -y p7zip-full ; fi
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
           ls -lah
-          printf "%s\n" "START_UPLOAD_TIME=$(date +%H:%M)" >> build.txt
+          printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
       - name: upload file to azure
         #continue-on-error: true
@@ -105,11 +107,16 @@ jobs:
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
           cat build.txt
+
+      - name: upload build.txt to azure
+        #continue-on-error: true
+        run: |
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
-      - name: check version of rootfs
+      - name: check build.txt from azure
         run: |
-          curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt
+          curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' > .debug.txt
+          cat .debug.txt
           sudo rm -rv .azure.py .debug* *tar.xz $(command -v upload_to_azure)
           ls -lah
