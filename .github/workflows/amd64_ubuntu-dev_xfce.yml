@@ -38,6 +38,16 @@ jobs:
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
+
       - name: curl azure uploader
         #continue-on-error: true
         run: |
