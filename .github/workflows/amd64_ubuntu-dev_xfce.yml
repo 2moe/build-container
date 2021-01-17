@@ -72,15 +72,15 @@ jobs:
       - name: check version of docker-image
         run: |
           ROOTFS_VERSION=latest02
-          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
-          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.conf | awk -F 'BUILD_DATE=' '{print $2}')
+          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
+          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
           if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
           printf "%s\n" "${ROOTFS_VERSION}"
           printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
 
       - name: compress docker image
         run: |
-          printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.conf
+          printf "%s\n%s\n%s\n%s\n%s\n" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
           zstd -z -10 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
@@ -95,21 +95,21 @@ jobs:
           if [ ! $(command -v 7za) ];then sudo apt update ; sudo apt install -y p7zip-full ; fi
           7za x .debug04 -p${{ secrets.PYTHON_ENV }}
           ls -lah
-          printf "%s\n" "START_UPLOAD_TIME=$(date +%Y%m%d)" >> build.conf
+          printf "%s\n" "START_UPLOAD_TIME=$(date +%H:%M)" >> build.txt
 
       - name: upload file to azure
         #continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
-          sed -i -E 's@^(STATUS)=.*@\1=completed@' build.conf
-          printf "%s\n%s\n%s\n" "END_TIME=$(date +%Y%m%d)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.conf
-          cat build.conf
-          upload_to_azure -c .azure.py -t 5 -s build.conf -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
+          printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
+          cat build.txt
+          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
       - name: check version of rootfs
         run: |
-          curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.conf
-          rm -rv .azure.py .debug* *tar.xz $(command -v upload_to_azure)
+          curl -L ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt
+          sudo rm -rv .azure.py .debug* *tar.xz $(command -v upload_to_azure)
           ls -lah
