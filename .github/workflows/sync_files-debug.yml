@@ -33,7 +33,7 @@ jobs:
           printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
           printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce4-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"

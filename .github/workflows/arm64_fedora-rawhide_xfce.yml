@@ -38,7 +38,7 @@ jobs:
           printf "%s\n" "DISTRO_PATH=arm64/fedora-rawhide/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
           printf "%s\n" "DISTRO_NAME=fedora-rawhide_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_arm64+xfce4-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_arm64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
