@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/manjaro-stable/xfce
+name: i386/debian-sid/lxde
 
 # Controls when the action will run.
 on:
@@ -35,11 +35,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/manjaro-stable/xfce" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=i386/debian-sid/lxde" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=manjaro-stable_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=manjaro-stable_arm64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=manjaro-stable_arm64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=debian-sid_i386" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=debian-sid_i386+lxde-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=debian-sid_i386-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
