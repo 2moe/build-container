@@ -10,7 +10,8 @@ DISTRO_CODE=$(curl -L ${UBUNTU_URL}/dists/devel/Release | grep 'Codename:' | hea
 [[ -n ${DISTRO_CODE} ]] || DISTRO_CODE=$(curl -L ${UBUNTU_URL_02}/dists/devel/Release | grep 'Codename:' | head -n 1 | awk -F ': ' '{print $2}')
 ###################
 sudo apt update
-sudo apt install -y debootstrap qemu-user-static
+sudo apt install -y debootstrap
+#qemu-user-static
 ##################
 cd /usr/share/debootstrap/scripts
 if [[ ! -e ${DISTRO_CODE} ]]; then
