@@ -115,8 +115,8 @@ jobs:
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
-          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
-          zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          #调试时使用-5 zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
 
