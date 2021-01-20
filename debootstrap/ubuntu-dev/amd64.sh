@@ -26,7 +26,11 @@ sudo su -c "echo 'docker' >${DEBIAN_CHROOT}/run/systemd/container"
 
 sed -i "s@hirsute@${DISTRO_CODE}@g" ${ARCH_TYPE}.list
 sudo cp -fv ${ARCH_TYPE}.list ${DEBIAN_CHROOT}/etc/apt/sources.list
-
+pwd
 cd ${DEBIAN_CHROOT}
-tar -cvf ${CUR}/ubuntu.tar ./*
+pwd
+sudo tar -cf ${CUR}/ubuntu.tar ./*
+ls -lah
 cd ${CUR}
+pwd
+ls -lah

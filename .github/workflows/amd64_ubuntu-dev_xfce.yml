@@ -42,7 +42,7 @@ jobs:
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
-      - name: debootstrap debug02
+      - name: debootstrap debug03
         run: |
           if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
               cd debootstrap/ubuntu-dev
