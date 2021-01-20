@@ -91,8 +91,8 @@ jobs:
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          sed -i '/install-gui.sh/d' Dockerfile
-          sed -i '/bash zsh.sh/d' Dockerfile
+          #sed -i '/install-gui.sh/d' Dockerfile
+          #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
           docker build -t u2 .
 
@@ -100,7 +100,7 @@ jobs:
         continue-on-error: true
         run: |
           docker images | grep u2
-          at now + 1 minutes<<<"docker stop u2;docker kill u2"
+          at now + 2 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
@@ -119,7 +119,6 @@ jobs:
           zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
-          exit 1
 
       - name: curl file
         continue-on-error: true
