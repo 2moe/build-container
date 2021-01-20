@@ -108,7 +108,6 @@ jobs:
         run: |
           docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
-          exit 1
 
       - name: compress docker image
         run: |
@@ -120,6 +119,7 @@ jobs:
           zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
+           exit 1
 
       - name: curl file
         continue-on-error: true
