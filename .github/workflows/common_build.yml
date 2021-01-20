@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: amd64/ubuntu-dev/xfce
+name: arm64/ubuntu-bionic/kde
 
 # Controls when the action will run.
 on:
@@ -7,7 +7,7 @@ on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/amd64_ubuntu-dev_xfce.yml"
+      - ".github/workflows/common_build.yml"
   #schedule:
   #  - cron: "35 17 * * *"
   #cron不生效？？？
@@ -35,11 +35,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/ubuntu-bionic/kde" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=ubuntu-bionic_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-bionic_arm64+kde-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-bionic_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -78,11 +78,11 @@ jobs:
       - name: debootstrap ubuntu rootfs
         run: |
           if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
-              cd debootstrap/ubuntu-dev
-              bash amd64.sh
+              cd debootstrap/ubuntu-bionic
+              bash arm64.sh
               cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
           elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
-              cd debootstrap/ubuntu-dev
+              cd debootstrap/ubuntu-bionic
               bash arm64.sh
               cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
           fi
@@ -115,8 +115,8 @@ jobs:
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
-          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
-          zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          #调试时使用-5 zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
 
