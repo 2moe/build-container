@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/ubuntu-dev/zsh
+name: amd64/ubuntu-dev/xfce
 
 # Controls when the action will run.
 on:
@@ -7,7 +7,7 @@ on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/common_build.yml"
+      - ".github/workflows/amd64_ubuntu-dev_xfce.yml"
   #schedule:
   #  - cron: "35 17 * * *"
   #cron不生效？？？
@@ -35,11 +35,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=ubuntu-dev_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_arm64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_arm64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -75,11 +75,11 @@ jobs:
           cd ${HOME}
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
-      - name: debootstrap debug04
+      - name: debootstrap ubuntu rootfs
         run: |
           if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
               cd debootstrap/ubuntu-dev
-              bash arm64.sh
+              bash amd64.sh
               cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
           elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
               cd debootstrap/ubuntu-dev
@@ -91,7 +91,7 @@ jobs:
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          sed -i '/install-gui.sh/d' Dockerfile
+          #sed -i '/install-gui.sh/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
           docker build -t u2 .
@@ -119,7 +119,6 @@ jobs:
           zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
-          exit 1
 
       - name: curl file
         continue-on-error: true

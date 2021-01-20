@@ -75,7 +75,7 @@ jobs:
           cd ${HOME}
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
-      - name: debootstrap debug04
+      - name: debootstrap ubuntu rootfs
         run: |
           if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
               cd debootstrap/ubuntu-dev

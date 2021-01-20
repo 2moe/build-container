@@ -30,6 +30,7 @@ cd ${DEBIAN_CHROOT}
 sudo tar -cf ${CUR}/ubuntu.tar ./*
 ls -lah
 cd ${CUR}
+sudo chmod 666 -v ubuntu.tar
 sudo rm -rf ${DEBIAN_CHROOT}
 pwd
 ls -lah
