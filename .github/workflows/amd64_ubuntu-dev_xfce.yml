@@ -42,18 +42,6 @@ jobs:
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
-      - name: debootstrap debug03
-        run: |
-          if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
-              cd debootstrap/ubuntu-dev
-              bash amd64.sh
-              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
-              cd debootstrap/ubuntu-dev
-              bash arm64.sh
-              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          fi
-          exit 1
 
       - name: Set up QEMU
         id: qemu
@@ -87,6 +75,18 @@ jobs:
           cd ${HOME}
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
+      - name: debootstrap debug04
+        run: |
+          if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
+              cd debootstrap/ubuntu-dev
+              bash amd64.sh
+              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
+              cd debootstrap/ubuntu-dev
+              bash arm64.sh
+              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          fi
+
       - name: docker build
         #continue-on-error: true
         run: |
@@ -100,7 +100,7 @@ jobs:
         continue-on-error: true
         run: |
           docker images | grep u2
-          at now + 2 minutes<<<"docker stop u2;docker kill u2"
+          at now + 1 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
@@ -108,7 +108,6 @@ jobs:
         run: |
           docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
-          #exit 1
 
       - name: compress docker image
         run: |
@@ -116,9 +115,11 @@ jobs:
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
-          zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
+          exit 1
 
       - name: curl file
         continue-on-error: true
