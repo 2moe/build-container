@@ -8,9 +8,11 @@ UBUNTU_URL="http://azure.archive.ubuntu.com/ubuntu"
 UBUNTU_URL_02="https://mirrors.bfsu.edu.cn/ubuntu"
 DISRO_CODE=$(curl -L ${UBUNTU_URL}/dists/devel/Release | grep 'Codename:' | head -n 1 | awk -F ': ' '{print $2}')
 [[ -n ${DISRO_CODE} ]] || DISRO_CODE=$(curl -L ${UBUNTU_URL_02}/dists/devel/Release | grep 'Codename:' | head -n 1 | awk -F ': ' '{print $2}')
+echo ${DISRO_CODE}
 ###################
 sudo apt update
-sudo apt install -y debootstrap qemu-user-static
+sudo apt install -y debootstrap
+#qemu-user-static
 ##################
 cd /usr/share/debootstrap/scripts
 if [[ ! -e ${DISTRO_CODE} ]]; then

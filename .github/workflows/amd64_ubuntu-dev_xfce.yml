@@ -42,6 +42,18 @@ jobs:
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
+      - name: debootstrap debug
+        run: |
+          if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
+              cd debootstrap/ubuntu-dev
+              bash amd64.sh
+              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
+              cd debootstrap/ubuntu-dev
+              bash arm64.sh
+              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          fi
+          exit 1
 
       - name: Set up QEMU
         id: qemu
@@ -78,15 +90,6 @@ jobs:
       - name: docker build
         #continue-on-error: true
         run: |
-          if [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hbWQ2NAo=) ];then
-              cd debootstrap/ubuntu-dev
-              bash amd64.sh
-              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          elif [ ${DISTRO_NAME} = $(base64 -d <<<dWJ1bnR1LWRldl9hcm02NAo=) ];then
-              cd debootstrap/ubuntu-dev
-              bash arm64.sh
-              cp ubuntu.tar ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          fi
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           sed -i '/install-gui.sh/d' Dockerfile
           sed -i '/bash zsh.sh/d' Dockerfile
@@ -105,7 +108,7 @@ jobs:
         run: |
           docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           ls -lh
-          exit 1
+          #exit 1
 
       - name: compress docker image
         run: |
