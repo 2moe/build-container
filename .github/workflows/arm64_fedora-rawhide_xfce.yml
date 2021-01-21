@@ -87,7 +87,7 @@ jobs:
         continue-on-error: true
         run: |
           docker images | grep u2
-          at now + 2 minutes<<<"docker stop u2;docker kill u2"
+          at now + 3 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
 
       - name: docker export
