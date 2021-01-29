@@ -94,6 +94,9 @@ jobs:
         #continue-on-error: true
         run: |
           docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          docker rm u2
+          docker rmi -f $(docker images -qa) 2>/dev/null
+          docker images
           ls -lh
 
       - name: compress docker image
