@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: amd64/arch/mate
+name: arm64/arch/kde
 
 # Controls when the action will run.
 on:
@@ -35,11 +35,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=amd64/arch/mate" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/arch/kde" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=arch_amd64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=arch_amd64+mate-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=arch_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=arch_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=arch_arm64+kde-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=arch_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
