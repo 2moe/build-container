@@ -34,7 +34,9 @@ jobs:
       - name: rm docker images
         #continue-on-error: true
         run: |
+          docker rm $(docker ps -a -q) 2>/dev/null
           docker rmi -f $(docker images -qa) 2>/dev/null
+          sudo df -h
 
       - name: set environment
         run: |
@@ -97,6 +99,7 @@ jobs:
       - name: docker run
         continue-on-error: true
         run: |
+          sudo df -h
           docker images | grep u2
           at now + 2 minutes<<<"docker stop u2;docker kill u2"
           docker run -t --name u2 u2 /bin/zsh
