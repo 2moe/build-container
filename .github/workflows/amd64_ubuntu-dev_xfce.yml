@@ -31,6 +31,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: rm docker images
+        #continue-on-error: true
+        run: |
+          docker rmi -f $(docker images -qa) 2>/dev/null
+
       - name: set environment
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
