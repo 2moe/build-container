@@ -35,6 +35,7 @@ jobs:
         continue-on-error: true
         run: |
           docker rmi -f $(docker images -qa) 2>/dev/null
+          yes | docker system prune -a 
           sudo df -h
 
       - name: set environment
