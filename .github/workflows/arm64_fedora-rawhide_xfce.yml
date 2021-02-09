@@ -34,7 +34,6 @@ jobs:
       - name: rm docker images
         continue-on-error: true
         run: |
-          docker rm $(docker ps -a -q) 2>/dev/null
           docker rmi -f $(docker images -qa) 2>/dev/null
           sudo df -h
 
