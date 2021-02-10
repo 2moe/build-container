@@ -50,27 +50,6 @@ jobs:
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
-      - name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
-
-      - name: Available platforms
-        run: echo ${{ steps.qemu.outputs.platforms }}
-
-      - name: check version of docker-image
-        run: |
-          ROOTFS_VERSION=latest02
-          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
-          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
-          if [ -z ${VERSION_01_DATE} ];then VERSION_01_DATE=20210116 ; fi
-          if [ -z ${VERSION_02_DATE} ];then VERSION_01_DATE=20210118 ; fi
-          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
-          printf "%s\n" "${VERSION_01_DATE} ${VERSION_02_DATE} ${ROOTFS_VERSION}"
-          printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
-
       - name: curl azure uploader
         #continue-on-error: true
         run: |
@@ -94,7 +73,7 @@ jobs:
           #sed -i '/install-gui.sh/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
-          docker build -t u2 .
+          sudo docker build -t u2 .
 
       - name: docker run
         continue-on-error: true
