@@ -108,8 +108,7 @@ jobs:
         run: |
           podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           podman rm u2
-          podman rmi -f $(podman images -qa) 2>/dev/null
-          podman images
+          podman rmi -f u2 2>/dev/null
           ls -lh
 
       - name: compress podman image
@@ -117,8 +116,8 @@ jobs:
           printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
-          zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
+          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
 
