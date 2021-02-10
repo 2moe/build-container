@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: amd64/ubuntu-dev/lxqt
+name: amd64/arch/mate
 
 # Controls when the action will run.
 on:
@@ -31,22 +31,15 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: rm docker images
-        continue-on-error: true
-        run: |
-          docker rmi -f $(docker images -qa) 2>/dev/null
-          yes | docker system prune -a 
-          sudo df -h
-
       - name: set environment
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/lxqt" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/arch/mate" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+lxqt-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=arch_amd64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=arch_amd64+mate-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=arch_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -91,7 +84,7 @@ jobs:
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          #sed -i '/install-gui.sh/d' Dockerfile
+          sed -i '/install-gui.sh/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
           podman build -t u2 .
@@ -101,16 +94,15 @@ jobs:
         run: |
           sudo df -h
           podman images | grep u2
-          at now + 2 minutes<<<"podman stop u2;podman kill u2"
-          podman run -t --name u2 u2 /bin/zsh
+          at now + 2 minutes<<<"podman stop u2;sudo podman kill u2"
+          sudo podman run -t --name u2 u2 /bin/zsh
 
       - name: podman export
         #continue-on-error: true
         run: |
-          podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          sudo podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           podman rm u2
-          podman rmi -f $(podman images -qa) 2>/dev/null
-          podman images
+          podman rmi -f u2 2>/dev/null
           ls -lh
 
       - name: compress podman image
