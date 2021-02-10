@@ -85,6 +85,7 @@ jobs:
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           sed -i '/install-gui.sh/d' Dockerfile
+          sed -i '/build-fakeroot/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
           podman build -t u2 .
@@ -95,12 +96,12 @@ jobs:
           sudo df -h
           podman images | grep u2
           at now + 2 minutes<<<"podman stop u2;sudo podman kill u2"
-          sudo podman run -t --name u2 u2 /bin/zsh
+          podman run -t --name u2 u2 /bin/zsh
 
       - name: podman export
         #continue-on-error: true
         run: |
-          sudo podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           podman rm u2
           podman rmi -f u2 2>/dev/null
           ls -lh
