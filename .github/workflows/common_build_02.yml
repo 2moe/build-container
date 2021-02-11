@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: armhf/fedora-rawhide/lxqt
+name: arm64/alpine-edge/xfce
 
 # Controls when the action will run.
 on:
@@ -34,7 +34,7 @@ jobs:
       - name: rm docker images
         continue-on-error: true
         run: |
-          sudo docker rmi -f $(docker images -qa) 2>/dev/null
+          docker rmi -f $(docker images -qa) 2>/dev/null
           yes | docker system prune -a 
           sudo df -h
 
@@ -42,11 +42,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=armhf/fedora-rawhide/lxqt" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/alpine-edge/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=fedora-rawhide_armhf" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_armhf+lxqt-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_armhf-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=alpine-edge_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=alpine-edge_arm64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=alpine-edge_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -87,38 +87,37 @@ jobs:
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
 
-      - name: docker build
+      - name: podman build
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           #sed -i '/install-gui.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
-          docker build -t u2 .
+          podman build -t u2 .
 
-      - name: docker run
+      - name: podman run
         continue-on-error: true
         run: |
           sudo df -h
-          docker images | grep u2
-          at now + 3 minutes<<<"docker stop u2;docker kill u2"
-          docker run -t --name u2 u2 /bin/zsh
+          podman images | grep u2
+          at now + 3 minutes<<<"podman stop u2;podman kill u2"
+          podman run -t --name u2 u2 /bin/zsh
 
-      - name: docker export
+      - name: podman export
         #continue-on-error: true
         run: |
-          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
-          docker rm u2
-          docker rmi -f $(docker images -qa) 2>/dev/null
-          docker images
+          podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          podman rm u2
+          podman rmi -f u2 2>/dev/null
           ls -lh
 
-      - name: compress docker image
+      - name: compress podman image
         run: |
           printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          #nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
-          zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
+          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
           #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
           ls -lh
 
