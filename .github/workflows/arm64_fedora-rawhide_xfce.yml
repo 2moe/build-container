@@ -35,7 +35,9 @@ jobs:
         continue-on-error: true
         run: |
           docker rmi -f $(docker images -qa) 2>/dev/null
-          yes | docker system prune -a 
+          yes | docker system prune -a
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
+          sudo apt clean
           sudo df -h
 
       - name: set environment
