@@ -50,7 +50,8 @@ jobs:
       - name: compress virtio iso
         run: |
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          nice -n -20 zstd -z -22 -T0 -v --ultra virtio.iso.zst ${DOWNLOAD_FILE_NAME}
+          sudo nice -n -20 zstd -z -22 -T0 -v --ultra virtio.iso.zst ${DOWNLOAD_FILE_NAME}
+          sudo chmod 666 ${DOWNLOAD_FILE_NAME}
           ls -lh
 
       - name: curl file
