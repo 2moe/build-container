@@ -50,6 +50,8 @@ jobs:
       - name: compress virtio iso
         run: |
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
+          sudo chmod 666 ${DOWNLOAD_FILE_NAME}
+          sudo chown 0:0 ${DOWNLOAD_FILE_NAME}
           tar -cvf virtio.tar ${DOWNLOAD_FILE_NAME}
           nice -n -20 zstd -z -22 -T0 -v --ultra virtio.tar
           ls -lh
