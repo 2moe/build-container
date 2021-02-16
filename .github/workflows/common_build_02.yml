@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/fedora-rawhide/mate
+name: arm64/fedora-rawhide/lxqt
 
 # Controls when the action will run.
 on:
@@ -43,10 +43,10 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/fedora-rawhide/mate" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/fedora-rawhide/lxqt" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
           printf "%s\n" "DISTRO_NAME=fedora-rawhide_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_arm64+mate-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_arm64+lxqt-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
