@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: i386/alpine-edge/mate
+name: arm64/fedora-rawhide/xfce
 
 # Controls when the action will run.
 on:
@@ -11,7 +11,6 @@ on:
   #schedule:
   #  - cron: "35 17 * * *"
   #cron不生效？？？
-
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
 
@@ -35,18 +34,20 @@ jobs:
         continue-on-error: true
         run: |
           docker rmi -f $(docker images -qa) 2>/dev/null
-          yes | docker system prune -a 
+          yes | docker system prune -a
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
+          sudo apt clean
           sudo df -h
 
       - name: set environment
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=i386/alpine-edge/mate" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/fedora-rawhide/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=alpine-edge_i386" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=alpine-edge_i386+mate-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=alpine-edge_i386-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=fedora-rawhide_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_arm64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -100,13 +101,14 @@ jobs:
         run: |
           sudo df -h
           podman images | grep u2
-          at now + 3 minutes<<<"podman stop u2;podman kill u2"
+          at now + 6 minutes<<<"podman stop u2;podman kill u2"
           podman run -t --name u2 u2 /bin/zsh
 
       - name: podman export
         #continue-on-error: true
         run: |
           podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          sudo chmod 666 ${ROOTFS_FILE_LITE_NAME}.tar
           podman rm u2
           podman rmi -f u2 2>/dev/null
           ls -lh
