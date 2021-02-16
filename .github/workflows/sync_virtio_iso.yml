@@ -11,7 +11,6 @@ on:
   #schedule:
   #  - cron: "35 17 * * *"
   #crontab不生效？？？
-
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
 
@@ -35,14 +34,14 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "DOWNLOAD_FILE_NAME=virtio-win-latest.iso" >> ${GITHUB_ENV}
-  
+
       - name: curl azure uploader
         #continue-on-error: true
         run: |
           curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
           sudo tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
 
-       -name: download virtio iso
+      - name: download virtio iso
         run: |
           if [ ! $(command -v aria2c) ];then sudo apt update ; sudo apt install -y aria2 ; fi
           THE_LATEST_ISO_LINK='https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso'
