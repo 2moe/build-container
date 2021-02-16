@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: update virtio-win-latest.iso
+name: virtio-win-latest.iso+date=21-02
 
 # Controls when the action will run.
 on:
