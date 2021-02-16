@@ -41,7 +41,7 @@ jobs:
         run: |
           curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
           sudo tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
-       
+
        -name: download virtio iso
         run: |
           if [ ! $(command -v aria2c) ];then sudo apt update ; sudo apt install -y aria2 ; fi
