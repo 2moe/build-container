@@ -103,7 +103,7 @@ jobs:
         run: |
           sudo df -h
           podman images | grep u2
-          at now + 2 minutes<<<"podman stop u2;podman kill u2"
+          at now + 5 minutes<<<"podman stop u2;podman kill u2"
           podman run -t --name u2 u2 /bin/zsh
 
       - name: podman export
