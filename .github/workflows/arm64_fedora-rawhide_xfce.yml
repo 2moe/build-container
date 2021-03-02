@@ -35,7 +35,11 @@ jobs:
         run: |
           docker rmi -f $(docker images -qa) 2>/dev/null
           yes | docker system prune -a
-          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
+          sudo apt update
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
+          sudo apt upgrade -y
+          sudo apt full-upgrade -y
+          sudo dpkg --configure -a
           sudo apt clean
           sudo df -h
 
