@@ -30,15 +30,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: install podman and runc
-        continue-on-error: true
-        run: |
-          sudo apt update
-          git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc
-          cp -vf opencontainers-runc/*deb ./
-          sudo apt install -y ./runc*.deb
-          sudo apt install -y podman
-
       - name: set environment
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
@@ -86,9 +77,12 @@ jobs:
       - name: debootstrap ubuntu rootfs
         run: |
           sudo apt update
+          #cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          #[[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
+          git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc
+          cp -vf opencontainers-runc/*deb ./
+          sudo apt install -y ./runc*.deb
           sudo apt install -y podman
-          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
 
       - name: podman build
         #continue-on-error: true
