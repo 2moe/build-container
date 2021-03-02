@@ -66,6 +66,6 @@ jobs:
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
       - name: upload file to azure
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           upload_to_azure -c .azure.py -t 5 -s virtio.tar.zst -r ${{ secrets.REQUEST_CDN }}/windows/

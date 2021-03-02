@@ -10,7 +10,6 @@ on:
       - ".github/workflows/arm64_fedora-rawhide_xfce.yml"
   #schedule:
   #  - cron: "35 17 * * *"
-  #cron不生效？？？
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
 
@@ -132,7 +131,7 @@ jobs:
           ls -lh
 
       - name: curl file
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           ls -lah
@@ -142,7 +141,7 @@ jobs:
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
       - name: upload file to azure
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
