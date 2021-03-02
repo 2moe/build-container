@@ -38,6 +38,8 @@ jobs:
           sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
           sudo apt clean
           sudo df -h
+          sudo apt update
+          sudo apt install -y podman
 
       - name: set environment
         run: |
