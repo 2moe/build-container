@@ -56,7 +56,7 @@ jobs:
           ls -lh
 
       - name: curl file
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           ls -lah
