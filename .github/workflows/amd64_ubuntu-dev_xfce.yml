@@ -85,8 +85,12 @@ jobs:
 
       - name: debootstrap ubuntu rootfs
         run: |
+          sudo apt update
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
+          [[ ! -e opencontainers-runc ]] || sudo rm -rfv opencontainers-runc
+          if grep -q 'Ubuntu 20\.04\.' /etc/issue; then git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc ; cp -vf opencontainers-runc/*deb ./ ;sudo apt install -y ./runc*.deb ;fi
+          sudo apt install -y podman
 
       - name: podman build
         #continue-on-error: true
@@ -95,6 +99,7 @@ jobs:
           #sed -i '/install-gui.sh/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
+          #cd docker-build
           podman build -t u2 .
 
       - name: podman run
