@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: amd64/ubuntu-dev/zsh
+name: amd64/manjaro-stable/xfce
 
 # Controls when the action will run.
 on:
@@ -30,15 +30,24 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: rm docker images
+        continue-on-error: true
+        run: |
+          docker rmi -f $(docker images -qa) 2>/dev/null
+          yes | docker system prune -a
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
+          sudo apt clean
+          sudo df -h
+
       - name: set environment
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=amd64/ubuntu-dev/zsh" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/manjaro-stable/xfce" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=ubuntu-dev_amd64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_amd64+zsh-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=manjaro-stable_amd64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=manjaro-stable_amd64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=manjaro-stable_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -77,21 +86,20 @@ jobs:
       - name: debootstrap ubuntu rootfs
         run: |
           sudo apt update
-          #cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
-          #[[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
-          git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc
-          cp -vf opencontainers-runc/*deb ./
-          sudo apt install -y ./runc*.deb
+          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
+          [[ ! -e opencontainers-runc ]] || sudo rm -rfv opencontainers-runc
+          if grep -q 'Ubuntu 20\.04\.' /etc/issue; then git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc ; cp -vf opencontainers-runc/*deb ./ ;sudo apt install -y ./runc*.deb ;fi
           sudo apt install -y podman
 
       - name: podman build
         #continue-on-error: true
         run: |
-          #cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           #sed -i '/install-gui.sh/d' Dockerfile
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
-          cd docker-build
+          #cd docker-build
           podman build -t u2 .
 
       - name: podman run
