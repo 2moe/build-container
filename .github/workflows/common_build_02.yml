@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: armhf/fedora-rawhide/mate
+name: amd64/fedora-rawhide/zsh
 
 # Controls when the action will run.
 on:
@@ -10,7 +10,6 @@ on:
       - ".github/workflows/common_build_02.yml"
   #schedule:
   #  - cron: "35 17 * * *"
-  #cron不生效？？？
   # Allows you to run this workflow manually from the Actions tab
   #workflow_dispatch:
 
@@ -35,7 +34,11 @@ jobs:
         run: |
           docker rmi -f $(docker images -qa) 2>/dev/null
           yes | docker system prune -a
-          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql
+          sudo apt update
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
+          sudo apt upgrade -y
+          sudo apt full-upgrade -y
+          sudo dpkg --configure -a
           sudo apt clean
           sudo df -h
 
@@ -43,11 +46,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=armhf/fedora-rawhide/mate" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/fedora-rawhide/zsh" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=fedora-rawhide_armhf" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_armhf+mate-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_armhf-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=fedora-rawhide_amd64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=fedora-rawhide_amd64+zsh-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=fedora-rawhide_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -85,8 +88,12 @@ jobs:
 
       - name: debootstrap ubuntu rootfs
         run: |
+          sudo apt update
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
+          [[ ! -e opencontainers-runc ]] || sudo rm -rfv opencontainers-runc
+          if grep -q 'Ubuntu 20\.04\.' /etc/issue; then git clone --depth=1 https://github.com/cu233/runc.git opencontainers-runc ; cp -vf opencontainers-runc/*deb ./ ;sudo apt install -y ./runc*.deb ;fi
+          sudo apt install -y podman
 
       - name: podman build
         #continue-on-error: true
@@ -124,7 +131,7 @@ jobs:
           ls -lh
 
       - name: curl file
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
           ls -lah
@@ -134,7 +141,7 @@ jobs:
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
       - name: upload file to azure
-        continue-on-error: true
+        #continue-on-error: true
         run: |
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
