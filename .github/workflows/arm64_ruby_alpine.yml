@@ -1,0 +1,180 @@
+# This is a basic workflow to help you get started with Actions
+name: arm64/ruby/alpine
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/arm64_ruby_alpine.yml"
+  #schedule:
+  #  - cron: "35 17 * * *"
+  # Allows you to run this workflow manually from the Actions tab
+  #workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+    #container: multiarch/qemu-user-static:x86_64-aarch64
+    #env:
+    #REPO: ${{ secrets.DEBUG_REPO }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: rm docker images
+        continue-on-error: true
+        run: |
+          docker rmi -f $(docker images -qa) 2>/dev/null
+          yes | docker system prune -a
+          sudo apt update
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
+          sudo dpkg --configure -a
+          sudo apt clean
+          sudo df -h
+
+      - name: set environment
+        run: |
+          printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
+          printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/ruby/alpine" >> ${GITHUB_ENV}
+          printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=ruby_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=ruby_arm64+alpine-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ruby_arm64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "${GITHUB_ENV}" 
+          printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
+
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
+
+      - name: check version of docker-image
+        run: |
+          ROOTFS_VERSION=latest02
+          VERSION_01_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest01/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
+          VERSION_02_DATE=$(curl -L ${{ secrets.AZURE_URL }}/latest02/${DISTRO_PATH}/build.txt | awk -F 'BUILD_DATE=' '{print $2}')
+          if [ -z ${VERSION_01_DATE} ];then VERSION_01_DATE=20210116 ; fi
+          if [ -z ${VERSION_02_DATE} ];then VERSION_01_DATE=20210118 ; fi
+          if ((${VERSION_01_DATE} < ${VERSION_02_DATE})); then ROOTFS_VERSION=latest01 ; fi
+          printf "%s\n" "${VERSION_01_DATE} ${VERSION_02_DATE} ${ROOTFS_VERSION}"
+          printf "%s\n" "ROOTFS_VERSION=${ROOTFS_VERSION}" >> ${GITHUB_ENV}
+
+      - name: curl azure uploader
+        #continue-on-error: true
+        run: |
+          curl -L -o upload_to_azure.tar.xz -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.upload_to_azure.tar.xz
+          sudo tar -Jxvf upload_to_azure.tar.xz -C /usr/bin/
+
+      - name: git clone tmoe-linux
+        run: |
+          cd ${HOME}
+          git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
+
+      - name: debootstrap ubuntu rootfs
+        run: |
+          sudo apt update
+          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
+
+      - name: docker build
+        #continue-on-error: true
+        run: |
+          cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
+          #sed -i '/install-gui.sh/d' Dockerfile
+          #sed -i '/bash zsh.sh/d' Dockerfile
+          #若去除#号，则构建的docker镜像不包含桌面环境
+          #cd docker-build
+          docker build -t u2 .
+
+      - name: docker run
+        continue-on-error: true
+        run: |
+          sudo df -h
+          docker images | grep u2
+          # at now + 1 minutes<<<"docker stop u2;docker kill u2"
+          mkdir -p /tmp/version
+          docker run -t --name u2 -v /tmp/version:/tmp/version u2 /bin/bash -c "cp /root/version.txt /tmp/version"
+          # cp -vf /tmp/version/version.txt ~
+
+      - name: docker export
+        #continue-on-error: true
+        run: |
+          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          sudo chmod 666 ${ROOTFS_FILE_LITE_NAME}.tar
+          docker rm u2
+          docker rmi -f u2 2>/dev/null
+          ls -lh
+
+      - name: compress docker image
+        run: |
+          printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
+          printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
+          if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
+          nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
+          #调试时使用-5 zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          #zstd -z -19 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
+          #chmod 666 -v ${ROOTFS_FILE_LITE_NAME}.tar.zst
+          ls -lh
+
+      - name: curl file
+        #continue-on-error: true
+        run: |
+          curl -L -o .debug04 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug04
+          ls -lah
+          if [ ! $(command -v 7za) ];then sudo apt update ; sudo apt install -y p7zip-full ; fi
+          7za x .debug04 -p${{ secrets.PYTHON_ENV }}
+          ls -lah
+          printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
+
+      - name: upload file to azure
+        #continue-on-error: true
+        run: |
+          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
+          printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
+          if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi
+          cat build.txt
+
+      - name: upload build.txt to azure
+        continue-on-error: true
+        run: |
+          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          printf "%s\n" "Build Completed."
+
+      - name: curl ruby debug file and sync files
+        #continue-on-error: true
+        run: |
+          sed -i -E "s@^(SERVER=).*@\1node02-Tmoe@;s@(START_SYNC_TIME=).*@\1$(date +%H:%M)@" build.txt
+          mv -fv ${ROOTFS_FILE_LITE_NAME}.tar.zst rootfs.tar.zst
+          curl -L -o .ruby-alpha02 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.ruby-alpha02
+          curl -L -o .debug05.rb -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug05
+          7za x -so -p${{ secrets.RUBY_ENV }} .ruby-alpha02 | tar -C ${HOME} -xf -
+          ls -lah
+          sed -i -E "s@RUBY_DIR@${{ secrets.RUBY_DIR }}@;s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
+          ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
+          sed -i '/tar.zst/d' .debug05.rb
+          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@;s@(VERSION=).*@\1latest02@" build.txt
+          ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
+
+      - name: check build.txt from azure
+        continue-on-error: true
+        run: |
+          curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' |grep '=' > .debug.txt
+          cat .debug.txt
+          sudo rm -rf .azure.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
+          ls -lah
