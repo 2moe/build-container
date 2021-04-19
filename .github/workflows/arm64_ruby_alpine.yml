@@ -107,7 +107,11 @@ jobs:
           docker images | grep u2
           # at now + 1 minutes<<<"docker stop u2;docker kill u2"
           mkdir -p /tmp/version
-          docker run -t --name u2 -v /tmp/version:/tmp/version u2 /bin/bash -c "for i in /root/version.txt /usr/local/etc/tmoe-linux/environment/container.env ;do; if [ -r ${i} ];then cp -vf ${i} /tmp/version ;fi;done"
+          docker run -t --name u2 -v /tmp/version:/tmp/version u2 /bin/bash -c 'for i in /root/version.txt /usr/local/etc/tmoe-linux/environment/container.env ;do
+            if [ -r ${i} ];then
+              cp -vf ${i} /tmp/version 
+            fi
+          done'
           # cp -vf /tmp/version/version.txt ~
 
       - name: docker export
