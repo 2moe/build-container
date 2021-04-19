@@ -152,9 +152,9 @@ jobs:
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
           for i in /tmp/version/* ;do
-          if [ -r /tmp/version/${i} ];then
-            sed -i 's@^export @@g' /tmp/version/${i}
-            sed -i '$ r/tmp/version/${i}' build.txt 
+          if [ -r ${i} ];then
+            sed -i 's@^export @@g' ${i}
+            sed -i '$ r${i}' build.txt 
           fi
           done
           # if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi
