@@ -86,7 +86,6 @@ jobs:
 
       - name: debootstrap ubuntu rootfs
         run: |
-          sudo apt update
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
 
@@ -112,6 +111,7 @@ jobs:
               cp -vf ${i} /tmp/version 
             fi
           done'
+          sudo chmod -Rv 777 /tmp/version
           # cp -vf /tmp/version/version.txt ~
 
       - name: docker export
@@ -154,7 +154,7 @@ jobs:
           for i in /tmp/version/* ;do
           if [ -r ${i} ];then
             sed -i 's@^export @@g' ${i}
-            sed -i '$ r${i}' build.txt 
+            sed -i "$ r${i}" build.txt 
           fi
           done
           # if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi

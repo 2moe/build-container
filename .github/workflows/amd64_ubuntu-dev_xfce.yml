@@ -86,7 +86,6 @@ jobs:
 
       - name: debootstrap ubuntu rootfs
         run: |
-          sudo apt update
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
 
