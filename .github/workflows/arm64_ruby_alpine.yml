@@ -32,11 +32,11 @@ jobs:
       - name: rm docker images
         continue-on-error: true
         run: |
-          docker rmi -f $(docker images -qa) 2>/dev/null
-          yes | docker system prune -a
-          sudo apt update
-          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
-          sudo dpkg --configure -a
+          # docker rmi -f $(docker images -qa) 2>/dev/null
+          # yes | docker system prune -a
+          # sudo apt update
+          # sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
+          # sudo dpkg --configure -a
           sudo apt clean
           sudo df -h
 
@@ -107,7 +107,7 @@ jobs:
           docker images | grep u2
           # at now + 1 minutes<<<"docker stop u2;docker kill u2"
           mkdir -p /tmp/version
-          docker run -t --name u2 -v /tmp/version:/tmp/version u2 /bin/bash -c "cp /root/version.txt /tmp/version"
+          docker run -t --name u2 -v /tmp/version:/tmp/version u2 /bin/bash -c "for i in /root/version.txt /usr/local/etc/tmoe-linux/environment/container.env ;do; if [ -r ${i} ];then cp -vf ${i} /tmp/version ;fi;done"
           # cp -vf /tmp/version/version.txt ~
 
       - name: docker export
@@ -147,7 +147,13 @@ jobs:
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
-          if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi
+          for i in /tmp/version/* ;do
+          if [ -r /tmp/version/${i} ];then
+            sed -i 's@^export @@g' /tmp/version/${i}
+            sed -i '$ r/tmp/version/${i}' build.txt 
+          fi
+          done
+          # if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi
           cat build.txt
 
       - name: upload build.txt to azure
