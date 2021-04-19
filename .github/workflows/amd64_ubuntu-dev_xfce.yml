@@ -164,7 +164,7 @@ jobs:
           sed -i -E "s@RUBY_DIR@${{ secrets.RUBY_DIR }}@;s@CircularModule@${DISTRO_PATH}@g;s@initialize(.tar.zst)@${ROOTFS_FILE_LITE_NAME}\1@g" .debug05.rb
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
           sed -i '/tar.zst/d' .debug05.rb
-          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@;s@(VERSION=).*@\1latest02@" build.txt
+          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@;s@^(VERSION=).*@\1latest02@" build.txt
           ${{ secrets.RUBY_BEGIN }} ${{ secrets.RUBY_CLASS }} ${{ secrets.RUBY_DEF }} ${{ secrets.RUBY_EXEC }} .debug05.rb ${{ secrets.RUBY_END }} 2>/dev/null
 
       - name: check build.txt from azure
