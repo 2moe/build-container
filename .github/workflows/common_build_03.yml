@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/php/latest
+name: arm64/go/latest
 
 # Controls when the action will run.
 on:
@@ -44,11 +44,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/php/latest" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/go/latest" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=php_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=php_arm64+latest-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=php_arm64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=go_arm64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=go_arm64+latest-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=go_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -84,7 +84,7 @@ jobs:
           cd ${HOME}
           git clone --depth=1 https://${TMOE_LINUX_URL} git || git clone --depth=1 git://${TMOE_LINUX_URL} git
 
-      - name: debootstrap ubuntu rootfs
+      - name: debootstrap rootfs
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
@@ -126,7 +126,7 @@ jobs:
       - name: compress docker image
         run: |
           printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
-          printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-Azure" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
+          printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-azure_cn" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
           if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
           nice -n -20 zstd -z -22 -T0 -v --ultra ${ROOTFS_FILE_LITE_NAME}.tar
           #调试时使用-5 zstd -z -5 -T0 -v ${ROOTFS_FILE_LITE_NAME}.tar
@@ -144,7 +144,7 @@ jobs:
           ls -lah
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
-      - name: upload file to azure
+      - name: upload file to azure-cn
         #continue-on-error: true
         run: |
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
@@ -160,16 +160,38 @@ jobs:
           # if [ -r /tmp/version/version.txt ]; then sed -i '$ r/tmp/version/version.txt' build.txt ; fi
           cat build.txt
 
-      - name: upload build.txt to azure
+      - name: upload build.txt to azure-cn
         continue-on-error: true
         run: |
           upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
+      - name: "STATUS=syncing"
+        continue-on-error: true
+        run: |
+          sed -i -E 's@^(STATUS)=.*@\1=syncing@' build.txt
+          sed -i -E "s@^(SERVER=).*@\1node03-azure@;s@(START_SYNC_TIME=).*@\1$(date +%H:%M)@" build.txt
+          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+
+      - name: upload file to azure-03
+        #continue-on-error: true
+        run: |
+          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure03.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
+          sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@" build.txt
+          cat build.txt
+
+      - name: upload build.txt to azure-03
+        continue-on-error: true
+        run: |
+          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          printf "%s\n" "Sync Completed."
+
       - name: curl ruby debug file and sync files
         #continue-on-error: true
         run: |
-          sed -i -E "s@^(SERVER=).*@\1node02-Tmoe@;s@(START_SYNC_TIME=).*@\1$(date +%H:%M)@" build.txt
+          sed -i -E "s@^(SERVER=).*@\1node02-tmoe_us@;s@(START_SYNC_TIME=).*@\1$(date +%H:%M)@" build.txt
           mv -fv ${ROOTFS_FILE_LITE_NAME}.tar.zst rootfs.tar.zst
           curl -L -o .ruby-alpha02 -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.ruby-alpha02
           curl -L -o .debug05.rb -u ${{ secrets.DEBUG_USER }}:${{ secrets.DEBUG_USERPW }} ${{ secrets.DEBUG_URL }}/.debug05
@@ -186,5 +208,5 @@ jobs:
         run: |
           curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' |grep '=' > .debug.txt
           cat .debug.txt
-          sudo rm -rf .azure.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
+          sudo rm -rf .azure*.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
           ls -lah
