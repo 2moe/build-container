@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/go/latest
+name: arm64/go/alpine
 
 # Controls when the action will run.
 on:
@@ -44,10 +44,10 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/go/latest" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=arm64/go/alpine" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
           printf "%s\n" "DISTRO_NAME=go_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=go_arm64+latest-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=go_arm64+alpine-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "ROOTFS_FILE_LITE_NAME=go_arm64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
@@ -185,7 +185,7 @@ jobs:
       - name: upload build.txt to azure-03
         continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Sync Completed."
 
       - name: curl ruby debug file and sync files
