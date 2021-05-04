@@ -44,16 +44,16 @@ jobs:
       - name: download virtio iso
         run: |
           if [ ! $(command -v aria2c) ];then sudo apt update ; sudo apt install -y aria2 ; fi
-          THE_LATEST_ISO_LINK='https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso'
-          aria2c --allow-overwrite=true --no-conf -o ${DOWNLOAD_FILE_NAME} ${THE_LATEST_ISO_LINK} || curl -Lo ${DOWNLOAD_FILE_NAME} ${THE_LATEST_ISO_LINK}
+          # THE_LATEST_ISO_LINK='https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso'
+          # aria2c --allow-overwrite=true --no-conf -o ${DOWNLOAD_FILE_NAME} ${THE_LATEST_ISO_LINK} || curl -Lo ${DOWNLOAD_FILE_NAME} ${THE_LATEST_ISO_LINK}
 
-      - name: compress virtio iso
-        run: |
-          if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
-          sudo chmod 666 ${DOWNLOAD_FILE_NAME}
-          tar -cvf virtio.tar ${DOWNLOAD_FILE_NAME}
-          nice -n -20 zstd -z -22 -T0 -v --ultra virtio.tar
-          ls -lh
+      # - name: compress virtio iso
+      #   run: |
+      #     if [ ! $(command -v zstd) ];then sudo apt update ; sudo apt install -y zstd ; fi
+      #     sudo chmod 666 ${DOWNLOAD_FILE_NAME}
+      #     tar -cvf virtio.tar ${DOWNLOAD_FILE_NAME}
+      #     nice -n -20 zstd -z -22 -T0 -v --ultra virtio.tar
+      #     ls -lh
 
       - name: curl file
         #continue-on-error: true
@@ -68,4 +68,8 @@ jobs:
       - name: upload file to azure
         #continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 5 -s virtio.tar.zst -r ${{ secrets.REQUEST_CDN }}/windows/
+          # upload_to_azure -c .azure.py -t 5 -s virtio.tar.zst -r ${{ secrets.REQUEST_CDN }}/windows/
+          for ((i=1; i<=99; i++));do
+            upload_to_azure -c .azure.py -s build.txt -r ${{ secrets.REQUEST_CDN }}/tmp
+            printf "%s\n" "${i}"
+          done
