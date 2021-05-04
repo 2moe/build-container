@@ -134,10 +134,18 @@ jobs:
           ls -lah
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
+      - name: 99.times{"upload build.txt"}
+        continue-on-error: true
+        run: |
+          upload_to_azure -c .azure.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          for ((i=1; i<=99; i++));do
+            upload_to_azure -c .azure.py -s build.txt -n ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+            printf "%s\n" "${i}"
+          done
+
       - name: upload file to azure-cn
         #continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
