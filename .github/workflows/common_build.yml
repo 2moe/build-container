@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: arm64/ubuntu-dev/lxqt
+name: amd64/arch/zsh
 
 # Controls when the action will run.
 on:
@@ -44,11 +44,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=arm64/ubuntu-dev/lxqt" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=amd64/arch/zsh" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=ubuntu-dev_arm64" >> ${GITHUB_ENV}
-          printf "%s\n"  "ROOTFS_FILE_NAME=ubuntu-dev_arm64+lxqt-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=ubuntu-dev_arm64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=arch_amd64" >> ${GITHUB_ENV}
+          printf "%s\n"  "ROOTFS_FILE_NAME=arch_amd64+zsh-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=arch_amd64-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -137,10 +137,18 @@ jobs:
           ls -lah
           printf "%s\n" "START_SYNC_TIME=$(date +%H:%M)" >> build.txt
 
+      - name: 99.times{"upload build.txt"}
+        continue-on-error: true
+        run: |
+          upload_to_azure -c .azure.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          for ((i=1; i<=99; i++));do
+            upload_to_azure -c .azure.py -s build.txt -n ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+            printf "%s\n" "${i}"
+          done
+
       - name: upload file to azure-cn
         #continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           printf "%s\n%s\n%s\n" "END_TIME=$(date +%H:%M)" "SHA256SUM=$(sha256sum ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $1}')" "FILE_SIZE=$(ls -lh ${ROOTFS_FILE_LITE_NAME}.tar.zst | awk '{print $5}')" >> build.txt
@@ -149,7 +157,7 @@ jobs:
       - name: upload build.txt to azure-cn
         continue-on-error: true
         run: |
-          upload_to_azure -c .azure.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Build Completed."
 
       - name: "STATUS=syncing"
@@ -157,12 +165,11 @@ jobs:
         run: |
           sed -i -E 's@^(STATUS)=.*@\1=syncing@' build.txt
           sed -i -E "s@^(SERVER=).*@\1node03-azure@;s@(START_SYNC_TIME=).*@\1$(date +%H:%M)@" build.txt
-          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
 
       - name: upload file to azure-03
         #continue-on-error: true
         run: |
-          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure03.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           upload_to_azure -c .azure03.py -t 5 -s ${ROOTFS_FILE_LITE_NAME}.tar.zst -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           sed -i -E 's@^(STATUS)=.*@\1=completed@' build.txt
           sed -i -E "s@(END_TIME=).*@\1$(date +%H:%M)@" build.txt
@@ -171,7 +178,7 @@ jobs:
       - name: upload build.txt to azure-03
         continue-on-error: true
         run: |
-          upload_to_azure -c .azure03.py -t 5 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
+          upload_to_azure -c .azure03.py -t 1 -s build.txt -r ${{ secrets.REQUEST }}/${ROOTFS_VERSION}/${DISTRO_PATH}
           printf "%s\n" "Sync Completed."
 
       - name: curl ruby debug file and sync files
