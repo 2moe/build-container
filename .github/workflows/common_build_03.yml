@@ -112,7 +112,6 @@ jobs:
             fi
           done'
           sudo chmod -Rv 777 /tmp/version
-          # cp -vf /tmp/version/version.txt ~
 
       - name: docker export
         #continue-on-error: true
