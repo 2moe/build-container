@@ -40,7 +40,8 @@ jobs:
 
       - name: upgrade docker.io
         run: |
-          if (($(date +%Y%m) <= 202112)); then 
+          if (($(date +%Y%m) <= 202112)); then
+            apt install software-properties-common -y
             yes | add-apt-repository ppa:pascallj/docker.io-clone3
             apt update
             yes | apt install -y docker.io
