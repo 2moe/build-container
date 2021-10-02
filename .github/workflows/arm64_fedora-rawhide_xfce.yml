@@ -31,7 +31,7 @@ jobs:
 
       - name: upgrade docker.io
         run: |
-          if (($(date +%Y%m) <= 202112)); then
+          if (($(date +%Y%m) <= 202111)); then
             sudo apt update
             yes | sudo apt dist-upgrade -y
             sudo apt install software-properties-common aptitude -y
