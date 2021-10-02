@@ -42,10 +42,11 @@ jobs:
         run: |
           if (($(date +%Y%m) <= 202112)); then
             sudo apt update
-            sudo apt install software-properties-common -y
+            yes | sudo apt dist-upgrade -y
+            sudo apt install software-properties-common aptitude -y
             yes | sudo add-apt-repository ppa:pascallj/docker.io-clone3
             sudo apt update
-            yes | sudo apt install -y docker.io
+            yes | sudo aptitude install -y docker.io
           fi
 
       - name: check version of docker-image
