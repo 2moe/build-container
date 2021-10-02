@@ -29,6 +29,17 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: upgrade docker.io
+        run: |
+          if (($(date +%Y%m) <= 202112)); then
+            sudo apt update
+            yes | sudo apt dist-upgrade -y
+            sudo apt install software-properties-common aptitude -y
+            yes | sudo add-apt-repository ppa:pascallj/docker.io-clone3
+            sudo apt update
+            yes | sudo aptitude install -y docker.io
+          fi
+
       - name: rm docker images
         continue-on-error: true
         run: |
