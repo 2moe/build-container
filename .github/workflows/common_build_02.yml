@@ -18,13 +18,38 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    #container: multiarch/qemu-user-static:x86_64-aarch64
+    #env:
+    #REPO: ${{ secrets.DEBUG_REPO }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: checkout
         uses: actions/checkout@v2
+
+      - name: upgrade docker.io
+        run: |
+          if (($(date +%Y%m) <= 202111)); then
+            sudo apt update
+            yes | sudo apt dist-upgrade -y
+            sudo apt install software-properties-common aptitude -y
+            yes | sudo add-apt-repository ppa:pascallj/docker.io-clone3
+            sudo apt update
+            yes | sudo aptitude install -y docker.io
+          fi
+
+      - name: rm docker images
+        continue-on-error: true
+        run: |
+          docker rmi -f $(docker images -qa) 2>/dev/null
+          yes | docker system prune -a
+          sudo apt update
+          sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
+          sudo dpkg --configure -a
+          sudo apt clean
+          sudo df -h
 
       - name: set environment
         run: |
@@ -38,16 +63,15 @@ jobs:
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
-      - name: upgrade docker.io
-        run: |
-          if (($(date +%Y%m) <= 202112)); then
-            sudo apt update
-            yes | sudo apt dist-upgrade -y
-            sudo apt install software-properties-common aptitude -y
-            yes | sudo add-apt-repository ppa:pascallj/docker.io-clone3
-            sudo apt update
-            yes | sudo aptitude install -y docker.io
-          fi
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+
+      - name: Available platforms
+        run: echo ${{ steps.qemu.outputs.platforms }}
 
       - name: check version of docker-image
         run: |
