@@ -54,7 +54,7 @@ jobs:
 
       -name: check distro
         run: |
-        if [[ ${DISTRO_NAME} =~ ^arch.* ]];then echo Okk; exit; fi
+          if [[ ${DISTRO_NAME} =~ ^arch.* ]];then echo Okk; exit; fi
 
       - name: Set up QEMU
         id: qemu
