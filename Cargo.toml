@@ -4,6 +4,11 @@ cargo-features = ["strip"]
 name = "get-arch-url"
 version = "0.0.1"
 edition = "2021"
+license = "gpl-2.0-or-later"
+authors = ["2moe"]
+description = """
+A simple program to get the latest arch rootfs url.
+"""
 
 
 [dependencies]
@@ -25,7 +30,12 @@ features = ["rt-multi-thread", "macros"]
 [profile.release]
 opt-level = 3
 debug = false
-# lto = true
+lto = true
 strip = "symbols"
 # codegen-units = 1
 panic = "abort"
+
+[package.metadata.deb]
+depends = "$auto"
+section = "utility"
+priority = "optional"
