@@ -1,0 +1,31 @@
+cargo-features = ["strip"]
+
+[package]
+name = "get-arch-url"
+version = "0.0.1"
+edition = "2021"
+
+
+[dependencies]
+toml_edit = "0.3.1"
+error-chain = "0.12.4"
+nom = "7.0.0"
+lazy_static = "1.4.0"
+
+[dependencies.reqwest]
+version = "0.11.4"
+default-features = false
+features = ["rustls-tls"]
+
+[dependencies.tokio]
+version = "1.11.0"
+default-features = false
+features = ["rt-multi-thread", "macros"]
+
+[profile.release]
+opt-level = 3
+debug = false
+# lto = true
+strip = "symbols"
+# codegen-units = 1
+panic = "abort"
