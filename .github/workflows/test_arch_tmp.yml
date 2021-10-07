@@ -54,15 +54,7 @@ jobs:
 
       -name: check distro
         run: |
-          case ${DISTRO_NAME} in
-          arch*)
-            echo Ok
-            exit 1
-          ;;
-          *)
-            echo Check failed
-          ;;
-          esac
+        if [[ ${DISTRO_NAME} =~ ^arch.* ]];then echo Okk; exit; fi
 
       - name: Set up QEMU
         id: qemu
