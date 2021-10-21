@@ -1,5 +1,5 @@
 # This is a basic workflow to help you get started with Actions
-name: amd64/kali-rolling/xfce
+name: armhf/kali-rolling/zsh
 
 # Controls when the action will run.
 on:
@@ -44,11 +44,11 @@ jobs:
         run: |
           printf "%s\n" "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
           printf "%s\n" "TMOE_LINUX_URL=github.com/2moe/tmoe-linux" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_PATH=amd64/kali-rolling/xfce" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_PATH=armhf/kali-rolling/zsh" >> ${GITHUB_ENV}
           printf "%s\n" "START_TIME=$(date +%H:%M)" >> ${GITHUB_ENV}
-          printf "%s\n" "DISTRO_NAME=kali-rolling_amd64" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_NAME=kali-rolling_amd64+xfce-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
-          printf "%s\n" "ROOTFS_FILE_LITE_NAME=kali-rolling_amd64-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "DISTRO_NAME=kali-rolling_armhf" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_NAME=kali-rolling_armhf+zsh-$(date +%Y_%m-%d)-rootfs" >> ${GITHUB_ENV}
+          printf "%s\n" "ROOTFS_FILE_LITE_NAME=kali-rolling_armhf-rootfs" >> ${GITHUB_ENV}
           printf "%s\n" "${GITHUB_ENV}" 
           printf "%s\n" "${START_TIME} ${ROOTFS_FILE_NAME} ${ROOTFS_FILE_LITE_NAME}"
 
@@ -89,7 +89,7 @@ jobs:
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
           [[ ! -s ../bootstrap.sh ]] || bash ../bootstrap.sh
 
-      - name: podman build
+      - name: docker build
         #continue-on-error: true
         run: |
           cd ${HOME}/git/share/docker-build/${DISTRO_PATH}
@@ -97,26 +97,26 @@ jobs:
           #sed -i '/bash zsh.sh/d' Dockerfile
           #若去除#号，则构建的docker镜像不包含桌面环境
           #cd docker-build
-          podman build --pull -t u2 .
+          docker build --pull -t u2 .
 
-      - name: podman run
+      - name: docker run
         continue-on-error: true
         run: |
           sudo df -h
-          podman images | grep u2
-          at now + 5 minutes<<<"podman stop u2;podman kill u2"
-          podman run -t --name u2 u2 /bin/zsh
+          docker images | grep u2
+          at now + 5 minutes<<<"docker stop u2;docker kill u2"
+          docker run -t --name u2 u2 /bin/zsh
 
-      - name: podman export
+      - name: docker export
         #continue-on-error: true
         run: |
-          podman export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
+          docker export u2 > ${ROOTFS_FILE_LITE_NAME}.tar
           sudo chmod 666 ${ROOTFS_FILE_LITE_NAME}.tar
-          podman rm u2
-          podman rmi -f u2 2>/dev/null
+          docker rm u2
+          docker rmi -f u2 2>/dev/null
           ls -lh
 
-      - name: compress podman image
+      - name: compress docker image
         run: |
           printf "%s\n%s\n%s\n%s\n%s\n%s\n" "DISTRO_NAME=${DISTRO_NAME}" "ROOTFS_FILE=${ROOTFS_FILE_NAME}.tar.zst" "BUILD_DATE=$(date +%Y%m%d)" "START_TIME=${START_TIME}" "START_ZSTD_TIME=$(date +%H:%M)" "STATUS=building" > build.txt
           printf "%s\n%s\n%s\n" "VERSION=${ROOTFS_VERSION}" "SERVER=node01-azure_cn" "DEV_HOST_CPU=\"$(cat /proc/cpuinfo| grep 'model name' |  head -n 1 | awk -F ': ' '{print $2}')\"" >> build.txt
