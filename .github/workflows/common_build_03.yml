@@ -34,9 +34,10 @@ jobs:
         run: |
           # docker rmi -f $(docker images -qa) 2>/dev/null
           # yes | docker system prune -a
-          # sudo apt update
+          sudo apt update
           # sudo apt autoremove --purge ^apache ^dotnet firefox ^llvm ^mysql ^libmono- ^mono-
           # sudo dpkg --configure -a
+          sudo apt install -y xz-utils
           sudo apt clean
           sudo df -h
 
@@ -213,7 +214,7 @@ jobs:
       - name: check build.txt from azure
         continue-on-error: true
         run: |
-          curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | egrep -v 'http.*|tmoe' |grep '=' > .debug.txt
+          curl -sL ${{ secrets.AZURE_URL }}/${ROOTFS_VERSION}/${DISTRO_PATH}/build.txt | grep -Ev 'http.*|tmoe' |grep '=' > .debug.txt
           cat .debug.txt
           sudo rm -rf .azure*.py .ruby* .debug* *tar.xz ~/.ssh $(command -v upload_to_azure)
           ls -lah
