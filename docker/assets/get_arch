@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+#-----------------
+# get_docker_arch(){
+# local target_arch="${TARGETARCH}"
+# local target_variant="${TARGETVARIANT}"
+# }
+
+DOCKER_ARCH="${TARGETARCH}${TARGETVARIANT}"
+
+case "$DOCKER_ARCH" in
+amd64) ARCH=amd64 ;;
+386 | i*86) ARCH=i386 ;;
+arm64*) ARCH=arm64 ;;
+armv7*) ARCH=armhf ;;
+armv[4-6]*) ARCH=armel ;;
+mips64*) ARCH=mips64el ;;
+mips*) ARCH=mipsel ;;
+ppc64*) ARCH=ppc64el ;;
+s390*) ARCH=s390x ;;
+riscv64*) ARCH=riscv64 ;;
+esac
+export ARCH DOCKER_ARCH

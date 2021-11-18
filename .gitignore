@@ -1,4 +1,5 @@
 # Logs
+tmp
 /test
 logs
 *.log
@@ -103,3 +104,6 @@ dist
 
 # TernJS port file
 .tern-port
+docker/tmp
+old
+old/
