@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 #-----------------
+set -ex
 case "$TARGETARCH" in
-arm*) key=archlinuxarm ;;
+arm*) KEY=archlinuxarm ;;
 *) KEY=archlinux ;;
 esac
 
-pacman-key --populate "$key"
+pacman-key --populate "$KEY"

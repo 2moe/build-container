@@ -1,0 +1,41 @@
+name: build arch rootfs
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/arch.yml"
+
+jobs:
+  build-container:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tag: base
+            target: amd64
+          - os: ubuntu-latest
+            tag: base
+            target: arm64
+          - os: ubuntu-latest
+            tag: base
+            target: armhf
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: "2moe/build-container"
+          ref: "master"
+          fetch-depth: 1
+          path: "docker/assets"
+
+      - name: build arch-base container
+        run: |
+          DOCKER_BUILDKIT=1 docker build -t u2 -f ../arch/base.dockerfile --platform=linux/arm64 .
+
+      - name: cat os-release
+        if: matrix.target == 'amd64'
+        run: |
+          cat /etc/os-release
