@@ -1,4 +1,3 @@
-#!/usr/bin/env sh
 #-----------------
 # get_docker_arch(){
 # local target_arch="${TARGETARCH}"

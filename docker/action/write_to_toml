@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -ex
+#-----------------
+write_to_toml_main() {
+    write_main_toml
+    check_toml_time
+    write_extra_toml_data
+}
+
+write_main_toml() {
+    cat >i.toml <<-EOF
+[main]
+name = "$name"
+tag = ["$tag", "$time_today"${extra_tag}]
+os = "$container_os"
+release = "$container_release"
+arch = "$arch"
+nogui = $nogui
+
+# If the value is false, then the container will not be downloaded.
+completed = true
+
+[file]
+name = "${Container_name}_${end_time_normal}.tar.zst"
+
+version = "0.0.0-alpha.1"
+
+# This value can be used to verify the integrity of the file
+sha256 = "${file_sha256}"
+
+# zstd: [1-22]
+zstd-level = ${zstd_level}
+
+[file.size]
+# Installed size ≈ tar-size
+# Installed size is approximately equal to the size of the tar file
+tar = "${file_size_tar}"
+tar-bytes = ${file_size_tar_bytes}
+
+# Space occupied ≈ tar-size + zstd-size
+# You will need to prepare a large enough space before installation.
+zstd = "${file_size_zst}"
+zstd-bytes = ${file_size_zstd_bytes}
+
+[compatibility]
+compatible_mode = true
+rootfs_version = "${Rootfs_version}"
+# edition 2021
+# DISTRO_NAME=${DISTRO_NAME}
+# ROOTFS_FILE=${Container_name}_${end_time_normal}.tar.zst
+# BUILD_DATE=$(date -u +%Y%m%d)
+# STATUS=completed
+# VERSION=${Rootfs_version}
+# END_TIME=$(date -u +%H:%M)
+
+[time]
+format = "rfc-3339"
+zone = "UTC"
+begin = ${time_begin}
+start-sync_0 = ${time_start_sync_0}
+EOF
+}
+check_toml_time() {
+    if [ -n "${time_start_zstd}" ]; then
+        echo "start-zstd = ${time_start_zstd}" >>i.toml
+    fi
+
+    if [ -n "${time_start_sync_1}" ]; then
+        echo "start-sync_1 = ${time_start_sync_1}" >>i.toml
+    fi
+
+    if [ -n "${time_end_sync_1}" ]; then
+        echo "end-sync_1 = ${time_end_sync_1}" >>i.toml
+    fi
+}
+
+write_extra_toml_data() {
+    printf "%s\n" \
+        "end = ${end_time}" \
+        "" \
+        '[server]' \
+        'name = "docker"' \
+        "node = 4" \
+        "repo = \"${repo}\"" \
+        "" \
+        '# Environment variables  (●＞ω＜●)' \
+        '[env]' \
+        'LANG = "en_US.UTF-8"' \
+        >>i.toml
+
+    for i in /tmp/version/container.env /tmp/version/version.txt; do
+        if [ -r "${i}" ]; then
+            sed -i 's@^export @@g' "${i}"
+            sed -i "$ r${i}" i.toml
+        fi
+    done
+}
+write_to_toml_main "$@"

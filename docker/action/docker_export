@@ -1,0 +1,12 @@
+docker_export() {
+    docker export \
+        ${Container_name} \
+        >${Container_name}.tar
+}
+docker_remove() {
+    docker rm -f "${Container_name}"
+    docker rmi -f "$repo"
+    yes | docker system prune
+}
+docker_export
+docker_remove

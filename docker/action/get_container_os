@@ -1,0 +1,176 @@
+set -ex
+#---------------------
+case "$name" in
+test)
+    container_os=alpine
+    case "$tag" in
+    hello)
+        container_release=edge
+        extra_tag=', "test"'
+        ;;
+    *) container_release=latest ;;
+    esac
+    ;;
+alpine)
+    container_release=edge
+    DISTRO_OS="alpine-edge"
+    ;;
+arch)
+    container_release=latest
+    DISTRO_OS="arch"
+    ;;
+debian)
+    container_release=sid
+    DISTRO_OS="debian-sid"
+    ;;
+fedora)
+    container_release=rawhide
+    DISTRO_OS="fedora-rawhide"
+    ;;
+kali)
+    container_release=rolling
+    DISTRO_OS="kali-rolling"
+    ;;
+manjaro)
+    container_release=stable
+    DISTRO_OS="manjaro-stable"
+    ;;
+mongo)
+    container_os=ubuntu
+    container_release=lts
+    ;;
+rust)
+    case "$tag" in
+    latest)
+        container_os=debian
+        container_release=sid
+        extra_tag=', "nightly", "gnu-libc"'
+        ;;
+    alpine)
+        container_os=alpine
+        container_release=stable
+        extra_tag=', "musl-libc"'
+        ;;
+    esac
+    ;;
+code)
+    container_os=debian
+    container_release=sid
+    ;;
+ubuntu)
+    case "$tag" in
+    bionic)
+        container_release=bionic
+        extra_tag=', "18.04"'
+        DISTRO_OS="ubuntu-bionic"
+        ;;
+    *)
+        container_release=dev
+        extra_tag=', "devel"'
+        DISTRO_OS="ubuntu-dev"
+        ;;
+    esac
+    ;;
+esac
+
+if [[ -z ${container_os} ]]; then
+    container_os=$name
+fi
+
+# node-alpine
+
+if [[ -z ${container_release} ]]; then
+    # container_os=$tag
+    case "$tag" in
+    latest)
+        container_os=debian
+        container_release=stable
+        ;;
+    alpine)
+        container_os=alpine
+        container_release=stable
+        extra_tag=', "musl-libc"'
+        ;;
+    *) container_release=$tag ;;
+    esac
+fi
+
+if [[ -n ${DISTRO_OS} ]]; then
+    DISTRO_NAME="${DISTRO_OS}_${arch}"
+fi
+
+if [[ -z ${DISTRO_NAME} ]]; then
+    case "$tag" in
+    latest)
+        DISTRO_NAME="${container_os}_${arch}"
+        ;;
+    alpine)
+        DISTRO_NAME="${container_os}-${container_release}_${arch}"
+        ;;
+    *)
+        case ${container_release} in
+        latest) DISTRO_NAME="${container_os}_${arch}" ;;
+        *) DISTRO_NAME="${container_os}-${container_release}_${arch}" ;;
+        esac
+        ;;
+    esac
+fi
+
+case "$tag" in
+xfce* | kde* | lxde | lxqt | mate)
+    nogui=false
+    LOGIN_SHELL=zsh
+    ;;
+zsh)
+    nogui=true
+    LOGIN_SHELL=zsh
+    ;;
+base)
+    nogui=true
+    LOGIN_SHELL=sh
+    ;;
+*)
+    nogui=true
+    LOGIN_SHELL=bash
+    ;;
+esac
+
+check_version_of_docker_image() {
+    # Remote_dir="/share/next/down/share/Tmoe-linux/rootfs"
+    Netdisk='http://cdn02.tmoe.me/node03'
+    Distro_path="${arch}/${DISTRO_OS}/${tag}"
+
+    Rootfs_version=latest02
+    Version_01_date=$(curl -L "${Netdisk}/latest01/${Distro_path}/build.txt" | awk -F 'BUILD_DATE=' '{print $2}')
+    Version_02_date=$(curl -L "${Netdisk}/latest02/${Distro_path}/build.txt" | awk -F 'BUILD_DATE=' '{print $2}')
+
+    if [ -z "${Version_01_date}" ]; then
+        Version_01_date=20210116
+    fi
+
+    if [ -z "${Version_02_date}" ]; then
+        Version_01_date=20210118
+    fi
+
+    if ((Version_01_date < Version_02_date)); then
+        Rootfs_version=latest01
+    fi
+
+    printf "%s\n" "v1 = ${Version_01_date}, v2 = ${Version_02_date}, ver = ${Rootfs_version}"
+}
+check_version_of_docker_image
+
+printf "%s\n" \
+    "container_os=$container_os" \
+    "container_release=$container_release" \
+    "DISTRO_NAME=${DISTRO_NAME}" \
+    "nogui=$nogui" \
+    "LOGIN_SHELL=${LOGIN_SHELL}" \
+    "Rootfs_version=${Rootfs_version}" \
+    >>$GITHUB_ENV
+
+if [[ -n $extra_tag ]]; then
+    printf "%s\n" \
+        "extra_tag=$extra_tag" \
+        >>$GITHUB_ENV
+fi

@@ -1,0 +1,25 @@
+set -ex
+
+tempdir=$(mktemp)
+rm -rfv $tempdir 2>/dev/null
+mkdir -pv $tempdir
+mv -v ${Container_name}.tar.zst "$tempdir"/rootfs.tar.zst
+cp -v docker/scratch/zstd.dockerfile "$tempdir"/Dockerfile
+cd "$tempdir"
+# today=$(date -u +%Y-%m-%d)
+
+DOCKER_BUILDKIT=1 \
+    docker build \
+    -t "${repo}:zstd" \
+    --platform=${platform} \
+    --pull \
+    .
+
+cd -
+rm -rfv ${tempdir}
+
+docker push "${repo}:zstd"
+
+printf "%s\n" \
+    "time_end_sync_1=$(date -u +%H:%M:%S)" \
+    >>"$GITHUB_ENV"

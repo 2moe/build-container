@@ -1,0 +1,23 @@
+set -ex
+#---------------------
+workdir="docker/assets"
+cd "$workdir"
+
+if [[ ! -e $file ]]; then
+    export file="../${name}/gui.dockerfile"
+fi
+
+DOCKER_BUILDKIT=1 \
+    docker build \
+    -t "${repo}:latest" \
+    -t "${repo}:${time_today}" \
+    -f "$file" \
+    --build-arg TAG=${tag} \
+    --build-arg OS=${name} \
+    --platform=${platform} \
+    --pull \
+    .
+
+printf "%s\n" \
+    "time_start_sync_0=$(date -u +%H:%M:%S)" \
+    >>"$GITHUB_ENV"

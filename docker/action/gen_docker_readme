@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+set -ex
+#-----------------
+cat_gui_readme() {
+    cat >docker-readme.md <<-EOF
+# ${Container_name}
+
+## How to run it?
+
+\`\`\`shell
+# install docker
+if [ -z "\$(command -v docker)" ]; then
+    apt update
+    apt install docker.io
+    # If your host architecture is not ${arch}, then install qemu & binfmt-support.
+    apt install qemu-user-static
+fi
+
+# 5903 is the host vnc port
+# 5902 is the container vnc port
+# 36080 is the container novnc port
+docker run \\
+    -it \\
+    --shm-size 512m \\
+    -p 5903:5902 \\
+    -p 36081:36080 \\
+    --name ${Container_name} \\
+    -e LANG=en_US.UTF-8 \\
+    ${repo}
+\`\`\`
+
+## How to start vnc?
+
+\`\`\`shell
+    docker exex -it ${Container_name} zsh
+\`\`\`
+
+The default user is root.
+
+After entering the container, you can create a new user, and then switch to it.
+
+Finally, run the following commands.
+
+\`\`\`shell
+    startvnc
+\`\`\`
+
+or
+
+\`\`\`shell
+    startx11vnc
+\`\`\`
+
+or
+
+\`\`\`shell
+    novnc
+\`\`\`
+
+Note:
+
+If you want to use novnc, then open your browser, and type the address:
+
+\`\`\`
+localhost:36081
+\`\`\`
+
+If you want to use tiger/x11vnc, then open vnc viewer, then type the address:
+
+\`\`\`
+localhost:5903
+\`\`\`
+
+## build info
+
+\`\`\`toml
+EOF
+}
+cat_nogui_readme() {
+    cat >docker-readme.md <<-EOF
+# ${Container_name}
+
+## How to run it?
+
+\`\`\`shell
+docker run \\
+    -it \\
+    --name ${Container_name} \\
+    ${repo}
+\`\`\`
+
+## How to exec shell?
+
+\`\`\`shell
+    docker exec -it ${Container_name} ${LOGIN_SHELL}
+\`\`\`
+
+## build info
+
+\`\`\`toml
+EOF
+}
+
+case ${nogui} in
+true) cat_nogui_readme ;;
+false) cat_gui_readme ;;
+esac
+
+cat ./i.toml >>docker-readme.md
+echo '```' >>docker-readme.md

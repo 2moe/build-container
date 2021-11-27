@@ -1,0 +1,37 @@
+set -ex
+#---------
+docker_run_main() {
+    case $1 in
+    podman) Container=podman ;;
+    docker | *) Container=docker ;;
+    esac
+    case $2 in
+    zsh) run_zsh_container ;;
+    *) run_normal_container ;;
+    esac
+}
+run_normal_container() {
+    mkdir -pv /tmp/version
+    "${Container}" \
+        run \
+        -t \
+        --name "${Container_name}" \
+        -v /tmp/version:/tmp/version \
+        "$repo" \
+        /bin/bash -c \
+        "for i in /root/version.txt /usr/local/etc/tmoe-linux/environment/container.env ;do
+            if [ -r \${i} ];then
+               cp -vf \${i} /tmp/version 
+            fi
+          done"
+}
+run_zsh_container() {
+    "${Container}" \
+        run \
+        -t \
+        --name "${Container_name}" \
+        "$repo" \
+        /bin/zsh
+}
+#---------
+docker_run_main "$@"

@@ -1,0 +1,38 @@
+set -ex
+#---------
+compress_podman_image() {
+
+    Zstd_level=$1
+    # for i in /tmp/version/*; do
+    #     if [ -r "${i}" ]; then
+    #         sed -i 's@^export @@g' "${i}"
+    #         sed -i "$ r${i}" build.txt
+    #     fi
+    # done
+
+    printf "%s\n" \
+        "time_start_zstd=$(date -u +%H:%M:%S)" \
+        >>"$GITHUB_ENV"
+
+    # max 22
+    zstd \
+        -z \
+        -${Zstd_level} \
+        -T0 \
+        -v \
+        --ultra \
+        "${Container_name}".tar
+    #调试时使用nice -n 20 zstd -z -5 -T0 -v "${Rootfs_lite_name}".tar
+    #zstd -z -19 -T0 -v "${Rootfs_lite_name}".tar
+    #chmod 666 -v "${Rootfs_lite_name}".tar.zst
+    printf "%s\n" \
+        "file_size_tar=$(du -sh ${Container_name}.tar | awk '{print $1}')" \
+        "file_size_tar_bytes=$(stat --format=%s ${Container_name}.tar)" \
+        "file_size_zst=$(du -sh ${Container_name}.tar.zst | awk '{print $1}')" \
+        "file_size_zstd_bytes=$(stat --format=%s ${Container_name}.tar.zst)" \
+        "file_sha256=$(sha256sum ${Container_name}.tar.zst | awk '{print $1}')" \
+        "time_start_sync_1=$(date -u +%H:%M:%S)" \
+        >>"$GITHUB_ENV"
+    ls -lh
+}
+compress_podman_image "$@"

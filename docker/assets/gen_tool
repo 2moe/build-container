@@ -1,0 +1,15 @@
+cd ${TMOE_DIR}
+printf "%s\n" \
+    "CONTAINER_TYPE=podman" \
+    "CONTAINER_NAME=${OS}_gui-${TAG}" \
+    >container.txt
+mv /root/docker_tool /tmp
+
+cd /tmp
+sed -i 's@*) #main@2333)@g' docker_tool
+
+printf "%s\n" \
+    "source /tmp/docker_tool -install-deps" \
+    "cd /usr/local/etc/tmoe-linux/git/share/old-version/tools/gui/" \
+    "source gui --auto-install-gui-${TAG}" \
+    >install-gui.sh

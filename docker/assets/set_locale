@@ -1,6 +1,15 @@
-localedef \
-    -i en_US \
-    -c \
-    -f UTF-8 \
-    -A /usr/share/locale/locale.alias \
-    en_US.UTF-8
+locale_def_utf8() {
+    lang=$1
+    localedef \
+        -i en_US \
+        -c \
+        -f UTF-8 \
+        -A /usr/share/locale/locale.alias \
+        ${lang}.UTF-8
+}
+
+if [ -n "$(command -v localedef)" ]; then
+    locale_def_utf8 en_US
+else
+    echo ERROR, failed to generate locale.
+fi

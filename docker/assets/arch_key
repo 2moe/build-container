@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-#-----------------
-set -ex
 case "$TARGETARCH" in
 arm*) KEY=archlinuxarm ;;
 *) KEY=archlinux ;;
