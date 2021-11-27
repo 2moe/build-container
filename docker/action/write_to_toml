@@ -14,7 +14,8 @@ name = "$name"
 tag = ["$tag", "$time_today"${extra_tag}]
 os = "$container_os"
 release = "$container_release"
-arch = "$arch"
+arch = "$DEB_ARCH"
+platform = "$platform"
 nogui = $nogui
 
 # If the value is false, then the container will not be downloaded.

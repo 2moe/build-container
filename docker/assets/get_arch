@@ -1,3 +1,4 @@
+set -ex
 #-----------------
 # get_docker_arch(){
 # local target_arch="${TARGETARCH}"
@@ -19,3 +20,7 @@ s390*) ARCH=s390x ;;
 riscv64*) ARCH=riscv64 ;;
 esac
 export ARCH DOCKER_ARCH
+
+if [ -n "$GITHUB_ENV" ]; then
+    echo "DEB_ARCH=${ARCH}" >> "$GITHUB_ENV"
+fi

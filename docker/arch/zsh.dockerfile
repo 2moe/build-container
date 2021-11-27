@@ -4,9 +4,9 @@ FROM cake233/arch-${TARGETARCH}${TARGETVARIANT}
 
 # ARG OS=arch
 # ARG RELEASE=latest
-ENV TMOE_CHROOT true \
-    TMOE_DOCKER true \
-    TMOE_DIR "/usr/local/etc/tmoe-linux"
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
 
 # install base-devel
 RUN pacman -Syu --noconfirm --needed base base-devel
@@ -16,7 +16,6 @@ RUN pacman \
     -S \
     --noconfirm \
     --needed \
-    wget \
     git \
     unzip \
     neofetch \
@@ -33,19 +32,21 @@ RUN mkdir -pv /run/systemd \
 
 ARG TAG=zsh
 ARG TMOE_GIT_URL="https://github.com/2moe/tmoe-linux"
+ARG ARCH
+ARG OS
 RUN mkdir -p ${TMOE_DIR} \
     && cd ${TMOE_DIR} \
     && printf "%s\n" \
     "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=arch_nogui-${ARG}" \
+    "CONTAINER_NAME=${OS}_nogui-${TAG}" \
+    "ARCH=${ARCH}" \
     > container.txt; \
     git clone \
     -b master \
     --depth=1 \
     ${TMOE_GIT_URL} \
     git \
-    && cp -fv git/share/old-version/tools/sources/yay/build_fakeroot /tmp \
-    && cp -fv git/share/old-version/tools/app/tool /root/docker_tool
+    && cp -fv git/share/old-version/tools/sources/yay/build_fakeroot /tmp
 
 WORKDIR /tmp
 ARG URL="https://github.com/2cd/zsh/raw/master/zsh.sh"

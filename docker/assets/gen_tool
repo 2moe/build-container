@@ -1,9 +1,13 @@
+set -ex
+
 cd ${TMOE_DIR}
 printf "%s\n" \
     "CONTAINER_TYPE=podman" \
     "CONTAINER_NAME=${OS}_gui-${TAG}" \
+    "ARCH=${ARCH}" \
     >container.txt
-mv /root/docker_tool /tmp
+
+cp -fv git/share/old-version/tools/app/tool /tmp/docker_tool
 
 cd /tmp
 sed -i 's@*) #main@2333)@g' docker_tool

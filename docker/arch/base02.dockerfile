@@ -9,7 +9,7 @@ COPY --chmod=755 arch_key /tmp
 
 SHELL [ "bash", "-cex" ]
 WORKDIR /tmp
-RUN . arch_key
+RUN . ./arch_key
 
 # set locale
 COPY --chmod=755 set_locale /tmp
@@ -21,7 +21,7 @@ WORKDIR /root
 # base
 RUN pacman -Syyu --needed --noconfirm base wget
 
-# clean /var/lib/pacman/
+# clean /var/cache/pacman/
 RUN yes | pacman -Scc
 
 CMD ["bash"]

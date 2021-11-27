@@ -19,15 +19,10 @@ RUN curl -Lo get-url.deb "${URL}" \
 ARG TARGETARCH
 ARG TARGETVARIANT
 COPY --chmod=755 get_arch /tmp
-RUN . get_arch \
+RUN . ./get_arch \
     && get-arch-url \
     && curl -Lo arch.tar.xz "$(cat url.txt)"
 
-# extract tar.xz
-# RUN mkdir /arch \
-#     && tar -Jxvf arch.tar.xz -C /arch
 RUN mv arch.tar.xz /
-#     && cd / \
-#     && xz -dv arch.tar.xz
 
 CMD ["sh"]

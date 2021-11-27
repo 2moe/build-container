@@ -5,6 +5,14 @@ cd "$workdir"
 
 if [[ ! -e $file ]]; then
     export file="../${name}/gui.dockerfile"
+    docker pull ${zsh_repo}:zstd
+    docker run -d --name zsh_tmp ${zsh_repo}:zstd sh
+    docker cp zsh_tmp:/root/rootfs.tar.zst .
+    zstd -dfv rootfs.tar.zst
+    rm rootfs.tar.zst 2>/dev/null
+    docker stop zsh_tmp
+    docker rm -f zsh_tmp
+    docker rmi -f ${zsh_repo}:zstd
 fi
 
 DOCKER_BUILDKIT=1 \
@@ -14,9 +22,14 @@ DOCKER_BUILDKIT=1 \
     -f "$file" \
     --build-arg TAG=${tag} \
     --build-arg OS=${name} \
+    --build-arg ARCH=${DEB_ARCH} \
     --platform=${platform} \
     --pull \
     .
+
+case "file" in
+*gui.dockerfile) rm -fv rootrfs.tar 2>/dev/null
+esac
 
 printf "%s\n" \
     "time_start_sync_0=$(date -u +%H:%M:%S)" \
