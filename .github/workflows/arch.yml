@@ -22,17 +22,17 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tag: base
+            tag: zsh
             arch: amd64
             platform: "linux/amd64"
 
           - os: ubuntu-latest
-            tag: base
+            tag: zsh
             arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            tag: base
+            tag: zsh
             arch: armv7
             platform: "linux/arm/v7"
 
