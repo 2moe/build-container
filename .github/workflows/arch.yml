@@ -1,4 +1,4 @@
-name: build arch rootfs
+name: build arch docker image
 on:
   push:
     branches: [master]

@@ -19,7 +19,7 @@ ENV LANG en_US.UTF-8
 WORKDIR /root
 
 # base
-RUN pacman -Syyu --needed base wget
+RUN pacman -Syyu --needed --noconfirm base wget
 
 # clean /var/lib/pacman/
 RUN yes | pacman -Scc
