@@ -1,18 +1,18 @@
-name: build alpine images
+name: build debian images
 # time = 2021-11-28 20:11:48+00:00
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/alpine.yml"
+      - ".github/workflows/debian.yml"
 
 jobs:
   job1:
     # needs: [job0, job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: alpine
+      name: debian
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
@@ -253,11 +253,11 @@ jobs:
     needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: alpine
+      name: debian
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 19
+      zstd_level: 18
 
     strategy:
       fail-fast: false
@@ -290,7 +290,7 @@ jobs:
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            tag: mate
+            tag: lxde
             arch: armv7
             platform: "linux/arm/v7"
 
@@ -300,7 +300,7 @@ jobs:
           #   platform: "linux/arm/v6"
 
           - os: ubuntu-latest
-            tag: mate
+            tag: lxde
             arch: 386
             platform: "linux/386"
 

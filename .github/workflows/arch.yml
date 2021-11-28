@@ -6,7 +6,7 @@ on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/arch.yml"
+      - ".github/workflows/arch.yml233"
 
 jobs:
   job1:
@@ -224,7 +224,7 @@ jobs:
           cp docker-readme.md ~/${Container_name}.md
           cp i.toml ~/${Container_name}.toml
 
-      - name: index repo
+      - name: repo(index)
         uses: actions/checkout@v2
         with:
           repository: "2cd/index"
@@ -233,8 +233,8 @@ jobs:
           fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
       - name: create local changes
         run: |
-          mkdir -p doc
-          cp ~/${Container_name}.md ~/${Container_name}.toml doc/
+          mkdir -p doc/${name}
+          cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
 
       - name: commit files
         run: |
@@ -465,7 +465,7 @@ jobs:
           cp docker-readme.md ~/${Container_name}.md
           cp i.toml ~/${Container_name}.toml
 
-      - name: index repo
+      - name: repo(index)
         uses: actions/checkout@v2
         with:
           repository: "2cd/index"
@@ -474,8 +474,8 @@ jobs:
           fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
       - name: create local changes
         run: |
-          mkdir -p doc
-          cp ~/${Container_name}.md ~/${Container_name}.toml doc/
+          mkdir -p doc/${name}
+          cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
 
       - name: commit files
         run: |
@@ -723,7 +723,7 @@ jobs:
           cp docker-readme.md ~/${Container_name}.md
           cp i.toml ~/${Container_name}.toml
 
-      - name: index repo
+      - name: repo(index)
         uses: actions/checkout@v2
         with:
           repository: "2cd/index"
@@ -732,8 +732,8 @@ jobs:
           fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
       - name: create local changes
         run: |
-          mkdir -p doc
-          cp ~/${Container_name}.md ~/${Container_name}.toml doc/
+          mkdir -p doc/${name}
+          cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
 
       - name: commit files
         run: |

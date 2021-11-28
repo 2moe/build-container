@@ -1,18 +1,18 @@
-name: build alpine images
+name: build images
 # time = 2021-11-28 20:11:48+00:00
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/alpine.yml"
+      - ".github/workflows/go233.yml"
 
 jobs:
   job1:
     # needs: [job0, job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: alpine
+      name: ${{ matrix.os }}
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
@@ -23,9 +23,15 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tag: zsh
+            name: code
+            tag: latest
             arch: amd64
             platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: code
+            tag: latest
+            arch: arm64
+            platform: "linux/arm64"
 
           - os: ubuntu-latest
             tag: zsh
@@ -42,10 +48,10 @@ jobs:
           #   arch: armv6
           #   platform: "linux/arm/v6"
 
-          - os: ubuntu-latest
-            tag: zsh
-            arch: 386
-            platform: "linux/386"
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: 386
+          #   platform: "linux/386"
 
           # - os: ubuntu-latest
           #   tag: latest
@@ -253,11 +259,11 @@ jobs:
     needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: alpine
+      name: fedora
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 19
+      zstd_level: 18
 
     strategy:
       fail-fast: false
@@ -275,6 +281,10 @@ jobs:
             tag: mate
             arch: amd64
             platform: "linux/amd64"
+          - os: ubuntu-latest
+            tag: lxqt
+            arch: amd64
+            platform: "linux/amd64"
 
           - os: ubuntu-latest
             tag: kde
@@ -288,6 +298,10 @@ jobs:
             tag: mate
             arch: arm64
             platform: "linux/arm64"
+          - os: ubuntu-latest
+            tag: lxqt
+            arch: arm64
+            platform: "linux/arm64"
 
           - os: ubuntu-latest
             tag: mate
@@ -299,10 +313,10 @@ jobs:
           #   arch: armv6
           #   platform: "linux/arm/v6"
 
-          - os: ubuntu-latest
-            tag: mate
-            arch: 386
-            platform: "linux/386"
+          # - os: ubuntu-latest
+          #   tag: mate
+          #   arch: 386
+          #   platform: "linux/386"
 
           # - os: ubuntu-latest
           #   tag: latest
