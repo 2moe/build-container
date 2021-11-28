@@ -235,7 +235,7 @@ jobs:
           branch: "master"
   #------------------------------------------------
   job2:
-    needs: [job1]
+    # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
       name: rust
@@ -268,7 +268,7 @@ jobs:
             arch: armv6
             platform: "linux/arm/v6"
 
-            - os: ubuntu-latest
+          - os: ubuntu-latest
             tag: alpine
             arch: 386
             platform: "linux/386"
