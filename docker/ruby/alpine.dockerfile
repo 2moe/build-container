@@ -24,9 +24,9 @@ RUN . /tmp/set_container_txt
 RUN cd "$TMOE_DIR"; \
     printf "%s\n" \
     'export PATH="/usr/local/bundle/bin${PATH:+:${PATH}}"' \
-    "export GEM_HOME=/usr/local/bundle" \
-    "export BUNDLE_SILENCE_ROOT_WARNING=1"\
-    "export BUNDLE_APP_CONFIG=/usr/local/bundle" \
+    "export GEM_HOME='/usr/local/bundle'" \
+    "export BUNDLE_SILENCE_ROOT_WARNING='1'"\
+    "export BUNDLE_APP_CONFIG='/usr/local/bundle'" \
     > environment/container.env; \
     printf "%s\n" \
     'cd ~' \

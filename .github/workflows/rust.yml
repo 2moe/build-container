@@ -1,18 +1,18 @@
-name: build code, go, jdk, php, nginx & node.js images
+name: build rust images
 # time = 2021-11-28 20:11:48+00:00
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/go.yml"
+      - ".github/workflows/rust.yml"
 
 jobs:
   job1:
     # needs: [job0, job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: ${{ matrix.name }}
+      name: rust
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
@@ -23,153 +23,34 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            name: code
             tag: latest
             arch: amd64
             platform: "linux/amd64"
+
           - os: ubuntu-latest
-            name: code
             tag: latest
             arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: go
             tag: latest
-            arch: amd64
-            platform: "linux/amd64"
+            arch: riscv64
+            platform: "linux/riscv64"
+
           - os: ubuntu-latest
-            name: go
             tag: latest
-            arch: arm64
-            platform: "linux/arm64"
+            arch: ppc64le
+            platform: "linux/ppc64le"
 
           - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          - os: ubuntu-latest
-            name: jdk
             tag: latest
-            arch: amd64
-            platform: "linux/amd64"
+            arch: s390x
+            platform: "linux/s390x"
+
           - os: ubuntu-latest
-            name: jdk
             tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: jdk
-            tag: latest
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          - os: ubuntu-latest
-            name: monogo
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: monogo
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            name: nginx
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: nginx
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            name: nginx
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: nginx
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: nginx
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          - os: ubuntu-latest
-            name: node
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: node
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            name: node
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: node
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: node
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv6
-          #   platform: "linux/arm/v6"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: 386
-          #   platform: "linux/386"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: riscv64
-          #   platform: "linux/riscv64"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: ppc64le
-          #   platform: "linux/ppc64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: s390x
-          #   platform: "linux/s390x"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips64le
-          #   platform: "linux/mips64le"
+            arch: mips64le
+            platform: "linux/mips64le"
 
           # - os: ubuntu-latest
           #   tag: latest
@@ -354,10 +235,10 @@ jobs:
           branch: "master"
   #------------------------------------------------
   job2:
-    # needs: [job1]
+    needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: ${{ matrix.name }}
+      name: rust
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
@@ -368,68 +249,29 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            name: php
-            tag: latest
+            tag: alpine
             arch: amd64
             platform: "linux/amd64"
+
           - os: ubuntu-latest
-            name: php
-            tag: latest
+            tag: alpine
             arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: php
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: php
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: php
             tag: alpine
             arch: armv7
             platform: "linux/arm/v7"
 
           - os: ubuntu-latest
-            name: ruby
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: ruby
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            name: ruby
             tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: ruby
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: ruby
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
+            arch: armv6
+            platform: "linux/arm/v6"
 
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv6
-          #   platform: "linux/arm/v6"
-
-          # - os: ubuntu-latest
-          #   tag: mate
-          #   arch: 386
-          #   platform: "linux/386"
+            - os: ubuntu-latest
+            tag: alpine
+            arch: 386
+            platform: "linux/386"
 
           # - os: ubuntu-latest
           #   tag: latest

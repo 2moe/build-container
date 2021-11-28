@@ -20,7 +20,7 @@ RUN . /tmp/set_container_txt
 # export env to file
 RUN cd "$TMOE_DIR"; \
     printf "%s\n" \
-    "export PHP_INI_DIR=${PHP_INI_DIR}" \
+    "export PHP_INI_DIR='${PHP_INI_DIR}'" \
     > environment/container.env; \
     printf "%s\n" \
     'cd ~' \
