@@ -75,7 +75,7 @@ ubuntu)
 esac
 
 if [[ -z ${container_os} ]]; then
-    container_os=$name
+    container_os="$name"
 fi
 
 # node-alpine
@@ -193,6 +193,18 @@ check_version_of_docker_image() {
         "v1 = ${Version_01_date}" \
         "v2 = ${Version_02_date}" \
         "ver = ${Rootfs_version}"
+    case "$name-$tag" in
+    *-base)
+        NODE_1=false
+        NODE_2=false
+        NODE_3=false
+        ;;
+    *)
+        NODE_1=true
+        NODE_2=true
+        NODE_3=true
+        ;;
+    esac
 }
 check_version_of_docker_image
 
@@ -208,6 +220,9 @@ printf "%s\n" \
     "LAST_FILE=${LAST_FILE}" \
     "LAST_TAG=${LAST_TAG}" \
     "LOCALE=${LOCALE}" \
+    "NODE_1=${NODE_1}" \
+    "NODE_2=${NODE_2}" \
+    "NODE_3=${NODE_3}" \
     >>"$GITHUB_ENV"
 
 if [[ -n $extra_tag ]]; then

@@ -8,6 +8,12 @@ write_to_toml_main() {
 }
 
 write_main_toml() {
+    case "$tag" in
+    latest | base) Container_name="${name}_${DEB_ARCH}" ;;
+    alpine) Container_name="${name}-musl_${DEB_ARCH}" ;;
+    *) Container_name="${name}-${tag}_${DEB_ARCH}" ;;
+    esac
+
     cat >i.toml <<-EOF
 [main]
 name = "$name"
@@ -111,20 +117,20 @@ repo = "${repo}"
 [server.node1]
 name = "cn"
 current = false
-last = true
+last = ${NODE_1}
 split = false
 
 [server.node2]
 name = "us"
 current = false
-last = false
+last = ${NODE_2}
 split = false
 part = 12
 
 [server.node3]
 name = "global"
 current = false
-last = true
+last = ${NODE_3}
 split = false
 
 [server.node4]
