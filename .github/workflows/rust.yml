@@ -63,7 +63,7 @@ jobs:
             platform: "linux/arm/v5"
 
           - os: ubuntu-latest
-            tag: alpine
+            tag: latest
             arch: 386
             platform: "linux/386"
           # - os: ubuntu-latest
