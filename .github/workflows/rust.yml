@@ -62,10 +62,10 @@ jobs:
             arch: armv5
             platform: "linux/arm/v5"
 
-          - os: ubuntu-latest
-            tag: latest
-            arch: 386
-            platform: "linux/386"
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: 386
+          #   platform: "linux/386"
           # - os: ubuntu-latest
           #   tag: latest
           #   arch: mips32le
