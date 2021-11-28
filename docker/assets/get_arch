@@ -28,11 +28,14 @@ armv7*)
     GNU_TARGET="armv7-unknown-linux-gnueabihf"
     MUSL_TARGET="armv7-unknown-linux-musleabihf"
     ;;
-armv[4-6]*)
+armv5*)
     ARCH=armel
-    # armv5
-    # armv5te-unknown-linux-gnueabi
-
+    GNU_TARGET="armv5te-unknown-linux-gnueabi"
+    # no musl?
+    MUSL_TARGET="armv5te-unknown-linux-musleabi"
+    ;;
+armv6*)
+    ARCH=armel
     # armv6
     GNU_TARGET="arm-unknown-linux-gnueabi"
     MUSL_TARGET="arm-unknown-linux-musleabi"

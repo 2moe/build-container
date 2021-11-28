@@ -24,17 +24,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            name: nginx
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   name: nginx
+          #   tag: alpine
+          #   arch: arm64
+          #   platform: "linux/arm64"
 
           - os: ubuntu-latest
             name: rust
             tag: latest
-            arch: ppc64le
-            platform: "linux/ppc64le"
+            arch: armv5
+            platform: "linux/arm/v5"
 
           # - os: ubuntu-latest
           #   tag: latest
