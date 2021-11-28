@@ -1,6 +1,5 @@
+// go run readme.go
 package main
-// COPY go.go /root/README.go
-//go run README.go
 
 import "fmt"
 

@@ -1,19 +1,32 @@
 # syntax=docker/dockerfile:1
-FROM cake233/fedora-zsh-${TARGETARCH}${TARGETVARIANT}
+#---------------------------
+# FROM cake233/fedora-zsh-${TARGETARCH}${TARGETVARIANT}
+FROM scratch
+ADD rootfs.tar /
 
-ARG TAG
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux" \
+    LANG="en_US.UTF-8"
+
 ARG OS
-
-WORKDIR /tmp
+ARG TAG
+ARG ARCH
 COPY --chmod=755 gen_tool /tmp
-RUN . gen_tool
+RUN . /tmp/gen_tool
 
 ARG AUTO_INSTALL_GUI=true
-RUN bash install-gui.sh
+RUN bash /tmp/install-gui.sh
 
 WORKDIR /root
-RUN rm -rfv /tmp/* ~/.vnc/*passwd ~/.cache/* 2>/dev/null; \
-    dnf clean all
+
+# clean
+RUN rm -rfv \
+    ~/.vnc/*passwd \
+    ~/.cache/* \
+    /tmp/* \
+    2>/dev/null
+RUN dnf clean all
 
 EXPOSE 5902 36080
-CMD ["zsh"]
+CMD ["/usr/bin/zsh"]

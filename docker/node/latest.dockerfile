@@ -1,47 +1,51 @@
-FROM --platform=${TARGETPLATFORM}  node:latest
+# syntax=docker/dockerfile:1
+#---------------------------
+FROM --platform=${TARGETPLATFORM} node:latest
+COPY node.js /root/readme.js
 
-ADD node.js /root/README.js
+# set arg & env
 ARG DEBIAN_FRONTEND=noninteractive
-ENV HOME=/root \
-    TMOE_PROOT=false \
-    TMOE_CHROOT=true \
-    TMOE_DOCKER=true
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
 
-RUN apt update; \
-    apt dist-upgrade -y; \
-    dpkg --configure -a; \
-    apt install -y sudo locales; \
-    apt install -y whiptail curl eatmydata procps apt-utils; \
-    apt install -y --no-install-recommends neofetch; \
-    printf "%s\n" "root:root" | chpasswd; \
-    mkdir -p /run/systemd; \
-    printf "%s\n" "docker" > /run/systemd/container; \
-    mkdir -pv /usr/local/etc/tmoe-linux; \
-    cd /usr/local/etc/tmoe-linux/; \
-    printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=node_nogui-debian" \
-    > container.txt ; \
+# install dependencies
+COPY --chmod=755 install_deb_deps /tmp
+RUN . /tmp/install_deb_deps
+
+# set locale
+COPY --chmod=755 set_locale /tmp
+RUN . /tmp/set_locale
+ENV LANG en_US.UTF-8
+
+ARG OS
+ARG TAG
+ARG ARCH
+COPY --chmod=755 set_container_txt /tmp
+RUN . /tmp/set_container_txt
+
+# export env to file
+RUN cd "$TMOE_DIR"; \
     mkdir -p environment; \
     printf "%s\n" \
     'cd ~' \
     "node" \
     > environment/entrypoint; \
-    chmod -R a+rx environment/; \
-    cd /root; \
+    chmod -R a+rx environment/
+
+# export version info to file
+RUN cd /root; \
     printf "%s\n" \
-    "NODE_VERSION='$(node --version)'" \
-    "YARN_VERSION='$(yarn --version)'" \
-    "NPM_VERSION='$(npm --version)'" \
-    > version.txt; \
-    rm -fv /var/cache/apt/archives/* \
-    /var/cache/apt/* \
-    /var/mail/* \
-    /var/log/* \
-    /var/log/apt/* \
-    /var/log/journal/* \
-    /var/lib/apt/lists/* \
-    2>/dev/null; \
-    apt clean
+    "" \
+    '[version]' \
+    "node = '$(node --version)'" \
+    "yarn = '$(yarn --version)'" \
+    "npm = '$(npm --version)'" \
+    > version.toml; \
+    cat version.toml
+
+# clean
+COPY --chmod=755 clean_deb_cache /tmp
+RUN . /tmp/clean_deb_cache
 
 CMD [ "node" ]

@@ -2,5 +2,6 @@ case "$TARGETARCH" in
 arm*) KEY=archlinuxarm ;;
 *) KEY=archlinux ;;
 esac
-
+pacman-key --init
+pacman-key --populate
 pacman-key --populate "$KEY"

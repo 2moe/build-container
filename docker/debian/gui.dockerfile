@@ -1,27 +1,34 @@
 # syntax=docker/dockerfile:1
-FROM cake233/debian-zsh-${TARGETARCH}${TARGETVARIANT}
+#---------------------------
+# FROM cake233/debian-zsh-${TARGETARCH}${TARGETVARIANT}
+FROM scratch
+ADD rootfs.tar /
 
 ARG DEBIAN_FRONTEND=noninteractive
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux" \
+    LANG="en_US.UTF-8"
 
-ARG TAG
 ARG OS
-
-WORKDIR /tmp
+ARG TAG
+ARG ARCH
 COPY --chmod=755 gen_tool /tmp
-RUN . gen_tool
+RUN . /tmp/gen_tool
 
 ARG AUTO_INSTALL_GUI=true
-RUN bash install-gui.sh
+RUN bash /tmp/install-gui.sh
 
 WORKDIR /root
-RUN rm -fv /var/cache/apt/archives/* \
-    /var/cache/apt/* \
-    /var/mail/* \
-    /var/log/* \
-    /var/log/apt/* \
-    /var/log/journal/* \
-    /var/lib/apt/lists/* \
+
+# clean
+COPY --chmod=755 clean_deb_cache /tmp
+RUN . /tmp/clean_deb_cache
+RUN rm -rfv \
+    ~/.vnc/*passwd \
+    /tmp/* \
     2>/dev/null
 
 EXPOSE 5902 36080
-CMD ["zsh"]
+
+CMD ["/usr/bin/zsh"]

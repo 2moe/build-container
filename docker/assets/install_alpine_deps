@@ -1,0 +1,13 @@
+set -ex
+apk update
+apk upgrade
+apk add \
+    sudo \
+    tar \
+    grep \
+    curl \
+    wget \
+    bash \
+    tzdata \
+    newt \
+    shadow

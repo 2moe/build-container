@@ -1,0 +1,8 @@
+rm -fv /var/cache/apt/archives/* \
+    /var/cache/apt/* \
+    /var/mail/* \
+    /var/lib/apt/lists/* \
+    ~/.cache/* \
+    2>/dev/null
+
+apt clean 2>/dev/null

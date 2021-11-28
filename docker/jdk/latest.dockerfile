@@ -1,49 +1,54 @@
-FROM --platform=${TARGETPLATFORM}  openjdk:jdk-slim
-ENV HOME=/root \
-    TMOE_PROOT=false \
-    TMOE_CHROOT=true \
-    TMOE_DOCKER=true
+# syntax=docker/dockerfile:1
+#---------------------------
+FROM --platform=${TARGETPLATFORM} openjdk:jdk-slim
 
-RUN apt update; \
-    apt dist-upgrade -y; \
-    dpkg --configure -a; \
-    apt install -y sudo locales curl; \
-    apt install -y whiptail eatmydata procps apt-utils; \
-    apt install -y --no-install-recommends neofetch; \
-    printf "%s\n" "root:root" | chpasswd; \
-    mkdir -p /run/systemd; \
-    printf "%s\n" "docker" > /run/systemd/container; \
-    mkdir -pv /usr/local/etc/tmoe-linux; \
-    cd /usr/local/etc/tmoe-linux; \
-    printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=openjdk_nogui-debian" \
-    > container.txt ; \
-    mkdir -p environment; \
+WORKDIR /root
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
+
+COPY --chmod=755 install_deb_deps /tmp
+RUN . /tmp/install_deb_deps
+
+# set locale
+COPY --chmod=755 set_locale /tmp
+RUN . /tmp/set_locale
+ENV LANG en_US.UTF-8
+
+ARG OS
+ARG TAG
+ARG ARCH
+COPY --chmod=755 set_container_txt /tmp
+RUN . /tmp/set_container_txt
+
+RUN cd ${TMOE_DIR}; \
     JAVA_DIR=$(command -v java); \
     JAVA_PATH=${JAVA_DIR%/*}; \
     printf "%s\n" \
     "export PATH=\"${JAVA_PATH}\${PATH:+:\${PATH}}\"" \
-    "export JAVA_HOME=${JAVA_HOME}" \
+    "export JAVA_HOME='${JAVA_HOME}'" \
     > environment/container.env; \
     printf "%s\n" \
     'cd ~' \
     "jshell" \
     > environment/entrypoint; \
-    chmod -R a+rx environment/; \
-    cd /root; \
+    chmod -R a+rx environment/
+
+RUN cd /root; \
     printf "%s\n" \
-    "JAVA_VERSION='$(java --version)'" \
-    "JAVAC_VERSION='$(javac --version)'" \
-    > version.txt; \
-    cat version.txt; \
-    rm -fv /var/cache/apt/archives/* \
-    /var/cache/apt/* \
-    /var/mail/* \
-    /var/log/* \
-    /var/log/apt/* \
-    /var/log/journal/* \
-    /var/lib/apt/lists/* \
-    2>/dev/null; \
-    apt clean
+    "" \
+    '[version]' \
+    "java = '''" \
+    "$(java --version)" \
+    "'''" \
+    "javac = '$(javac --version)'" \
+    > version.toml; \
+    cat version.toml
+
+# clean
+COPY --chmod=755 clean_deb_cache /tmp
+RUN . /tmp/clean_deb_cache
+# RUN rm -rfv /tmp/* 2>/dev/null
+
 CMD [ "jshell" ]

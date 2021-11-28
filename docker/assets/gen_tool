@@ -1,6 +1,6 @@
 set -ex
 
-cd ${TMOE_DIR}
+cd "${TMOE_DIR}"
 printf "%s\n" \
     "CONTAINER_TYPE=podman" \
     "CONTAINER_NAME=${OS}_gui-${TAG}" \
@@ -17,3 +17,11 @@ printf "%s\n" \
     "cd /usr/local/etc/tmoe-linux/git/share/old-version/tools/gui/" \
     "source gui --auto-install-gui-${TAG}" \
     >install-gui.sh
+
+cd /root
+printf "%s\n" \
+    "" \
+    '[port]' \
+    "tcp = [5902, 36080]" \
+    >>version.toml
+cat version.toml

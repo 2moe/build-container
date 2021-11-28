@@ -27,6 +27,12 @@ docker run \\
     --name ${Container_name} \\
     -e LANG=en_US.UTF-8 \\
     ${repo}
+
+# optional: bind audio server
+# host cmd: pactl load-module module-native-protocol-unix socket=/path/to/src.socket
+# docker args: -v /path/to/src.socket:/path/to/target.socket \\
+# -e PULSE_SERVER=unix:/path/to/target.socket
+
 \`\`\`
 
 ## How to start vnc?
@@ -70,10 +76,6 @@ If you want to use tiger/x11vnc, then open vnc viewer, then type the address:
 \`\`\`
 localhost:5903
 \`\`\`
-
-## build info
-
-\`\`\`toml
 EOF
 }
 cat_nogui_readme() {
@@ -94,16 +96,76 @@ docker run \\
 \`\`\`shell
     docker exec -it ${Container_name} ${LOGIN_SHELL}
 \`\`\`
-
-## build info
-
-\`\`\`toml
 EOF
 }
 
-case ${nogui} in
-true) cat_nogui_readme ;;
-false) cat_gui_readme ;;
+cat_build_info_title() {
+    cat >build_info_title.md <<-EOF
+
+## ${Container_name}.toml
+
+\`\`\`toml
+EOF
+    cat build_info_title.md >>docker-readme.md
+}
+
+cat_go_readme() {
+    cat >go-example.md <<-EOF
+
+## example
+
+\`\`\`shell
+docker run \\
+    --rm \\
+    -v "\$PWD"/go-project:/app \\
+    -w /app \\
+    ${Container_name} \\
+    go build -v
+\`\`\`
+EOF
+
+    cat go-example.md >>docker-readme.md
+
+    printf "%s\n" \
+        "" \
+        '## readme.go' \
+        '```go' \
+        >>docker-readme.md
+
+    cat "$dir"/go.go >>docker-readme.md
+    echo '```' >>docker-readme.md
+}
+
+cat_rust_readme() {
+    cat >rs-example.md <<-EOF
+
+## example
+
+\`\`\`shell
+docker run \\
+    --rm \\
+    -v "\$PWD"/rs-project:/app \\
+    -w /app \\
+    ${Container_name} \\
+    cargo b --release
+\`\`\`
+EOF
+    cat rs-example.md >>docker-readme.md
+}
+
+case ${X11} in
+false)
+    cat_nogui_readme
+    case "$name" in
+    go) cat_go_readme ;;
+    rust) cat_rust_readme ;;
+    esac
+    cat_build_info_title
+    ;;
+true)
+    cat_gui_readme
+    cat_build_info_title
+    ;;
 esac
 
 cat ./i.toml >>docker-readme.md

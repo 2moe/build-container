@@ -1,35 +1,44 @@
-FROM --platform=${TARGETPLATFORM}  node:alpine
+# syntax=docker/dockerfile:1
+#---------------------------
+FROM --platform=${TARGETPLATFORM} node:alpine
+COPY node.js /root/readme.js
 
-ADD README.js /root
-ENV HOME=/root \
-    TMOE_PROOT=false \
+ENV LANG="C.UTF-8" \
     TMOE_CHROOT=true \
-    TMOE_DOCKER=true
-RUN apk update; \
-    apk upgrade; \
-    apk add sudo tar grep curl wget bash tzdata newt shadow; \
-    printf "%s\n" "root:root" | chpasswd; \
-    ln -svf /usr/share/zoneinfo/UTC /etc/localtime; \
-    mkdir -pv /usr/local/etc/tmoe-linux; \
-    cd /usr/local/etc/tmoe-linux/; \
-    printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=node_nogui-alpine" \
-    > container.txt ; \
-    mkdir -p environment; \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
+
+COPY --chmod=755 install_alpine_deps /tmp
+RUN . /tmp/install_alpine_deps
+
+ARG OS
+ARG TAG
+ARG ARCH
+COPY --chmod=755 set_container_txt /tmp
+RUN . /tmp/set_container_txt
+
+RUN cd "$TMOE_DIR"; \
     printf "%s\n" \
     'cd ~' \
     "node" \
     > environment/entrypoint; \
-    chmod -R a+rx environment/; \
-    cd /root; \
+    chmod -R a+rx environment/
+
+# export version info to file
+RUN cd /root; \
     printf "%s\n" \
-    "NODE_VERSION='$(node --version)'" \
-    "YARN_VERSION='$(yarn --version)'" \
-    "NPM_VERSION='$(npm --version)'" \
-    > version.txt; \
-    rm -rf /var/cache/apk/* ~/.cache/* 2>/dev/null
-#apk -v cache clean
-#npm i -g npm
+    "" \
+    '[version]' \
+    "node = '$(node --version)'" \
+    "yarn = '$(yarn --version)'" \
+    "npm = '$(npm --version)'" \
+    > version.toml; \
+    cat version.toml
+
+# clean: apk -v cache clean
+RUN rm -rf \
+    /var/cache/apk/* \
+    ~/.cache/* \
+    2>/dev/null
 
 CMD [ "node" ]

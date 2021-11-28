@@ -8,19 +8,70 @@ set -ex
 DOCKER_ARCH="${TARGETARCH}${TARGETVARIANT}"
 
 case "$DOCKER_ARCH" in
-amd64) ARCH=amd64 ;;
-386 | i*86) ARCH=i386 ;;
-arm64*) ARCH=arm64 ;;
-armv7*) ARCH=armhf ;;
-armv[4-6]*) ARCH=armel ;;
-mips64*) ARCH=mips64el ;;
-mips*) ARCH=mipsel ;;
-ppc64*) ARCH=ppc64el ;;
-s390*) ARCH=s390x ;;
-riscv64*) ARCH=riscv64 ;;
+amd64)
+    ARCH=amd64
+    GNU_TARGET="x86_64-unknown-linux-gnu"
+    MUSL_TARGET="x86_64-unknown-linux-musl"
+    ;;
+386 | i*86)
+    ARCH=i386
+    GNU_TARGET="i686-unknown-linux-gnu"
+    MUSL_TARGET="i686-unknown-linux-musl"
+    ;;
+arm64*)
+    ARCH=arm64
+    GNU_TARGET="aarch64-unknown-linux-gnu"
+    MUSL_TARGET="aarch64-unknown-linux-musl"
+    ;;
+armv7*)
+    ARCH=armhf
+    GNU_TARGET="armv7-unknown-linux-gnueabihf"
+    MUSL_TARGET="armv7-unknown-linux-musleabihf"
+    ;;
+armv[4-6]*)
+    ARCH=armel
+    # armv5
+    # armv5te-unknown-linux-gnueabi
+
+    # armv6
+    GNU_TARGET="arm-unknown-linux-gnueabi"
+    MUSL_TARGET="arm-unknown-linux-musleabi"
+    ;;
+mips64*)
+    ARCH=mips64el
+    GNU_TARGET="mips64el-unknown-linux-gnuabi64"
+    MUSL_TARGET="mips64el-unknown-linux-muslabi64"
+    ;;
+mips*)
+    ARCH=mipsel
+    GNU_TARGET="mipsel-unknown-linux-gnu"
+    MUSL_TARGET="mipsel-unknown-linux-musl"
+    ;;
+ppc64*)
+    ARCH=ppc64el
+    GNU_TARGET="powerpc64le-unknown-linux-gnu"
+    # no musl
+    MUSL_TARGET="powerpc64le-unknown-linux-musl"
+    ;;
+s390*)
+    ARCH=s390x
+    GNU_TARGET="s390x-unknown-linux-gnu"
+    # no musl
+    MUSL_TARGET="s390x-unknown-linux-musl"
+    ;;
+riscv64*)
+    ARCH=riscv64
+    GNU_TARGET="riscv64gc-unknown-linux-gnu"
+    # no musl
+    MUSL_TARGET="riscv64gc-unknown-linux-musl"
+    ;;
 esac
 export ARCH DOCKER_ARCH
 
 if [ -n "$GITHUB_ENV" ]; then
-    echo "DEB_ARCH=${ARCH}" >> "$GITHUB_ENV"
+    printf "%s\n" \
+        "DEB_ARCH=${ARCH}" \
+        "GNU_TARGET=${GNU_TARGET}" \
+        "MUSL_TARGET=${MUSL_TARGET}" \
+        >>"$GITHUB_ENV"
 fi

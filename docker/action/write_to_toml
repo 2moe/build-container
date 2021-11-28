@@ -16,10 +16,7 @@ os = "$container_os"
 release = "$container_release"
 arch = "$DEB_ARCH"
 platform = "$platform"
-nogui = $nogui
-
-# If the value is false, then the container will not be downloaded.
-completed = true
+x11_or_wayland = $X11
 
 [file]
 name = "${Container_name}_${end_time_normal}.tar.zst"
@@ -36,20 +33,30 @@ zstd-level = ${zstd_level}
 # Installed size ≈ tar-size
 # Installed size is approximately equal to the size of the tar file
 tar = "${file_size_tar}"
-tar-bytes = ${file_size_tar_bytes}
+tar_bytes = ${file_size_tar_bytes}
 
 # Space occupied ≈ tar-size + zstd-size
 # You will need to prepare a large enough space before installation.
 zstd = "${file_size_zst}"
-zstd-bytes = ${file_size_zstd_bytes}
+zstd_bytes = ${file_size_zstd_bytes}
 
 [compatibility]
 compatible_mode = true
-rootfs_version = "${Rootfs_version}"
+
+last_version = "${LAST_VERSION}"
+
+# The value is &str, not int
+last_date = "${LAST_DATE}"
+last_tag = "${LAST_TAG}"
+last_file = "${LAST_FILE}"
+
+current_version = "${Rootfs_version}"
+current_date = "$(date -u +%Y%m%d)"
 # edition 2021
 # DISTRO_NAME=${DISTRO_NAME}
 # ROOTFS_FILE=${Container_name}_${end_time_normal}.tar.zst
 # BUILD_DATE=$(date -u +%Y%m%d)
+# BUILD_TAG=$(date -u +%Y-%m-%d)
 # STATUS=completed
 # VERSION=${Rootfs_version}
 # END_TIME=$(date -u +%H:%M)
@@ -57,6 +64,7 @@ rootfs_version = "${Rootfs_version}"
 [time]
 format = "rfc-3339"
 zone = "UTC"
+date = $(date -u +%Y-%m-%d)
 begin = ${time_begin}
 start-sync_0 = ${time_start_sync_0}
 EOF
@@ -76,24 +84,79 @@ check_toml_time() {
 }
 
 write_extra_toml_data() {
-    printf "%s\n" \
-        "end = ${end_time}" \
-        "" \
-        '[server]' \
-        'name = "docker"' \
-        "node = 4" \
-        "repo = \"${repo}\"" \
-        "" \
-        '# Environment variables  (●＞ω＜●)' \
-        '[env]' \
-        'LANG = "en_US.UTF-8"' \
-        >>i.toml
+    # printf "%s\n" \
+    #     "end = ${end_time}" \
+    #     "" \
+    #     '[server]' \
+    #     'name = "docker"' \
+    #     "node = 4" \
+    #     "repo = \"${repo}\"" \
+    #     "" \
+    #     '[server.availability]' \
+    #     "node_1 = false" \
+    #     "node_2 = false" \
+    #     "node_3 = false" \
+    #     "" \
+    #     '# Environment variables  (●＞ω＜●)' \
+    #     '[env]' \
+    #     "LANG = \"${LOCALE}\"" \
+    #     >>i.toml
 
-    for i in /tmp/version/container.env /tmp/version/version.txt; do
-        if [ -r "${i}" ]; then
-            sed -i 's@^export @@g' "${i}"
-            sed -i "$ r${i}" i.toml
-        fi
-    done
+    cat >server_tmp.toml <<-EOF
+end = ${end_time}
+
+[server]
+repo = "${repo}"
+
+[server.node1]
+name = "cn"
+current = false
+last = true
+split = false
+
+[server.node2]
+name = "us"
+current = false
+last = false
+split = false
+part = 12
+
+[server.node3]
+name = "global"
+current = false
+last = true
+split = false
+
+[server.node4]
+name = "docker"
+current = true
+
+# Environment variables  (●＞ω＜●)
+[env]
+LANG = "${LOCALE}"
+EOF
+    cat server_tmp.toml >>i.toml
+    # for i in /tmp/version/container.env /tmp/version/version.toml; do
+    #     if [ -r "${i}" ]; then
+    #         sed -i 's@^export @@g' "${i}"
+    #         sed -i "$ r${i}" i.toml
+    #     fi
+    # done
+    i="/tmp/version/container.env"
+    if [ -r "$i" ]; then
+        cat "$i"
+        sed -E \
+            -e "s@export@@g" \
+            -e 's@ (.*)=(")@\1 = \2@g' \
+            -e "s@ (.*)=(')@\1 = \2@g" \
+            -i "${i}"
+        cat "$i"
+        sed -i "$ r${i}" i.toml
+    fi
+
+    i="/tmp/version/version.toml"
+    if [ -r "$i" ]; then
+        sed -i "$ r${i}" i.toml
+    fi
 }
 write_to_toml_main "$@"

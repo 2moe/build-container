@@ -1,49 +1,55 @@
 # syntax=docker/dockerfile:1
-
+#---------------------------
 FROM --platform=${TARGETPLATFORM} golang:latest
-ADD go.go /root/README.go
+COPY go.go /root/README.go
+
+# set workdir & env
 WORKDIR /go
 ARG DEBIAN_FRONTEND=noninteractive
-ENV HOME=/root \
-    TMOE_PROOT=false \
-    TMOE_CHROOT=true \
-    TMOE_DOCKER=true
+ENV TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
 
-RUN apt update; \
-    apt dist-upgrade -y; \
-    dpkg --configure -a; \
-    apt install -y sudo locales curl; \
-    apt install -y whiptail eatmydata procps apt-utils; \
-    apt install -y --no-install-recommends neofetch; \
-    printf "%s\n" "root:root" | chpasswd; \
-    mkdir -p /run/systemd; \
-    printf "%s\n" "docker" > /run/systemd/container; \
-    mkdir -pv /usr/local/etc/tmoe-linux; \
-    cd /usr/local/etc/tmoe-linux; \
-    printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=go_nogui-debian" \
-    > container.txt ; \
-    mkdir -p environment; \
+# install dependencies
+COPY --chmod=755 install_deb_deps /tmp
+RUN . /tmp/install_deb_deps
+
+# set locale
+COPY --chmod=755 set_locale /tmp
+RUN . /tmp/set_locale
+ENV LANG en_US.UTF-8
+
+ARG OS
+ARG TAG
+ARG ARCH
+COPY --chmod=755 set_container_txt /tmp
+RUN . /tmp/set_container_txt
+
+# PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# GOPATH=/go
+# export env to file
+RUN cd "$TMOE_DIR"; \
     printf "%s\n" \
     'export PATH="/go/bin:/usr/local/go/bin${PATH:+:${PATH}}"' \
-    "export GOPATH=/go" \
+    'export GOPATH="/go"' \
     > environment/container.env; \
-    chmod -R a+rx environment/; \
-    cd /root; \
+    chmod -R a+rx environment/
+
+# export version info to file
+RUN cd /root; \
     printf "%s\n" \
-    "GO_VERSION='$(go version)'" \
-    > version.txt; \
-    cat version.txt; \
-    rm -fv /var/cache/apt/archives/* \
-    /var/cache/apt/* \
-    /var/mail/* \
-    /var/log/* \
-    /var/log/apt/* \
-    /var/log/journal/* \
-    /var/lib/apt/lists/* \
-    2>/dev/null; \
-    apt clean
-# ENV PATH=/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-#     GOPATH=/go
-CMD [ "/bin/bash" ]
+    "" \
+    '[version]' \
+    "go = '$(go version)'" \
+    "gofmt = '$(go version $(command -v gofmt))'" \
+    "" \
+    '[other]' \
+    'workdir = "/go"' \
+    > version.toml; \
+    cat version.toml
+
+# clean
+COPY --chmod=755 clean_deb_cache /tmp
+RUN . /tmp/clean_deb_cache
+
+CMD [ "/usr/bin/bash" ]

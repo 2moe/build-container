@@ -23,12 +23,14 @@ DOCKER_BUILDKIT=1 \
     --build-arg TAG=${tag} \
     --build-arg OS=${name} \
     --build-arg ARCH=${DEB_ARCH} \
+    --build-arg GNU_TARGET=${GNU_TARGET} \
+    --build-arg MUSL_TARGET=${MUSL_TARGET} \
     --platform=${platform} \
     --pull \
     .
 
 case "file" in
-*gui.dockerfile) rm -fv rootrfs.tar 2>/dev/null
+*gui.dockerfile) rm -fv rootrfs.tar 2>/dev/null ;;
 esac
 
 printf "%s\n" \

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-
+#---------------------------
 # DOCKER_BUILDKIT=1 docker build -t u2 -f ../arch/base.dockerfile --platform=linux/amd64 .
 # --build-arg ARCH=amd64
 
@@ -25,4 +25,4 @@ RUN . ./get_arch \
 
 RUN mv arch.tar.xz /
 
-CMD ["sh"]
+CMD ["/bin/sh"]

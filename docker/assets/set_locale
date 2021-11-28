@@ -1,11 +1,14 @@
 locale_def_utf8() {
     lang=$1
+    # lang=en_US
     localedef \
-        -i en_US \
         -c \
+        -i en_US \
         -f UTF-8 \
         -A /usr/share/locale/locale.alias \
-        ${lang}.UTF-8
+        "${lang}".UTF-8
+    # -c(--force), -v(--verbose), -f(--charmap), -i(--inputfile)
+    locale -a
 }
 
 if [ -n "$(command -v localedef)" ]; then

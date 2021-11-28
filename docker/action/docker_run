@@ -19,7 +19,7 @@ run_normal_container() {
         -v /tmp/version:/tmp/version \
         "$repo" \
         /bin/bash -c \
-        "for i in /root/version.txt /usr/local/etc/tmoe-linux/environment/container.env ;do
+        "for i in /root/version.toml /usr/local/etc/tmoe-linux/environment/container.env ;do
             if [ -r \${i} ];then
                cp -vf \${i} /tmp/version 
             fi

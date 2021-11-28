@@ -1,11 +1,11 @@
-name: build image
-# /tmp.
+name: build images
+# alpine xfce
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/hello.yml"
+      - ".github/workflows/hello.yml2333333333"
   # watch:
   #   types: started
 
@@ -13,7 +13,7 @@ jobs:
   first_job:
     runs-on: ${{ matrix.os }}
     env:
-      name: arch
+      name: alpine
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
@@ -24,34 +24,54 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tag: base
-            arch: amd64
-            platform: "linux/amd64"
-
-          - os: ubuntu-latest
-            tag: base
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            tag: base
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          - os: ubuntu-latest
             tag: zsh
             arch: amd64
             platform: "linux/amd64"
 
-          - os: ubuntu-latest
-            tag: zsh
-            arch: arm64
-            platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   tag: zsh
+          #   arch: arm64
+          #   platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            tag: zsh
-            arch: armv7
-            platform: "linux/arm/v7"
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: armv7
+          #   platform: "linux/arm/v7"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: armv6
+          #   platform: "linux/arm/v6"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: 386
+          #   platform: "linux/386"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: riscv64
+          #   platform: "linux/riscv64"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: ppc64le
+          #   platform: "linux/ppc64le"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: s390x
+          #   platform: "linux/s390x"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: mips64le
+          #   platform: "linux/mips64le"
+
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: mips32le
+          #   platform: "linux/mips32le"
 
           # - os: self-hosted-debian
           #   tag: hello
@@ -73,6 +93,11 @@ jobs:
           ref: "master"
           fetch-depth: 1
 
+      - name: get architecture
+        env:
+          TARGETARCH: ${{ matrix.arch }}
+        run: bash docker/assets/get_arch
+
       - name: get container os & set global env
         env:
           tag: ${{ matrix.tag }}
@@ -85,11 +110,6 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: ${{ matrix.platform }}
-
-      - name: get architecture
-        env:
-          TARGETARCH: ${{ matrix.arch }}
-        run: bash docker/assets/get_arch
 
       - name: set container name(notag latest/base)
         if: matrix.tag == 'base' || matrix.tag == 'latest'
@@ -124,7 +144,6 @@ jobs:
         env:
           file: "../${{ env.name }}/${{ matrix.tag }}02.dockerfile"
         run: |
-          docker pull ${{ env.repo }}:latest
           docker run -d --name base_tmp ${{ env.repo }}:latest sh
           docker cp base_tmp:/arch.tar.xz .
           xz -dfv arch.tar.xz
@@ -184,6 +203,8 @@ jobs:
         run: cat i.toml
 
       - name: gen docker readme
+        env:
+          dir: docker/assets
         run: |
           bash docker/action/gen_docker_readme
           cat docker-readme.md

@@ -1,0 +1,28 @@
+set -ex
+
+printf "%s\n" "root:root" | chpasswd
+ln -svf /usr/share/zoneinfo/UTC /etc/localtime
+
+set_systemd_container() {
+    mkdir -p /run/systemd
+    printf "%s\n" \
+        "docker" \
+        >/run/systemd/container
+}
+
+if [ -n "$(command -v ldd)" ]; then
+    if ldd --version 2>&1 | grep -q 'musl'; then
+        echo "skipped."
+    else
+        set_systemd_container
+    fi
+fi
+
+mkdir -pv "$TMOE_DIR"
+cd "$TMOE_DIR"
+printf "%s\n" \
+    "CONTAINER_TYPE=podman" \
+    "CONTAINER_NAME=${OS}_nogui-${TAG}" \
+    "ARCH=${ARCH}" \
+    >container.txt
+mkdir -p environment

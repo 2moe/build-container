@@ -44,18 +44,19 @@ rust)
     latest)
         container_os=debian
         container_release=sid
-        extra_tag=', "nightly", "gnu-libc"'
+        extra_tag=', "nightly", "unstable", "default", "gnu-libc"'
         ;;
-    alpine)
+    alpine | *)
         container_os=alpine
-        container_release=stable
-        extra_tag=', "musl-libc"'
+        container_release=edge
+        extra_tag=', "nightly", "unstable", "minimal", "musl-libc", "musl"'
         ;;
     esac
     ;;
 code)
     container_os=debian
     container_release=sid
+    extra_tag=', "vsc", "vscode", "web"'
     ;;
 ubuntu)
     case "$tag" in
@@ -89,74 +90,109 @@ if [[ -z ${container_release} ]]; then
     alpine)
         container_os=alpine
         container_release=stable
-        extra_tag=', "musl-libc"'
+        extra_tag=', "musl-libc", "musl"'
         ;;
     *) container_release=$tag ;;
     esac
 fi
 
-if [[ -n ${DISTRO_OS} ]]; then
-    DISTRO_NAME="${DISTRO_OS}_${arch}"
+if [[ -z ${DISTRO_OS} ]]; then
+    DISTRO_OS="${name}"
 fi
 
-if [[ -z ${DISTRO_NAME} ]]; then
+DISTRO_NAME="${DISTRO_OS}_${DEB_ARCH}"
+
+# if [[ -z ${DISTRO_NAME} ]]; then
+#     case "$tag" in
+#     latest)
+#         DISTRO_NAME="${container_os}_${DEB_ARCH}"
+#         ;;
+#     alpine)
+#         DISTRO_NAME="${container_os}-${container_release}_${DEB_ARCH}"
+#         ;;
+#     *)
+#         case ${container_release} in
+#         latest) DISTRO_NAME="${container_os}_${DEB_ARCH}" ;;
+#         *) DISTRO_NAME="${container_os}-${container_release}_${DEB_ARCH}" ;;
+#         esac
+#         ;;
+#     esac
+# fi
+case "$name" in
+alpine) LOCALE="C.UTF-8" ;;
+*)
     case "$tag" in
-    latest)
-        DISTRO_NAME="${container_os}_${arch}"
-        ;;
-    alpine)
-        DISTRO_NAME="${container_os}-${container_release}_${arch}"
-        ;;
-    *)
-        case ${container_release} in
-        latest) DISTRO_NAME="${container_os}_${arch}" ;;
-        *) DISTRO_NAME="${container_os}-${container_release}_${arch}" ;;
-        esac
-        ;;
+    alpine | musl) LOCALE="C.UTF-8" ;;
+    *) LOCALE="en_US.UTF-8" ;;
     esac
-fi
+    ;;
+esac
 
 case "$tag" in
 xfce* | kde* | lxde | lxqt | mate)
-    nogui=false
+    X11=true
     LOGIN_SHELL=zsh
     ;;
 zsh)
-    nogui=true
+    X11=false
     LOGIN_SHELL=zsh
     ;;
 base)
-    nogui=true
+    X11=false
     LOGIN_SHELL=sh
     ;;
-*)
-    nogui=true
+alpine | latest)
+    X11=false
     LOGIN_SHELL=bash
+    ;;
+*)
+    X11=false
+    LOGIN_SHELL=sh
     ;;
 esac
 
 check_version_of_docker_image() {
     # Remote_dir="/share/next/down/share/Tmoe-linux/rootfs"
     Netdisk='http://cdn02.tmoe.me/node03'
-    Distro_path="${arch}/${DISTRO_OS}/${tag}"
+    Distro_path="${DEB_ARCH}/${DISTRO_OS}/${tag}"
 
-    Rootfs_version=latest02
-    Version_01_date=$(curl -L "${Netdisk}/latest01/${Distro_path}/build.txt" | awk -F 'BUILD_DATE=' '{print $2}')
-    Version_02_date=$(curl -L "${Netdisk}/latest02/${Distro_path}/build.txt" | awk -F 'BUILD_DATE=' '{print $2}')
+    VERSION_01=$(curl -L "${Netdisk}/latest01/${Distro_path}/build.txt")
+    VERSION_02=$(curl -L "${Netdisk}/latest02/${Distro_path}/build.txt")
+    Version_01_date=$(printf "%s\n" "$VERSION_01" | grep BUILD_DATE | awk -F '=' '{print $2}')
+    Version_02_date=$(printf "%s\n" "$VERSION_02" | grep BUILD_DATE | awk -F '=' '{print $2}')
+    # ROOTFS_FILE
+    VERSION_01_FILE=$(printf "%s\n" "$VERSION_01" | grep ROOTFS_FILE | awk -F '=' '{print $2}')
+    VERSION_02_FILE=$(printf "%s\n" "$VERSION_02" | grep ROOTFS_FILE | awk -F '=' '{print $2}')
+
+    VERSION_01_TAG=$(printf "%s\n" "$VERSION_01" | grep BUILD_TAG | awk -F '=' '{print $2}')
+    VERSION_02_TAG=$(printf "%s\n" "$VERSION_02" | grep BUILD_TAG | awk -F '=' '{print $2}')
 
     if [ -z "${Version_01_date}" ]; then
-        Version_01_date=20210116
+        Version_01_date=20211126
     fi
 
     if [ -z "${Version_02_date}" ]; then
-        Version_01_date=20210118
+        Version_02_date=20211128
     fi
 
     if ((Version_01_date < Version_02_date)); then
         Rootfs_version=latest01
+        LAST_VERSION=latest02
+        LAST_DATE="$Version_02_date"
+        LAST_FILE="$VERSION_02_FILE"
+        LAST_TAG="$VERSION_02_TAG"
+    else
+        Rootfs_version=latest02
+        LAST_VERSION=latest01
+        LAST_DATE="$Version_01_date"
+        LAST_FILE="$VERSION_01_FILE"
+        LAST_TAG="$VERSION_01_TAG"
     fi
 
-    printf "%s\n" "v1 = ${Version_01_date}, v2 = ${Version_02_date}, ver = ${Rootfs_version}"
+    printf "%s\n" \
+        "v1 = ${Version_01_date}" \
+        "v2 = ${Version_02_date}" \
+        "ver = ${Rootfs_version}"
 }
 check_version_of_docker_image
 
@@ -164,13 +200,18 @@ printf "%s\n" \
     "container_os=$container_os" \
     "container_release=$container_release" \
     "DISTRO_NAME=${DISTRO_NAME}" \
-    "nogui=$nogui" \
+    "X11=$X11" \
     "LOGIN_SHELL=${LOGIN_SHELL}" \
     "Rootfs_version=${Rootfs_version}" \
-    >>$GITHUB_ENV
+    "LAST_VERSION=${LAST_VERSION}" \
+    "LAST_DATE=${LAST_DATE}" \
+    "LAST_FILE=${LAST_FILE}" \
+    "LAST_TAG=${LAST_TAG}" \
+    "LOCALE=${LOCALE}" \
+    >>"$GITHUB_ENV"
 
 if [[ -n $extra_tag ]]; then
     printf "%s\n" \
         "extra_tag=$extra_tag" \
-        >>$GITHUB_ENV
+        >>"$GITHUB_ENV"
 fi

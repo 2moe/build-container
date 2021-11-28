@@ -1,43 +1,79 @@
-FROM --platform=${TARGETPLATFORM} rust:alpine
-ARG TMOE_DIR="/usr/local/etc/tmoe-linux"
-ARG TZ_FILE="/usr/share/zoneinfo/UTC"
+# syntax=docker/dockerfile:1
+#---------------------------
+FROM --platform=${TARGETPLATFORM} alpine:edge
 
 WORKDIR /root
-ENV HOME=/root \
-    TMOE_PROOT=false \
+# PATH=/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LANG="C.UTF-8" \
     TMOE_CHROOT=true \
-    TMOE_DOCKER=true
-RUN apk update; \
-    apk upgrade; \
-    apk add openssl-dev musl-dev; \
-    apk add sudo tar grep curl wget bash tzdata newt shadow; \
-    printf "%s\n" "root:root" | chpasswd; \
-    ln -svf "${TZ_FILE}" /etc/localtime; \
-    rustup self update; \
-    rustup update; \
-    mkdir -pv ${TMOE_DIR}; \
-    cd ${TMOE_DIR}; \
-    printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=rust_nogui-alpine" \
-    > container.txt ; \
-    mkdir -p environment; \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux" \
+    RUSTUP_HOME="/usr/local/rustup" \
+    CARGO_HOME="/usr/local/cargo" \
+    PATH="/usr/local/cargo/bin:$PATH"
+
+# install dependencies
+COPY --chmod=755 install_alpine_deps /tmp
+RUN . /tmp/install_alpine_deps
+
+# install musl-dev
+RUN apk add openssl-dev \
+    musl-dev \
+    gcc \
+    ca-certificates
+
+# minimal, default, complete
+ARG RUSTUP_PROFILE=minimal
+ARG MUSL_TARGET
+RUN export RUSTUP_URL="https://static.rust-lang.org/rustup/dist/${MUSL_TARGET}/rustup-init"; \
+    curl -LO ${RUSTUP_URL} || exit 1; \
+    chmod +x rustup-init \
+    && ./rustup-init \
+    -y \
+    --profile ${RUSTUP_PROFILE} \
+    --no-modify-path \
+    --default-toolchain \
+    nightly \
+    && rm rustup-init \
+    && chmod -Rv a+w ${RUSTUP_HOME} ${CARGO_HOME}
+# RUN rustup update
+
+ARG OS
+ARG TAG
+ARG ARCH
+COPY --chmod=755 set_container_txt /tmp
+RUN . /tmp/set_container_txt
+
+# export env to file
+RUN cd ${TMOE_DIR}; \
     printf "%s\n" \
     'export PATH="/usr/local/cargo/bin${PATH:+:${PATH}}"' \
-    "export RUSTUP_HOME=/usr/local/rustup" \
-    "export CARGO_HOME=/usr/local/cargo" \
+    'export RUSTUP_HOME="/usr/local/rustup"' \
+    'export CARGO_HOME="/usr/local/cargo"' \
     > environment/container.env; \
-    chmod -R a+rx environment/; \
-    cd /root; \
-    printf "%s\n" \
-    "RUSTUP_VERSION='$(rustup --version)'" \
-    "CARGO_VERSION='$(cargo --version)'" \
-    "RUSTC_VERSION='$(rustc --version)'" \
-    > version.txt; \
-    cat version.txt; \
-    rm -rf /var/cache/apk/* ~/.cache/* 2>/dev/null 
+    chmod -R a+rx environment/
 
-# ENV PATH=/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-#     RUSTUP_HOME=/usr/local/rustup \
-#     CARGO_HOME=/usr/local/cargo
+# export version info to file
+RUN cd /root; \
+    printf "%s\n" \
+    "" \
+    '[version]' \
+    "rustup = '$(rustup --version)'" \
+    "cargo = '$(cargo --version)'" \
+    "rustc = '$(rustc --version)'" \
+    "cc = '$(cc --version | head -n 1)'" \
+    "cargo_verbose = '''" \
+    "$(cargo -Vv)" \
+    "'''" \
+    "rustc_verbose = '''" \
+    "$(rustc -Vv)" \
+    "'''" \
+    > version.toml; \
+    cat version.toml
+
+# clean: apk -v cache clean
+RUN rm -rf /var/cache/apk/* \
+    ~/.cache/* \
+    2>/dev/null 
+
 CMD [ "/bin/bash" ]

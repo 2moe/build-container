@@ -1,38 +1,35 @@
 # syntax=docker/dockerfile:1
-FROM cake233/alpine-zsh-${TARGETARCH}${TARGETVARIANT}
-# :zstd as rootfs
+#---------------------------
+# FROM cake233/alpine-zsh-${TARGETARCH}${TARGETVARIANT}
+FROM scratch
+ADD rootfs.tar /
 
-RUN apk add zstd tar
+ENV LANG="C.UTF-8" \
+    TMOE_CHROOT=true \
+    TMOE_DOCKER=true \
+    TMOE_DIR="/usr/local/etc/tmoe-linux"
 
-RUN mkdir -p /rootfs \
-    && tar -xvf /root/rootfs.tar.zst -C /rootfs
-
-
-# FROM scratch
-# COPY --from=rootfs /rootfs /
+RUN apk add zstd
 
 ARG TAG
 ARG OS
+ARG ARCH
+COPY --chmod=755 gen_tool /tmp
+RUN . /tmp/gen_tool
 
-RUN cd ${TMOE_DIR} \
-    && printf "%s\n" \
-    "CONTAINER_TYPE=podman" \
-    "CONTAINER_NAME=alpine_gui-${ARG}" \
-    > container.txt \
-    && mv /root/docker_tool /tmp  
-
-WORKDIR /tmp
-RUN sed -i 's@*) #main@2333)@g' docker_tool; \
-    printf "%s\n" \
-    "source /tmp/docker_tool -install-deps"  \
-    "cd /usr/local/etc/tmoe-linux/git/share/old-version/tools/gui/" \
-    "source gui --auto-install-gui-${TAG}" \
-    > install-gui.sh
+# auto install gui
 ARG AUTO_INSTALL_GUI=true
-RUN bash install-gui.sh
+RUN bash /tmp/install-gui.sh
 
+# clean
 RUN rm -rf \
     /var/cache/apk/* \
     ~/.cache/* \
     /tmp/* \
     ~/.vnc/*passwd
+
+# expose tcp ports
+EXPOSE 5902 36080
+
+# command: zsh
+CMD ["/bin/zsh"]

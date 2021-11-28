@@ -1,0 +1,21 @@
+set -ex
+#-------------------
+# upgrade
+apt update
+apt dist-upgrade -y
+dpkg --configure -a
+
+apt install \
+    -y \
+    sudo \
+    locales \
+    curl \
+    whiptail \
+    eatmydata \
+    procps \
+    apt-utils
+
+apt install \
+    -y \
+    --no-install-recommends \
+    neofetch

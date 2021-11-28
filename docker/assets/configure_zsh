@@ -1,0 +1,23 @@
+set -ex
+#------------
+# configure zsh
+URL="https://github.com/2cd/zsh/raw/master/zsh.sh"
+cd /tmp || cd ~
+curl -LO "$URL" || exit 1
+bash zsh.sh --tmoe_container_auto_configure
+
+URL="https://github.com/2moe/tmoe-linux"
+# set configuration
+cd "${TMOE_DIR}"
+git clone \
+    -b master \
+    --depth=1 \
+    "$URL" git
+
+cd /root
+printf "%s\n" \
+    "" \
+    '[version]' \
+    "zsh = '$(zsh --version)'" \
+    >version.toml
+cat version.toml
