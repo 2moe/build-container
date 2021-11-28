@@ -6,7 +6,7 @@ on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/arch.yml233"
+      - ".github/workflows/arch.yml"
 
 jobs:
   job1:
