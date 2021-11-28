@@ -14,7 +14,7 @@ RUN . /tmp/arch_key
 
 # set locale
 COPY --chmod=755 set_locale /tmp
-RUN . set_locale
+RUN . /tmp/set_locale
 ENV LANG en_US.UTF-8
 
 WORKDIR /root
