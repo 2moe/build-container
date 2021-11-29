@@ -57,10 +57,10 @@ jobs:
             arch: armv7
             platform: "linux/arm/v7"
 
-          - os: ubuntu-latest
-            tag: latest
-            arch: armv6
-            platform: "linux/arm/v6"
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: armv5
+          #   platform: "linux/arm/v5"
 
           # - os: ubuntu-latest
           #   tag: latest
