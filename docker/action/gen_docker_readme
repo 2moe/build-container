@@ -119,7 +119,7 @@ docker run \\
     --rm \\
     -v "\$PWD"/go-project:/app \\
     -w /app \\
-    ${Container_name} \\
+    ${repo} \\
     go build -v
 \`\`\`
 EOF
@@ -146,7 +146,7 @@ docker run \\
     --rm \\
     -v "\$PWD"/rs-project:/app \\
     -w /app \\
-    ${Container_name} \\
+    ${repo} \\
     cargo b --release
 \`\`\`
 EOF
