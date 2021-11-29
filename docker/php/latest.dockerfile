@@ -39,7 +39,9 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
-    "php = '$(php --version)'" \
+    "php = '''" \
+    "$(php --version)" \
+    "'''" \
     "" \
     '[other]' \
     "phpize_deps = '${PHPIZE_DEPS}'" \
