@@ -233,14 +233,16 @@ jobs:
           fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
       - name: create local changes
         run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git reset --hard origin/master
+          git pull --rebase --stat origin master --allow-unrelated-histories
           mkdir -p doc/${name}
           cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
 
       - name: commit files
         run: |
           git add .
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git commit -m "docs(docker): ${Container_name}.md" -a
       - name: push changes
         uses: ad-m/github-push-action@master
@@ -498,14 +500,16 @@ jobs:
           fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
       - name: create local changes
         run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git reset --hard origin/master
+          git pull --rebase --stat origin master --allow-unrelated-histories
           mkdir -p doc/${name}
           cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
 
       - name: commit files
         run: |
           git add .
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           git commit -m "docs(docker): ${Container_name}.md" -a
       - name: push changes
         uses: ad-m/github-push-action@master
