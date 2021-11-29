@@ -24,37 +24,32 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - os: ubuntu-latest
-          #   name: nginx
-          #   tag: alpine
-          #   arch: arm64
-          #   platform: "linux/arm64"
+          - os: ubuntu-latest
+            name: go
+            tag: latest
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: go
+            tag: latest
+            arch: arm64
+            platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: rust
-            tag: latest
+            name: go
+            tag: alpine
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: go
+            tag: alpine
+            arch: arm64
+            platform: "linux/arm64"
+          - os: ubuntu-latest
+            name: go
+            tag: alpine
             arch: armv7
-            platform: "linux/armv7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv6
-          #   platform: "linux/arm/v6"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: 386
-          #   platform: "linux/386"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: riscv64
-          #   platform: "linux/riscv64"
+            platform: "linux/arm/v7"
 
           # - os: ubuntu-latest
           #   tag: latest
