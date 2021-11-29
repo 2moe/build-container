@@ -33,8 +33,8 @@ jobs:
           - os: ubuntu-latest
             name: rust
             tag: latest
-            arch: armv5
-            platform: "linux/arm/v5"
+            arch: armv7
+            platform: "linux/armv7"
 
           # - os: ubuntu-latest
           #   tag: latest
