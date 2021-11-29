@@ -60,7 +60,7 @@ current_version = "${Rootfs_version}"
 current_date = "$(date -u +%Y%m%d)"
 # edition 2021
 # DISTRO_NAME=${DISTRO_NAME}
-# ROOTFS_FILE=${Container_name}_${end_time_normal}.tar.zst
+# ROOTFS_FILE=${Container_name}_${end_time_normal}-rootfs.tar.zst
 # BUILD_DATE=$(date -u +%Y%m%d)
 # BUILD_TAG=${time_today}
 # STATUS=completed
