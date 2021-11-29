@@ -26,27 +26,6 @@ jobs:
         include:
           - os: ubuntu-latest
             name: php
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: php
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            name: php
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: php
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: php
             tag: alpine
             arch: armv7
             platform: "linux/arm/v7"
