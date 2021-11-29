@@ -27,7 +27,7 @@ x11_or_wayland = $X11
 [file]
 name = "${Container_name}_${end_time_normal}.tar.zst"
 
-version = "0.0.0-alpha.1"
+version = "0.0.0-alpha.2"
 
 # This value can be used to verify the integrity of the file
 sha256 = "${file_sha256}"
@@ -58,6 +58,7 @@ last_file = "${LAST_FILE}"
 
 current_version = "${Rootfs_version}"
 current_date = "$(date -u +%Y%m%d)"
+old_file = "${OLD_FILE}"
 # edition 2021
 # DISTRO_NAME=${DISTRO_NAME}
 # ROOTFS_FILE=${Container_name}_${end_time_normal}-rootfs.tar.zst
@@ -118,19 +119,21 @@ repo = "${repo}"
 name = "cn"
 current = false
 last = ${NODE_1}
+in_sync = false
 split = false
 
 [server.node2]
 name = "us"
 current = false
 last = ${NODE_2}
+in_sync = false
 split = false
-part = 12
 
 [server.node3]
 name = "global"
 current = false
 last = ${NODE_3}
+in_sync = false
 split = false
 
 [server.node4]
