@@ -62,7 +62,7 @@ current_date = "$(date -u +%Y%m%d)"
 # DISTRO_NAME=${DISTRO_NAME}
 # ROOTFS_FILE=${Container_name}_${end_time_normal}.tar.zst
 # BUILD_DATE=$(date -u +%Y%m%d)
-# BUILD_TAG=$(date -u +%Y-%m-%d)
+# BUILD_TAG=${time_today}
 # STATUS=completed
 # VERSION=${Rootfs_version}
 # END_TIME=$(date -u +%H:%M)
@@ -70,7 +70,7 @@ current_date = "$(date -u +%Y%m%d)"
 [time]
 format = "rfc-3339"
 zone = "UTC"
-date = $(date -u +%Y-%m-%d)
+date = ${time_today}
 begin = ${time_begin}
 start-sync_0 = ${time_start_sync_0}
 EOF
