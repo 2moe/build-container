@@ -1,5 +1,5 @@
 name: build arch images
-# job1: base
+# begin_time = 2021-12-01 00:01:30+00:00
 # job2: zsh
 # job3: gui
 on:
