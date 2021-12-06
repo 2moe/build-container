@@ -18,17 +18,17 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 13
+      zstd_level: 11
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            name: php
+            name: go
             tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
+            arch: arm64
+            platform: "linux/arm64"
 
           # - os: ubuntu-latest
           #   tag: latest
