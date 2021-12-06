@@ -55,13 +55,16 @@ last_version = "${LAST_VERSION}"
 last_date = "${LAST_DATE}"
 last_tag = "${LAST_TAG}"
 last_file = "${LAST_FILE}"
+last_sha256 = "${LAST_SHA256}"
 
 current_version = "${Rootfs_version}"
 current_date = "$(date -u +%Y%m%d)"
 old_file = "${OLD_FILE}"
+old_sha256 = "${OLD_SHA256}"
 # edition 2021
 # DISTRO_NAME=${DISTRO_NAME}
 # ROOTFS_FILE=${Container_name}_${end_time_normal}-rootfs.tar.zst
+# SHA256SUM=${file_sha256}
 # BUILD_DATE=$(date -u +%Y%m%d)
 # BUILD_TAG=${time_today}
 # STATUS=completed
@@ -100,7 +103,7 @@ write_extra_toml_data() {
     #     "repo = \"${repo}\"" \
     #     "" \
     #     '[server.availability]' \
-    #     "node_1 = false" \
+    #     "node_1 = false" \o
     #     "node_2 = false" \
     #     "node_3 = false" \
     #     "" \

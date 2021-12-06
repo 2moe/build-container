@@ -167,6 +167,9 @@ check_version_of_docker_image() {
     VERSION_01_TAG=$(printf "%s\n" "$VERSION_01" | grep BUILD_TAG | awk -F '=' '{print $2}')
     VERSION_02_TAG=$(printf "%s\n" "$VERSION_02" | grep BUILD_TAG | awk -F '=' '{print $2}')
 
+    VERSION_01_SHA256=$(printf "%s\n" "$VERSION_01" | grep SHA256SUM | awk -F '=' '{print $2}')
+    VERSION_02_SHA256=$(printf "%s\n" "$VERSION_02" | grep SHA256SUM | awk -F '=' '{print $2}')
+
     if [ -z "${Version_01_date}" ]; then
         Version_01_date=20211126
     fi
@@ -183,6 +186,8 @@ check_version_of_docker_image() {
         # old_file = current.old.file
         OLD_FILE="$VERSION_01_FILE"
         LAST_TAG="$VERSION_02_TAG"
+        OLD_SHA256="$VERSION_01_SHA256"
+        LAST_SHA256="$VERSION_02_SHA256"
     else
         Rootfs_version=latest02
         LAST_VERSION=latest01
@@ -190,6 +195,8 @@ check_version_of_docker_image() {
         LAST_FILE="$VERSION_01_FILE"
         OLD_FILE="$VERSION_02_FILE"
         LAST_TAG="$VERSION_01_TAG"
+        OLD_SHA256="$VERSION_01_SHA256"
+        LAST_SHA256="$VERSION_02_SHA256"
     fi
 
     printf "%s\n" \
@@ -223,6 +230,8 @@ printf "%s\n" \
     "LAST_FILE=${LAST_FILE}" \
     "OLD_FILE=${OLD_FILE}" \
     "LAST_TAG=${LAST_TAG}" \
+    "OLD_SHA256=${OLD_SHA256}" \
+    "LAST_SHA256=${LAST_SHA256}" \
     "LOCALE=${LOCALE}" \
     "NODE_1=${NODE_1}" \
     "NODE_2=${NODE_2}" \
