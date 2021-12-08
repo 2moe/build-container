@@ -10,6 +10,7 @@ on:
 
 jobs:
   job1:
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     env:
       name: arch
@@ -252,6 +253,7 @@ jobs:
           branch: "master"
   #------------------------------------------------------
   job2:
+    continue-on-error: true
     needs: job1
     runs-on: ${{ matrix.os }}
     env:

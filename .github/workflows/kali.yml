@@ -9,6 +9,7 @@ on:
 
 jobs:
   job1:
+    continue-on-error: true
     # needs: [job0, job1]
     runs-on: ${{ matrix.os }}
     env:

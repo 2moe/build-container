@@ -10,6 +10,7 @@ on:
 jobs:
   job1:
     # needs: [job0, job1]
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     env:
       name: alpine
