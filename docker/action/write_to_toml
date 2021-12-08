@@ -49,13 +49,13 @@ zstd_bytes = ${file_size_zstd_bytes}
 [compatibility]
 compatible_mode = true
 
-last_version = "${LAST_VERSION}"
+previous_version = "${LAST_VERSION}"
 
 # The value is &str, not int
-last_date = "${LAST_DATE}"
-last_tag = "${LAST_TAG}"
-last_file = "${LAST_FILE}"
-last_sha256 = "${LAST_SHA256}"
+previous_date = "${LAST_DATE}"
+previous_tag = "${LAST_TAG}"
+previous_file = "${LAST_FILE}"
+previous_sha256 = "${LAST_SHA256}"
 
 current_version = "${Rootfs_version}"
 current_date = "$(date -u +%Y%m%d)"
@@ -121,21 +121,21 @@ repo = "${repo}"
 [server.node1]
 name = "cn"
 current = false
-last = ${NODE_1}
+previous = ${NODE_1}
 in_sync = false
 split = false
 
 [server.node2]
 name = "tmoe"
 current = false
-last = ${NODE_2}
+previous = ${NODE_2}
 in_sync = false
 split = false
 
 [server.node3]
 name = "azure"
 current = false
-last = ${NODE_3}
+previous = ${NODE_3}
 in_sync = false
 split = false
 
