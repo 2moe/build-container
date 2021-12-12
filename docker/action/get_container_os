@@ -183,20 +183,20 @@ check_version_of_docker_image() {
         LAST_VERSION=latest02
         LAST_DATE="$Version_02_date"
         LAST_FILE="$VERSION_02_FILE"
+        LAST_TAG="$VERSION_02_TAG"
+        LAST_SHA256="$VERSION_02_SHA256"
         # old_file = current.old.file
         OLD_FILE="$VERSION_01_FILE"
-        LAST_TAG="$VERSION_02_TAG"
         OLD_SHA256="$VERSION_01_SHA256"
-        LAST_SHA256="$VERSION_02_SHA256"
     else
         Rootfs_version=latest02
         LAST_VERSION=latest01
         LAST_DATE="$Version_01_date"
         LAST_FILE="$VERSION_01_FILE"
-        OLD_FILE="$VERSION_02_FILE"
         LAST_TAG="$VERSION_01_TAG"
-        OLD_SHA256="$VERSION_01_SHA256"
-        LAST_SHA256="$VERSION_02_SHA256"
+        LAST_SHA256="$VERSION_01_SHA256"
+        OLD_FILE="$VERSION_02_FILE"
+        OLD_SHA256="$VERSION_02_SHA256"
     fi
 
     printf "%s\n" \
