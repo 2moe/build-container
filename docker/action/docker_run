@@ -26,6 +26,9 @@ run_normal_container() {
           done"
 }
 run_zsh_container() {
+    run_normal_container
+    docker stop "${Container_name}" 2>/dev/null
+    docker rm -f "${Container_name}"
     "${Container}" \
         run \
         -t \
