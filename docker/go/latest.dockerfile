@@ -40,6 +40,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "go = '$(go version)'" \
     "gofmt = '$(go version $(command -v gofmt))'" \
     "" \

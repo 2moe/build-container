@@ -3,7 +3,7 @@ locale_def_utf8() {
     # lang=en_US
     localedef \
         -c \
-        -i en_US \
+        -i "${lang}" \
         -f UTF-8 \
         -A /usr/share/locale/locale.alias \
         "${lang}".UTF-8

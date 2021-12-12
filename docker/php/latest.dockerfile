@@ -39,6 +39,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "php = '''" \
     "$(php --version)" \
     "'''" \

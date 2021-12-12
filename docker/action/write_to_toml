@@ -121,7 +121,7 @@ repo = "${repo}"
 [server.node1]
 name = "cn"
 current = false
-previous = ${NODE_1}
+previous = false
 in_sync = false
 split = false
 

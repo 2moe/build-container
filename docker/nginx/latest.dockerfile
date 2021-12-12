@@ -35,6 +35,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "nginx = '${NGINX_VERSION}'"  \
     "njs = '${NJS_VERSION}'"  \
     "pkg_release = '${PKG_RELEASE}'" \

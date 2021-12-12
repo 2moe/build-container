@@ -18,6 +18,7 @@ cd /root
 printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "zsh = '$(zsh --version)'" \
     >version.toml
 cat version.toml

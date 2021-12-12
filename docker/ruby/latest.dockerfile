@@ -44,6 +44,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "ruby = '$(ruby --version)'" \
     "gem = '$(gem --version)'" \
     "bundle = '$(bundle --version)'" \

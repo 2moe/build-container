@@ -108,4 +108,5 @@ docker/tmp
 old
 old/
 .github/workflows/hello.yml
-.github/workflows
+.github/workflows/*.yaml
+.github/workflows/test.yml

@@ -63,6 +63,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
+    "ldd = '$(ldd --version | head -n 1)'" \
     "code = '$(code-server --version)'" \
     "" \
     '[port]' \
