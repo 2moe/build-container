@@ -204,10 +204,14 @@ jobs:
         run: |
           TODAY="$(date -u +%Y%m%d)"
           if ((TODAY<=20220302));then
-            sed -E \
-                -e "s@( openjdk):jdk-(slim)@\1:19-\2@" \
-                -i ${{ env.file }}
+            VERSION=19
+          elif ((TODAY<=20220922));then
+            VERSION=20
           fi
+
+          sed -E \
+                -e "s@( openjdk):jdk-(slim)@\1:${VERSION}-\2@" \
+                -i ${{ env.file }}
 
       - name: build container
         env:

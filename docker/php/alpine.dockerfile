@@ -33,7 +33,7 @@ RUN cd /root; \
     printf "%s\n" \
     "" \
     '[version]' \
-    "ldd = '$(ldd --version | head -n 1)'" \
+    "ldd = '$(ldd --version 2>&1 | head -n 2 | grep -vi copyright | sed ":a;N;s/\n/ /g;ta")'" \
     "php = '''" \
     "$(php --version)" \
     "'''" \
