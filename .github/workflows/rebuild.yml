@@ -160,7 +160,7 @@ jobs:
             sed -E \
                 -e "s@( golang):(alpine)@\1:rc-\2@" \
                 -e "s@( golang):latest@\1:rc-bullseye@" \
-                -i ${{ env.file }}
+                -i docker/action/${{ env.file }}
           fi
           bash docker/action/docker_build
 
