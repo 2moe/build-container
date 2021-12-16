@@ -187,7 +187,7 @@ jobs:
       - name: go.dockerfile -> beta
         if: matrix.name == 'go'
         env:
-          file: "docker/action/${{ env.name }}/${{ matrix.tag }}.dockerfile"
+          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
           if ((TODAY<=20220202));then
@@ -200,7 +200,7 @@ jobs:
       - name: jdk.dockerfile -> ea
         if: matrix.name == 'jdk'
         env:
-          file: "docker/action/${{ env.name }}/${{ matrix.tag }}.dockerfile"
+          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
           if ((TODAY<=20220302));then
