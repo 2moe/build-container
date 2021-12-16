@@ -32,6 +32,11 @@ jobs:
             tag: latest
             arch: arm64
             platform: "linux/arm64"
+          - os: ubuntu-latest
+            name: code
+            tag: latest
+            arch: armv7
+            platform: "linux/arm/v7"
 
           - os: ubuntu-latest
             name: go
@@ -179,11 +184,27 @@ jobs:
             "zsh_repo=${user}/${name}-zsh-${m_arch}" \
             >> "$GITHUB_ENV"
 
-      - name: build container
+      - name: build non-go container
+        if: matrix.name != 'go'
         env:
           file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
           tag: ${{ matrix.tag }}
         run: bash docker/action/docker_build
+
+      - name: build go container
+        if: matrix.name == 'go'
+        env:
+          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
+          tag: ${{ matrix.tag }}
+        run: |
+          TODAY="$(date -u +%Y%m%d)"
+          if ((TODAY<=20220202));then
+            sed -E \
+                -e "s@( golang):(alpine)@\1:rc-\2@" \
+                -e "s@( golang):latest@\1:rc-bullseye@" \
+                -i ${{ env.file }}
+          fi
+          bash docker/action/docker_build
 
       - name: build base
         if: matrix.tag == 'base'
