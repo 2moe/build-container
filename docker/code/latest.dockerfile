@@ -35,6 +35,8 @@ RUN cd /tmp; \
     apt install -y ./code.deb; \
     rm -fv code.deb
 
+RUN apt install -y libatomic1 2>/dev/null
+
 ARG OS
 ARG TAG
 ARG ARCH

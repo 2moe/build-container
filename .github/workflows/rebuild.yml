@@ -24,43 +24,43 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            name: go
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: go
-            tag: latest
-            arch: arm64
-            platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   name: go
+          #   tag: latest
+          #   arch: amd64
+          #   platform: "linux/amd64"
+          # - os: ubuntu-latest
+          #   name: go
+          #   tag: latest
+          #   arch: arm64
+          #   platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
+          # - os: ubuntu-latest
+          #   name: go
+          #   tag: alpine
+          #   arch: amd64
+          #   platform: "linux/amd64"
+          # - os: ubuntu-latest
+          #   name: go
+          #   tag: alpine
+          #   arch: arm64
+          #   platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   name: go
+          #   tag: alpine
+          #   arch: armv7
+          #   platform: "linux/arm/v7"
 
           - os: ubuntu-latest
             name: code
             tag: latest
             arch: armv7
             platform: "linux/arm/v7"
-          - os: ubuntu-latest
-            name: code
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
+          # - os: ubuntu-latest
+          #   name: code
+          #   tag: latest
+          #   arch: amd64
+          #   platform: "linux/amd64"
 
           # - os: ubuntu-latest
           #   tag: latest
