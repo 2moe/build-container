@@ -184,27 +184,36 @@ jobs:
             "zsh_repo=${user}/${name}-zsh-${m_arch}" \
             >> "$GITHUB_ENV"
 
-      - name: build non-go container
-        if: matrix.name != 'go'
-        env:
-          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
-          tag: ${{ matrix.tag }}
-        run: bash docker/action/docker_build
-
-      - name: build go container
+      - name: go.dockerfile -> beta
         if: matrix.name == 'go'
         env:
-          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
-          tag: ${{ matrix.tag }}
+          file: "docker/action/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
           if ((TODAY<=20220202));then
             sed -E \
                 -e "s@( golang):(alpine)@\1:rc-\2@" \
                 -e "s@( golang):latest@\1:rc-bullseye@" \
-                -i docker/action/${{ env.file }}
+                -i ${{ env.file }}
           fi
-          bash docker/action/docker_build
+
+      - name: jdk.dockerfile -> ea
+        if: matrix.name == 'jdk'
+        env:
+          file: "docker/action/${{ env.name }}/${{ matrix.tag }}.dockerfile"
+        run: |
+          TODAY="$(date -u +%Y%m%d)"
+          if ((TODAY<=20220302));then
+            sed -E \
+                -e "s@( openjdk):jdk-(slim)@\1:19-\2@" \
+                -i ${{ env.file }}
+          fi
+
+      - name: build container
+        env:
+          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
+          tag: ${{ matrix.tag }}
+        run: bash docker/action/docker_build
 
       - name: build base
         if: matrix.tag == 'base'
