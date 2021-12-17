@@ -28,7 +28,7 @@ docker run \
 
 ### cargo build
 
-```
+```sh
 docker run \
     -t \
     --rm \
