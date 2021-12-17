@@ -1,5 +1,5 @@
 name: build rust images
-# begin_time = 2021-12-13 00:02:03+00:00
+# begin_time = 2021-12-17 00:02:02+00:00
 
 on:
   push:
