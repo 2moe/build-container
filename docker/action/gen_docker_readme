@@ -94,7 +94,7 @@ docker run \\
 ## How to exec shell?
 
 \`\`\`sh
-    docker exec -it ${Container_name} ${LOGIN_SHELL}
+docker exec -it ${Container_name} ${LOGIN_SHELL}
 \`\`\`
 EOF
 }
