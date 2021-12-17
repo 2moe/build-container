@@ -7,7 +7,7 @@ cat_gui_readme() {
 
 ## How to run it?
 
-\`\`\`shell
+\`\`\`sh
 # install docker
 if [ -z "\$(command -v docker)" ]; then
     apt update
@@ -37,7 +37,7 @@ docker run \\
 
 ## How to start vnc?
 
-\`\`\`shell
+\`\`\`sh
     docker exex -it ${Container_name} zsh
 \`\`\`
 
@@ -47,19 +47,19 @@ After entering the container, you can create a new user, and then switch to it.
 
 Finally, run the following commands.
 
-\`\`\`shell
+\`\`\`sh
     startvnc
 \`\`\`
 
 or
 
-\`\`\`shell
+\`\`\`sh
     startx11vnc
 \`\`\`
 
 or
 
-\`\`\`shell
+\`\`\`sh
     novnc
 \`\`\`
 
@@ -68,7 +68,7 @@ Note:
 If you want to use novnc, then open your browser, and type the address:
 
 \`\`\`
-localhost:36081
+http://localhost:36081
 \`\`\`
 
 If you want to use tiger/x11vnc, then open vnc viewer, then type the address:
@@ -84,7 +84,7 @@ cat_nogui_readme() {
 
 ## How to run it?
 
-\`\`\`shell
+\`\`\`sh
 docker run \\
     -it \\
     --name ${Container_name} \\
@@ -93,7 +93,7 @@ docker run \\
 
 ## How to exec shell?
 
-\`\`\`shell
+\`\`\`sh
     docker exec -it ${Container_name} ${LOGIN_SHELL}
 \`\`\`
 EOF
@@ -114,13 +114,17 @@ cat_go_readme() {
 
 ## example
 
-\`\`\`shell
+\`\`\`sh
 docker run \\
+    -t \\
     --rm \\
+    -u "\$(id -u)":"\$(id -g)" \\
     -v "\$PWD"/go-project:/app \\
+    -e GOOS=linux \\
+    -e CGO_ENABLED=0 \\
     -w /app \\
     ${repo} \\
-    go build -v
+    go build -trimpath --ldflags "-s -w -buildid=" -v
 \`\`\`
 EOF
 
@@ -137,19 +141,11 @@ EOF
 }
 
 cat_rust_readme() {
-    cat >rs-example.md <<-EOF
-
-## example
-
-\`\`\`shell
-docker run \\
-    --rm \\
-    -v "\$PWD"/rs-project:/app \\
-    -w /app \\
-    ${repo} \\
-    cargo b --release
-\`\`\`
-EOF
+    cp -v "$dir"/rust.md ./rs-example.md
+    # cake233/rust-amd64
+    sed \
+        -e "s@cake233/rust-amd64@${repo}@g" \
+        -i rs-example.md
     cat rs-example.md >>docker-readme.md
 }
 
