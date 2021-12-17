@@ -42,7 +42,7 @@ docker run \
 ### check file
 
 ```sh
-FILE="hello/target/release/hello"
+FILE="tmp/hello/target/release/hello"
 
 file "$FILE"
 ldd "$FILE"
