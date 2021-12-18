@@ -5,8 +5,8 @@
 ### set env
 
 ```sh
-UID="$(id -u)" || UID=0
-GID="$(id -g)" || GID=0
+_UID="$(id -u)" || _UID=0
+_GID="$(id -g)" || _GID=0
 ```
 
 ### create a new project
@@ -19,7 +19,7 @@ mkdir -p tmp
 docker run \
     -t \
     --rm \
-    -u "$UID":"$GID" \
+    -u "$_UID":"$_GID" \
     -v "$PWD"/tmp:/app \
     -w /app \
     cake233/rust-amd64 \
@@ -32,7 +32,7 @@ docker run \
 docker run \
     -t \
     --rm \
-    -u "$UID":"$GID" \
+    -u "$_UID":"$_GID" \
     -v "$PWD"/tmp/hello:/app \
     -w /app \
     cake233/rust-amd64 \
