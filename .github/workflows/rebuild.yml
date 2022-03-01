@@ -54,7 +54,7 @@ jobs:
           - os: ubuntu-latest
             name: code
             tag: latest
-            arch: amd64
+            arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
