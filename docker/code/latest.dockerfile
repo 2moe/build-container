@@ -31,6 +31,7 @@ ARG ARCH
 # install code
 RUN cd /tmp; \
     THE_LATEST_LINK=$(curl -L https://api.github.com/repos/cdr/code-server/releases | grep "${ARCH}" | grep browser_download_url | grep \.deb | head -n 1 | awk -F ' ' '$0=$NF' | cut -d '"' -f 2); \
+    THE_LATEST_LINK=$(echo $THE_LATEST_LINK | sed -E -e "s@v(4.0).2/@v\1.1/@" -e "s@(_4.0).2_@\1.1_@"); \
     curl -Lo code.deb ${THE_LATEST_LINK} || exit 1; \
     apt install -y ./code.deb; \
     rm -fv code.deb
