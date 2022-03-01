@@ -148,7 +148,7 @@ jobs:
           file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220202));then
+          if ((TODAY<=20220330));then
             sed -E \
                 -e "s@( golang):(alpine)@\1:rc-\2@" \
                 -e "s@( golang):latest@\1:rc-bullseye@" \

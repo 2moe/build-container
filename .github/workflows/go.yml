@@ -190,7 +190,7 @@ jobs:
           file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220202));then
+          if ((TODAY<=20220330));then
             sed -E \
                 -e "s@( golang):(alpine)@\1:rc-\2@" \
                 -e "s@( golang):latest@\1:rc-bullseye@" \
@@ -203,9 +203,9 @@ jobs:
           file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220302));then
+          if ((TODAY<=20220922));then
             VERSION=19
-          elif ((TODAY<=20220922));then
+          elif ((TODAY<=20230922));then
             VERSION=20
           fi
 
