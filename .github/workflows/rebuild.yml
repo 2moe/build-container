@@ -52,7 +52,7 @@ jobs:
           #   platform: "linux/arm/v7"
 
           - os: ubuntu-latest
-            name: rust
+            name: nginx
             tag: alpine
             arch: amd64
             platform: "linux/amd64"
