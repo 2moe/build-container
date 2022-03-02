@@ -217,7 +217,7 @@ jobs:
         with:
           destination_container_repo: ${{ env.repo }}
           provider: dockerhub
-          short_description: "Quickly install ${{ env.Container_name }}"
+          # short_description: "Quickly install ${{ env.Container_name }}"
           readme_file: "docker-readme.md"
 
       - name: copy docker readme.md to home dir
@@ -476,7 +476,7 @@ jobs:
         with:
           destination_container_repo: ${{ env.repo }}
           provider: dockerhub
-          short_description: "Quickly install ${{ env.Container_name }}"
+          # short_description: "Quickly install ${{ env.Container_name }}"
           readme_file: "docker-readme.md"
 
       - name: copy docker readme.md to home dir
