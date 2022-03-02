@@ -152,13 +152,14 @@ No! Although the steps are similar to those above, they are much simpler.
 TMP=\$TMPDIR/tmp/code-docker
 mkdir -pv \$TMP
 cd \$TMP
+docker pull ${repo}
 docker run -t --rm -v \$TMP:/tmp/init ${repo} sh -c "cp -vf /root/* /tmp/init"
 \`\`\`
 
 #### set env
 
 \`\`\`sh
-editor 0.set
+editor 0.set || nano 0.set
 
 . 0.set
 \`\`\`
