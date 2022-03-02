@@ -151,8 +151,7 @@ No! Although the steps are similar to those above, they are much simpler.
 \`\`\`sh
 TMP=\$TMPDIR/tmp/code-docker
 mkdir -pv \$TMP
-docker run -t --rm ${repo} sh -c "cp -rfv /root/init \$TMP"
-cd init
+docker run -t --rm -v \$TMP:/tmp/init ${repo} sh -c "cp -vf /root/* /tmp/init"
 \`\`\`
 
 #### set env
