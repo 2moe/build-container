@@ -117,7 +117,7 @@ cd \$_TMP
 
 
 \`\`\`Dockerfile
-cat >>init.dockerfile<<-'EndOfDockerfile'
+cat >init.dockerfile<<-'EndOfDockerfile'
 $(cat "$dir"/code/init/init.dockerfile)
 EndOfDockerfile
 \`\`\`
@@ -146,12 +146,12 @@ Do we really have to use such tedious steps as above?
 
 No! Although the steps are similar to those above, they are much simpler.
 
-#### copy the necessary folders to the temporary directory
+#### copy the necessary folder to the temporary directory
 
 \`\`\`sh
 TMP=\$TMPDIR/tmp/code-docker
 mkdir -pv \$TMP
-docker run -t --rm ${repo} sh -c "cp -rfv /root/init \$_TMP"
+docker run -t --rm ${repo} sh -c "cp -rfv /root/init \$TMP"
 cd init
 \`\`\`
 

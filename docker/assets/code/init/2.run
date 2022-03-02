@@ -14,8 +14,9 @@ docker run \
     -p "$_Host_tcp_port":8080 \
     "$_Code_image_tag" &
 
-docker restart code
-docker exec -t code sh -c 'bat ~/.config/code-server/config.yaml'
+sleep 3
+
+docker exec -t code sh -c 'bat -pp ~/.config/code-server/config.yaml'
 # Get ip(v4) address
 # ip -4 a
 # Open your browser, and type the address

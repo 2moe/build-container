@@ -44,16 +44,16 @@ ARG CODE_DIR=".config/code-server"
 ARG CODE_CONF="$CODE_DIR/config.yaml"
 ARG _CODE_PASSWD
 
-RUN code-server --version &&
-    cat "$HOME/$CODE_CONF" &&
-    sed -E \
-        -e "s@(bind-addr:).*@\1 0.0.0.0:8080@" \
-        -e "s@(password:).*@\1 $_CODE_PASSWD@" \
-        -i "$HOME/$CODE_CONF" &&
-    mkdir -pv "$MY_HOME/$CODE_DIR" &&
-    cp -v "$HOME/$CODE_CONF" "$MY_HOME/$CODE_CONF" &&
-    chown -Rv "$_UID":"$_GID" "$MY_HOME/.config" &&
-    cat "$HOME/$CODE_CONF"
+RUN code-server --version \
+    && cat "$HOME/$CODE_CONF" \
+    && sed -E \
+    -e "s@(bind-addr:).*@\1 0.0.0.0:8080@" \
+    -e "s@(password:).*@\1 $_CODE_PASSWD@" \
+    -i "$HOME/$CODE_CONF" \
+    && mkdir -pv "$MY_HOME/$CODE_DIR" \
+    && cp -v "$HOME/$CODE_CONF" "$MY_HOME/$CODE_CONF" \
+    && chown -Rv "$_UID":"$_GID" "$MY_HOME/.config" \
+    && cat "$HOME/$CODE_CONF"
 
 USER "$_UID":"$_GID"
 
