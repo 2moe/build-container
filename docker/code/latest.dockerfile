@@ -3,6 +3,7 @@
 FROM --platform=${TARGETPLATFORM} debian:unstable-slim
 
 ADD code.js /root/readme.js
+ADD init /root
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
@@ -54,9 +55,10 @@ RUN cd "$TMOE_DIR"; \
 # bin/code
 RUN printf "%s\n" \
     '#!/usr/bin/env bash' \
-    "code-server &" \
+    'code-server $@ &' \
     "bat -ppnl yaml ~/.config/code-server/config.yaml || cat ~/.config/code-server/config.yaml" \
-    'printf "You can type; \033[32m%s\033[m or; \033[32m%s\033[m to start it, type; \033[32m%s\033[m to; \033[31m%s\033[m it.\n" "code" "code-server" "pkill node" "stop"' \
+    'printf "You can type \033[32m%s\033[m or \033[32m%s\033[m to start it, type \033[32m%s\033[m to \033[31m%s\033[m.\n" "code" "code-server" "pkill node" "stop"' \
+    'printf "You can also type code \$FILE_DIR to create a new window and open the specified directory.\n"' \
     > /usr/local/bin/code; \
     chmod a+rx /usr/local/bin/code
 

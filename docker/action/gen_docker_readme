@@ -53,7 +53,7 @@ Finally, run the following commands.
 
 or
 
-\`\`\`sh
+\`\`\`
     startx11vnc
 \`\`\`
 
@@ -97,6 +97,115 @@ docker run \\
 docker exec -it ${Container_name} ${LOGIN_SHELL}
 \`\`\`
 EOF
+}
+
+cat_code_readme() {
+    cat >docker-readme.md <<-EOF
+# ${Container_name}
+
+## How to build and run it?
+
+### Full
+
+#### create a dockerfile
+
+\`\`\`sh
+_TMP=\$TMPDIR/tmp/code-docker
+mkdir -pv \$_TMP
+cd \$_TMP
+\`\`\`
+
+
+\`\`\`Dockerfile
+cat >>init.dockerfile<<-'EndOfDockerfile'
+$(cat "$dir"/../code/init/init.dockerfile)
+EndOfDockerfile
+\`\`\`
+
+#### set env
+
+\`\`\`sh
+$(cat "$dir"/../code/init/0.set)
+\`\`\`
+
+#### build container
+
+\`\`\`sh
+$(cat "$dir"/../code/init/1.build)
+\`\`\`
+
+#### run
+
+\`\`\`sh
+$(cat "$dir"/../code/init/2.run)
+\`\`\`
+
+### Lite
+
+Do we really have to use such tedious steps as above?
+
+No! Although the steps are similar to those above, they are much simpler.
+
+#### copy the necessary folders to the temporary directory
+
+\`\`\`sh
+TMP=\$TMPDIR/tmp/code-docker
+mkdir -pv \$TMP
+docker run -t --rm ${repo} sh -c "cp -rfv /root/init \$_TMP"
+cd init
+\`\`\`
+
+#### set env
+
+\`\`\`sh
+editor 0.set
+
+. 0.set
+\`\`\`
+
+#### build
+
+\`\`\`sh
+. 1.build
+\`\`\`
+
+#### run
+
+\`\`\`
+. 2.run
+\`\`\`
+
+EOF
+    # cat "$dir"/../code/init/0.set >>docker-readme.md
+    # echo '```' >>docker-readme.md
+
+    # printf "%s\n" \
+    #     '#### build container' \
+    #     '' \
+    #     '```sh' \
+    #     >>docker-readme.md
+    # cat "$dir"/../code/init/1.build >>docker-readme.md
+    # echo '```' >>docker-readme.md
+
+    # printf "%s\n" \
+    #     '#### run' \
+    #     '' \
+    #     '```sh' \
+    #     >>docker-readme.md
+    # cat "$dir"/../code/init/2.run >>docker-readme.md
+    # echo '```' >>docker-readme.md
+
+    # printf "%s\n" \
+    #     '' \
+    #     '### Lite' \
+    #     '' \
+    #     'Do we really have to use such tedious steps as above?" \
+    #     "" \
+    #     "No! No need.' \
+    #     '```sh' \
+    #     "docker run -t --rm ${repo} sh -c 'cp /root/'" \
+    #     >>docker-readme.md
+
 }
 
 cat_build_info_title() {
@@ -150,7 +259,11 @@ cat_rust_readme() {
 
 case ${X11} in
 false)
-    cat_nogui_readme
+    case "$name" in
+    code) cat_code_readme ;;
+    *) cat_nogui_readme ;;
+    esac
+
     case "$name" in
     go) cat_go_readme ;;
     rust) cat_rust_readme ;;

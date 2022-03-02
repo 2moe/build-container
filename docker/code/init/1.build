@@ -1,0 +1,13 @@
+docker build \
+    --pull \
+    -f ./init.dockerfile \
+    --build-arg _LC="$_LC" \
+    --build-arg _USER="$_USER" \
+    --build-arg _GROUP="$_GROUP" \
+    --build-arg _UID="$_UID" \
+    --build-arg _GID="$_GID" \
+    --build-arg _ROOT_PASSWD="$_Root_passwd" \
+    --build-arg _MY_PASSWD="$_My_passwd" \
+    --build-arg _CODE_PASSWD="$_Code_passwd" \
+    -t "$_Code_image_tag" \
+    .

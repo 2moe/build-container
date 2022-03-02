@@ -1,0 +1,37 @@
+# en_US, zh_CN, es_ES, de_DE, etc.
+# _LC=en_US
+_LC=${LANG%.*}
+
+# If LANG or _LC is empty, then _LC=C
+_LC=${_LC:-C}
+
+_UID=$(id -u)
+# It is not recommended or necessary to use root(uid=0).
+case "$_UID" in
+0)
+    _UID=1002
+    _GID=1002
+    _USER=moe
+    ;;
+*)
+    _GID=$(id -g)
+    _USER=$(whoami)
+    ;;
+esac
+_GROUP="$_USER"
+
+_Root_passwd="123456780_this_password_is_too_simple"
+_My_passwd="0_123_456_789-Oh-No-My_password_can_not_be_that_simple."
+_Code_passwd="You_should_set_a_complex_password_and_if_you_need_to_expose_the_service_to_the_internet_then_you_can_use_the_nginx_reverse_proxy-code:8080"
+
+if [ -n "$(command -v pwgen)" ]; then
+    _Code_passwd=$(pwgen -snc1 200)
+elif [ -n "$(command -v apt-get)" ];then
+    sudo apt update
+    sudo apt install pwgen -y
+    _Code_passwd=$(pwgen -snc1 300)
+fi
+
+_Code_image_tag="code-image"
+
+export _LC _UID _GID _USER _GROUP _Root_passwd _My_passwd _Code_passwd _Code_image_tag
