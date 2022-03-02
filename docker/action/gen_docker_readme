@@ -153,7 +153,7 @@ TMP=\$TMPDIR/tmp/code-docker
 mkdir -pv \$TMP
 cd \$TMP
 docker pull ${repo}
-docker run -t --rm -v \$TMP:/tmp/init ${repo} sh -c "cp -vf /root/* /tmp/init"
+docker run -t --rm -v \$TMP:/tmp/init ${repo} sh -c "cp -fpv /root/* /tmp/init"
 \`\`\`
 
 #### set env
