@@ -3,7 +3,7 @@
 FROM --platform=${TARGETPLATFORM} debian:unstable-slim
 
 ADD code.js /root/readme.js
-ADD init /root
+ADD code/init /root
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
