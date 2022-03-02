@@ -118,26 +118,26 @@ cd \$_TMP
 
 \`\`\`Dockerfile
 cat >>init.dockerfile<<-'EndOfDockerfile'
-$(cat "$dir"/../code/init/init.dockerfile)
+$(cat "$dir"/code/init/init.dockerfile)
 EndOfDockerfile
 \`\`\`
 
 #### set env
 
 \`\`\`sh
-$(cat "$dir"/../code/init/0.set)
+$(cat "$dir"/code/init/0.set)
 \`\`\`
 
 #### build container
 
 \`\`\`sh
-$(cat "$dir"/../code/init/1.build)
+$(cat "$dir"/code/init/1.build)
 \`\`\`
 
 #### run
 
 \`\`\`sh
-$(cat "$dir"/../code/init/2.run)
+$(cat "$dir"/code/init/2.run)
 \`\`\`
 
 ### Lite
@@ -176,7 +176,7 @@ editor 0.set
 \`\`\`
 
 EOF
-    # cat "$dir"/../code/init/0.set >>docker-readme.md
+    # cat "$dir"/code/init/0.set >>docker-readme.md
     # echo '```' >>docker-readme.md
 
     # printf "%s\n" \
@@ -184,7 +184,7 @@ EOF
     #     '' \
     #     '```sh' \
     #     >>docker-readme.md
-    # cat "$dir"/../code/init/1.build >>docker-readme.md
+    # cat "$dir"/code/init/1.build >>docker-readme.md
     # echo '```' >>docker-readme.md
 
     # printf "%s\n" \
@@ -192,7 +192,7 @@ EOF
     #     '' \
     #     '```sh' \
     #     >>docker-readme.md
-    # cat "$dir"/../code/init/2.run >>docker-readme.md
+    # cat "$dir"/code/init/2.run >>docker-readme.md
     # echo '```' >>docker-readme.md
 
     # printf "%s\n" \
