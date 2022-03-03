@@ -24,6 +24,36 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - os: ubuntu-latest
+            tag: cutefish
+            arch: amd64
+            platform: "linux/amd64"
+            name: arch
+
+          - os: ubuntu-latest
+            tag: cutefish
+            arch: arm64
+            platform: "linux/arm64"
+            name: arch
+
+          - os: ubuntu-latest
+            tag: cutefish
+            arch: armv7
+            platform: "linux/arm/v7"    
+            name: arch
+
+          - os: ubuntu-latest
+            tag: dde
+            arch: amd64
+            platform: "linux/amd64"
+            name: ubuntu
+
+          - os: ubuntu-latest
+            tag: dde
+            arch: arm64
+            platform: "linux/arm64"
+            name: ubuntu
+
           # - os: ubuntu-latest
           #   name: go
           #   tag: latest
@@ -56,11 +86,11 @@ jobs:
           #   tag: latest
           #   arch: armv7
           #   platform: "linux/arm/v7"
-          - os: ubuntu-latest
-            name: code
-            tag: latest
-            arch: amd64
-            platform: "linux/amd64"
+          # - os: ubuntu-latest
+          #   name: code
+          #   tag: latest
+          #   arch: amd64
+          #   platform: "linux/amd64"
           # - os: ubuntu-latest
           #   name: code
           #   tag: latest
@@ -152,31 +182,6 @@ jobs:
             "repo=$repo" \
             "zsh_repo=${user}/${name}-zsh-${m_arch}" \
             >> "$GITHUB_ENV"
-
-      - name: go.dockerfile -> beta
-        if: matrix.name == 'go'
-        env:
-          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
-        run: |
-          TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220330));then
-            sed -E \
-                -e "s@( golang):(alpine)@\1:rc-\2@" \
-                -e "s@( golang):latest@\1:rc-bullseye@" \
-                -i ${{ env.file }}
-          fi
-
-      - name: jdk.dockerfile -> ea
-        if: matrix.name == 'jdk'
-        env:
-          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
-        run: |
-          TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220302));then
-            sed -E \
-                -e "s@( openjdk):jdk-(slim)@\1:19-\2@" \
-                -i ${{ env.file }}
-          fi
 
       - name: build container
         env:
@@ -290,6 +295,7 @@ jobs:
         run: |
           git add .
           git commit -m "docs(docker): ${Container_name}.md" -a
+
       - name: push changes
         uses: ad-m/github-push-action@master
         with:

@@ -129,7 +129,7 @@ alpine) LOCALE="C.UTF-8" ;;
 esac
 
 case "$tag" in
-xfce* | kde* | lxde | lxqt | mate)
+xfce* | kde* | lxde | lxqt | mate | cutefish | dde | ukui)
     X11=true
     LOGIN_SHELL=zsh
     ;;
