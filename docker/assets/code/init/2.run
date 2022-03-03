@@ -17,6 +17,7 @@ docker run \
 sleep 3
 
 docker exec -t code sh -c 'bat -pp ~/.config/code-server/config.yaml'
+
 # Get ip(v4) address
 # ip -4 a
 # Open your browser, and type the address
