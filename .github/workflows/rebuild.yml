@@ -25,22 +25,22 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            name: arch
             tag: cutefish
             arch: amd64
             platform: "linux/amd64"
-            name: arch
 
           - os: ubuntu-latest
+            name: arch
             tag: cutefish
             arch: arm64
             platform: "linux/arm64"
-            name: arch
 
           - os: ubuntu-latest
+            name: arch
             tag: cutefish
             arch: armv7
             platform: "linux/arm/v7"    
-            name: arch
 
           - os: ubuntu-latest
             tag: dde
@@ -54,79 +54,23 @@ jobs:
             platform: "linux/arm64"
             name: ubuntu
 
-          # - os: ubuntu-latest
-          #   name: go
-          #   tag: latest
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          # - os: ubuntu-latest
-          #   name: go
-          #   tag: latest
-          #   arch: arm64
-          #   platform: "linux/arm64"
+          - os: ubuntu-latest
+            tag: ukui
+            arch: amd64
+            platform: "linux/amd64"
+            name: ubuntu
 
-          # - os: ubuntu-latest
-          #   name: go
-          #   tag: alpine
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          # - os: ubuntu-latest
-          #   name: go
-          #   tag: alpine
-          #   arch: arm64
-          #   platform: "linux/arm64"
-          # - os: ubuntu-latest
-          #   name: go
-          #   tag: alpine
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
+          - os: ubuntu-latest
+            tag: ukui
+            arch: arm64
+            platform: "linux/arm64"
+            name: ubuntu
 
-          # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
-          # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
-          #   arch: arm64
-          #   platform: "linux/arm64"
-
-          # - os: ubuntu-latest
-          #   name: jdk
-          #   tag: latest
-          #   arch: arm64
-          #   platform: "linux/arm64"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: ppc64le
-          #   platform: "linux/ppc64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: s390x
-          #   platform: "linux/s390x"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips64le
-          #   platform: "linux/mips64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips32le
-          #   platform: "linux/mips32le"
-
-          # - os: self-hosted-debian
-          #   tag: hello
-          #   arch: amd64
-          #   platform: "linux/amd64"
+          - os: ubuntu-latest
+            tag: ukui
+            arch: armv7
+            platform: "linux/arm/v7"
+            name: ubuntu
 
     # repeat...
     steps:
