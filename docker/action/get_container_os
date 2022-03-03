@@ -65,6 +65,11 @@ ubuntu)
         extra_tag=', "18.04"'
         DISTRO_OS="ubuntu-bionic"
         ;;
+    dde)
+        container_release=dde
+        extra_tag=', "stable"'
+        DISTRO_OS="ubuntu"
+        ;;
     *)
         container_release=dev
         extra_tag=', "devel"'
