@@ -2,7 +2,7 @@
 #-----------------
 install_deps() {
     apt update
-    apt install -y \
+    yes | DEBIAN_FRONTEND=noninteractive apt install -y \
         automake \
         autotools-dev \
         breeze-dev \
