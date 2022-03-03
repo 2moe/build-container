@@ -16,7 +16,7 @@ RUN . /tmp/install_cutefish
 
 RUN cd ~/cutefish \
     && mkdir -pv ~/deb \
-    && mv -vf *.deb *.buildinfo *.changes *.deb ~/deb
+    && mv -vf *.deb *.buildinfo *.changes *.ddeb ~/deb
 
 # clean
 COPY --chmod=755 clean_deb_cache /tmp

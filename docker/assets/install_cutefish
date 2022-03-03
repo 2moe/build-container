@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #-----------------
 install_deps() {
+    apt update
     apt install -y \
         automake \
         autotools-dev \
