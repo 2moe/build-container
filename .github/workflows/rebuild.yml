@@ -24,53 +24,53 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            name: arch
-            tag: cutefish
-            arch: amd64
-            platform: "linux/amd64"
+          # - os: ubuntu-latest
+          #   name: arch
+          #   tag: cutefish
+          #   arch: amd64
+          #   platform: "linux/amd64"
 
-          - os: ubuntu-latest
-            name: arch
-            tag: cutefish
-            arch: arm64
-            platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   name: arch
+          #   tag: cutefish
+          #   arch: arm64
+          #   platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            name: arch
-            tag: cutefish
-            arch: armv7
-            platform: "linux/arm/v7"    
-
-          - os: ubuntu-latest
-            tag: dde
-            arch: amd64
-            platform: "linux/amd64"
-            name: ubuntu
+          # - os: ubuntu-latest
+          #   name: arch
+          #   tag: cutefish
+          #   arch: armv7
+          #   platform: "linux/arm/v7"    
 
           - os: ubuntu-latest
             tag: dde
-            arch: arm64
-            platform: "linux/arm64"
-            name: ubuntu
-
-          - os: ubuntu-latest
-            tag: ukui
             arch: amd64
             platform: "linux/amd64"
             name: ubuntu
 
           - os: ubuntu-latest
-            tag: ukui
+            tag: dde
             arch: arm64
             platform: "linux/arm64"
             name: ubuntu
 
-          - os: ubuntu-latest
-            tag: ukui
-            arch: armv7
-            platform: "linux/arm/v7"
-            name: ubuntu
+          # - os: ubuntu-latest
+          #   tag: ukui
+          #   arch: amd64
+          #   platform: "linux/amd64"
+          #   name: ubuntu
+
+          # - os: ubuntu-latest
+          #   tag: ukui
+          #   arch: arm64
+          #   platform: "linux/arm64"
+          #   name: ubuntu
+
+          # - os: ubuntu-latest
+          #   tag: ukui
+          #   arch: armv7
+          #   platform: "linux/arm/v7"
+          #   name: ubuntu
 
     # repeat...
     steps:
