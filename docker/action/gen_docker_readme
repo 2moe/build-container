@@ -134,7 +134,7 @@ docker run \\
     ${repo}
 \`\`\`
 
-You can also use powershell.
+You can also specify the absolute path to the shell.
 
 \`\`\`sh
 docker exec -it ${Container_name} ${LOGIN_SHELL}
