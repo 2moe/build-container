@@ -116,6 +116,18 @@ jobs:
             arch: amd64
             platform: "linux/amd64"
 
+          - os: ubuntu-latest
+            name: swift
+            tag: latest
+            arch: arm64
+            platform: "linux/arm64"
+
+          - os: ubuntu-latest
+            name: swift
+            tag: latest
+            arch: amd64
+            platform: "linux/amd64"            
+
           # - os: ubuntu-latest
           #   name: dotnet
           #   tag: latest

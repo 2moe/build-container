@@ -34,7 +34,9 @@ RUN cd /root; \
     "" \
     '[version]' \
     "ldd = '$(ldd --version 2>&1 | head -n 2 | grep -vi copyright | sed ":a;N;s/\n/ /g;ta")'" \
-    "swift = '$(swift --version)'" \
+    "swift = ''' \
+    "$(swift --version)" \
+    ''' \
     "" \
     > version.toml
 
