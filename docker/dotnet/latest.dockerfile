@@ -39,6 +39,7 @@ RUN pacman \
     iproute
 
 # git clone tmoe
+ARG URL="https://github.com/2moe/tmoe-linux"
 RUN mkdir -p "$TMOE_DIR" \
     && cd "$TMOE_DIR" \
     && git clone \
