@@ -98,6 +98,50 @@ docker exec -it ${Container_name} ${LOGIN_SHELL}
 \`\`\`
 EOF
 }
+cat_dotnet_readme() {
+    cat >docker-readme.md <<-EOF
+# ${Container_name}
+
+## Example
+
+\`\`\`sh
+TMP="/tmp/hello"
+mkdir -p "\$TMP"
+
+docker run \\
+    -t \\
+    --rm \\
+    -v "\$TMP":/app \\
+    -w /app \\
+    ${repo} \\
+    dotnet new console -o world
+
+docker run \\
+    -t \\
+    --rm \\
+    -v "\$TMP"/world:/app \\
+    -w /app \\
+    ${repo} \\
+    dotnet run --verbosity 4
+\`\`\`
+
+## How to exec shell?
+
+\`\`\`sh
+docker run \\
+    -it \\
+    --name ${Container_name} \\
+    ${repo}
+\`\`\`
+
+You can also use powershell.
+
+\`\`\`sh
+docker exec -it ${Container_name} ${LOGIN_SHELL}
+\`\`\`
+
+EOF
+}
 
 cat_code_readme() {
     cat >docker-readme.md <<-EOF
@@ -177,36 +221,6 @@ editor 0.set || nano 0.set
 \`\`\`
 
 EOF
-    # cat "$dir"/code/init/0.set >>docker-readme.md
-    # echo '```' >>docker-readme.md
-
-    # printf "%s\n" \
-    #     '#### build container' \
-    #     '' \
-    #     '```sh' \
-    #     >>docker-readme.md
-    # cat "$dir"/code/init/1.build >>docker-readme.md
-    # echo '```' >>docker-readme.md
-
-    # printf "%s\n" \
-    #     '#### run' \
-    #     '' \
-    #     '```sh' \
-    #     >>docker-readme.md
-    # cat "$dir"/code/init/2.run >>docker-readme.md
-    # echo '```' >>docker-readme.md
-
-    # printf "%s\n" \
-    #     '' \
-    #     '### Lite' \
-    #     '' \
-    #     'Do we really have to use such tedious steps as above?" \
-    #     "" \
-    #     "No! No need.' \
-    #     '```sh' \
-    #     "docker run -t --rm ${repo} sh -c 'cp /root/'" \
-    #     >>docker-readme.md
-
 }
 
 cat_build_info_title() {
@@ -262,6 +276,10 @@ case ${X11} in
 false)
     case "$name" in
     code) cat_code_readme ;;
+    dotnet)
+        LOGIN_SHELL="/usr/local/powershell/pwsh"
+        cat_dotnet_readme
+        ;;
     *) cat_nogui_readme ;;
     esac
 

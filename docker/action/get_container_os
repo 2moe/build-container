@@ -58,6 +58,11 @@ code)
     container_release=sid
     extra_tag=', "vsc", "vscode", "web"'
     ;;
+dotnet)
+    container_os=arch
+    container_release=latest
+    extra_tag=', ".NET", "dotnet", "dotNET", "dotnet-sdk"'
+    ;;
 ubuntu)
     case "$tag" in
     bionic)
