@@ -103,6 +103,25 @@ jobs:
             arch: armv7
             platform: "linux/arm/v7"
 
+          # .NET
+          - os: ubuntu-latest
+            name: dotnet
+            tag: latest
+            arch: arm64
+            platform: "linux/arm64"
+
+          - os: ubuntu-latest
+            name: dotnet
+            tag: latest
+            arch: amd64
+            platform: "linux/amd64"
+
+          - os: ubuntu-latest
+            name: dotnet
+            tag: latest
+            arch: armv7
+            platform: "linux/arm/v7"          
+
           # - os: ubuntu-latest
           #   tag: latest
           #   arch: ppc64le

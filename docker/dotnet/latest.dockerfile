@@ -99,6 +99,7 @@ RUN cd /root; \
     "" \
     '[version]' \
     "ldd = '$(ldd --version 2>&1 | head -n 2 | grep -vi copyright | sed ":a;N;s/\n/ /g;ta")'" \
+    "git = '$(git --version)'" \
     "dotnet = '$(dotnet --version)'" \
     "powershell = '$(pwsh -Version)'" \
     "dotnet_info = '''" \
@@ -106,7 +107,7 @@ RUN cd /root; \
     "'''" \
     "" \
     '[other]' \
-    'shell = "/usr/local/powershell/pwsh"' \
+    'cmd = "/usr/local/powershell/pwsh"' \
     > version.toml
 
 # add archlinux mirror repo & install fakeroot-tcp
