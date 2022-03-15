@@ -143,6 +143,51 @@ docker exec -it ${Container_name} ${LOGIN_SHELL}
 EOF
 }
 
+cat_swift_readme() {
+    cat >docker-readme.md <<-EOF
+# ${Container_name}
+
+## Example
+
+\`\`\`sh
+TMP="/tmp/hello"
+mkdir -p "\$TMP"
+
+docker run \\
+    -t \\
+    --rm \\
+    -v "\$TMP":/app \\
+    -w /app \\
+    ${repo} \\
+    swift package init --type executable
+
+docker run \\
+    -t \\
+    --rm \\
+    -v "\$TMP":/app \\
+    -w /app \\
+    ${repo} \\
+    swift run --verbose
+\`\`\`
+
+## How to exec shell?
+
+\`\`\`sh
+docker run \\
+    -it \\
+    --security-opt seccomp=unconfined \\
+    --name ${Container_name} \\
+    ${repo}
+\`\`\`
+
+
+\`\`\`sh
+docker exec -it ${Container_name} bash
+\`\`\`
+
+EOF
+}
+
 cat_code_readme() {
     cat >docker-readme.md <<-EOF
 # ${Container_name}
@@ -280,6 +325,7 @@ false)
         LOGIN_SHELL="/usr/local/powershell/pwsh"
         cat_dotnet_readme
         ;;
+    swift) cat_swift_readme ;;
     *) cat_nogui_readme ;;
     esac
 

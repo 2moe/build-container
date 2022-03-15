@@ -61,7 +61,12 @@ code)
 dotnet)
     container_os=arch
     container_release=latest
-    extra_tag=', ".NET", "dotnet", "dotNET", "dotnet-sdk"'
+    extra_tag=', ".NET", "dotnet-sdk"'
+    ;;
+swift)
+    container_os=ubuntu
+    container_release=focal
+    extra_tag=', "nightly"'
     ;;
 ubuntu)
     case "$tag" in

@@ -1,4 +1,4 @@
-name: rebuild dotnet images
+name: rebuild swift images
 # 2022-03-15
 
 on:
@@ -37,22 +37,22 @@ jobs:
           #   platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: dotnet
+            name: swift
             tag: latest
             arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: dotnet
+            name: swift
             tag: latest
             arch: amd64
             platform: "linux/amd64"
 
-          - os: ubuntu-latest
-            name: dotnet
-            tag: latest
-            arch: armv7
-            platform: "linux/arm/v7"
+          # - os: ubuntu-latest
+          #   name: dotnet
+          #   tag: latest
+          #   arch: armv7
+          #   platform: "linux/arm/v7"
 
           # - os: ubuntu-latest
           #   tag: dde
