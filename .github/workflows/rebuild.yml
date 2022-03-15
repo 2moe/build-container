@@ -1,4 +1,4 @@
-name: rebuild images
+name: rebuild dotnet images
 # 2022-03-15
 
 on:

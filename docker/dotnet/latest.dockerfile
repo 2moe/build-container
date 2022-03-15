@@ -40,7 +40,7 @@ RUN pacman \
 
 # git clone tmoe
 ARG URL="https://github.com/2moe/tmoe-linux"
-RUN mkdir -p "$TMOE_DIR" \
+RUN mkdir -p "$TMOE_DIR"/environment \
     && cd "$TMOE_DIR" \
     && git clone \
     -b master \
