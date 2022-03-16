@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 #---------------------------
-# swiftlang/swift
 ARG SWIFT_PLATFORM=ubuntu
 ARG OS_MAJOR_VER=20
 ARG OS_MIN_VER=04
+
 FROM --platform=${TARGETPLATFORM} ${SWIFT_PLATFORM}:${OS_MAJOR_VER}.${OS_MIN_VER}
 
-# double
+# twice ARG
 ARG SWIFT_PLATFORM=ubuntu
 ARG OS_MAJOR_VER=20
 ARG OS_MIN_VER=04
