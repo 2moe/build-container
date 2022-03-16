@@ -1,13 +1,11 @@
-name: rebuild swift images
-# 2022-03-16
+name: rebuild go
+# begin_time = 2022-03-16
 
 on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/rebuild.yml"
-  # watch:
-  #   types: started
+      - ".github/workflows/go.yml"
 
 jobs:
   job1:
@@ -18,71 +16,64 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 13
+      zstd_level: 22
 
     strategy:
       fail-fast: false
       matrix:
         include:
           # - os: ubuntu-latest
-          #   name: arch
-          #   tag: cutefish
+          #   name: code
+          #   tag: latest
           #   arch: amd64
           #   platform: "linux/amd64"
-
           # - os: ubuntu-latest
-          #   name: arch
-          #   tag: cutefish
+          #   name: code
+          #   tag: latest
           #   arch: arm64
           #   platform: "linux/arm64"
+          # - os: ubuntu-latest
+          #   name: code
+          #   tag: latest
+          #   arch: armv7
+          #   platform: "linux/arm/v7"
 
           - os: ubuntu-latest
-            name: swift
+            name: go
+            tag: latest
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: go
             tag: latest
             arch: arm64
             platform: "linux/arm64"
 
+          - os: ubuntu-latest
+            name: go
+            tag: alpine
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: go
+            tag: alpine
+            arch: arm64
+            platform: "linux/arm64"
+          - os: ubuntu-latest
+            name: go
+            tag: alpine
+            arch: armv7
+            platform: "linux/arm/v7"
+
           # - os: ubuntu-latest
-          #   name: swift
           #   tag: latest
+          #   arch: mips32le
+          #   platform: "linux/mips32le"
+
+          # - os: self-hosted-debian
+          #   tag: hello
           #   arch: amd64
           #   platform: "linux/amd64"
-
-          # - os: ubuntu-latest
-          #   name: dotnet
-          #   tag: latest
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: dde
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          #   name: ubuntu
-
-          # - os: ubuntu-latest
-          #   tag: dde
-          #   arch: arm64
-          #   platform: "linux/arm64"
-          #   name: ubuntu
-
-          # - os: ubuntu-latest
-          #   tag: ukui
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          #   name: ubuntu
-
-          # - os: ubuntu-latest
-          #   tag: ukui
-          #   arch: arm64
-          #   platform: "linux/arm64"
-          #   name: ubuntu
-
-          # - os: ubuntu-latest
-          #   tag: ukui
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
-          #   name: ubuntu
 
     # repeat...
     steps:
@@ -138,6 +129,36 @@ jobs:
             "repo=$repo" \
             "zsh_repo=${user}/${name}-zsh-${m_arch}" \
             >> "$GITHUB_ENV"
+
+      - name: go.dockerfile -> beta
+        if: matrix.name == 'go'
+        env:
+          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
+        run: |
+          TODAY="$(date -u +%Y%m%d)"
+          if ((TODAY<=20220630));then
+            sed -E \
+                -e "s@( golang):(alpine)@\1:1.18-\2@" \
+                -e "s@( golang):latest@\1:1.18-bullseye@" \
+                -i ${{ env.file }}
+                # rc-bullseye, rc-alpine
+          fi
+
+      - name: jdk.dockerfile -> ea
+        if: matrix.name == 'jdk'
+        env:
+          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
+        run: |
+          TODAY="$(date -u +%Y%m%d)"
+          if ((TODAY<=20220922));then
+            VERSION=19
+          elif ((TODAY<=20230922));then
+            VERSION=20
+          fi
+
+          sed -E \
+                -e "s@( openjdk):jdk-(slim)@\1:${VERSION}-\2@" \
+                -i ${{ env.file }}
 
       - name: build container
         env:
@@ -251,7 +272,6 @@ jobs:
         run: |
           git add .
           git commit -m "docs(docker): ${Container_name}.md" -a
-
       - name: push changes
         uses: ad-m/github-push-action@master
         with:

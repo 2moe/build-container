@@ -190,11 +190,12 @@ jobs:
           file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220330));then
+          if ((TODAY<=20220630));then
             sed -E \
-                -e "s@( golang):(alpine)@\1:rc-\2@" \
-                -e "s@( golang):latest@\1:rc-bullseye@" \
+                -e "s@( golang):(alpine)@\1:1.18-\2@" \
+                -e "s@( golang):latest@\1:1.18-bullseye@" \
                 -i ${{ env.file }}
+                # rc-bullseye, rc-alpine
           fi
 
       - name: jdk.dockerfile -> ea
