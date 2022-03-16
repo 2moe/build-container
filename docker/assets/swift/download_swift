@@ -1,13 +1,14 @@
 case ${ARCH} in
 amd64)
     OS_ARCH_SUFFIX=""
-    ADDITIONAL_TAR_OPTIONS="--strip-components=1"
     ;;
 arm64)
     OS_ARCH_SUFFIX=-aarch64
-    ADDITIONAL_TAR_OPTIONS=""
+    # ADDITIONAL_TAR_OPTIONS=""
     ;;
 esac
+ADDITIONAL_TAR_OPTIONS="--strip-components=1"
+
 # https://github.com/apple/swift-docker/blob/main/nightly-main/ubuntu/20.04/buildx/Dockerfile
 OS_VER=$SWIFT_PLATFORM$OS_MAJOR_VER.$OS_MIN_VER$OS_ARCH_SUFFIX
 PLATFORM_WEBROOT="$SWIFT_WEBROOT/$SWIFT_PLATFORM$OS_MAJOR_VER$OS_MIN_VER$OS_ARCH_SUFFIX"
@@ -25,5 +26,6 @@ curl -fsSL ${PLATFORM_WEBROOT}/${DOWNLOAD_DIR}/${download} -o latest_toolchain.t
 
 # - Unpack the toolchain, set libs permissions, and clean up.
 tar -xzf latest_toolchain.tar.gz --directory / ${ADDITIONAL_TAR_OPTIONS}
+# mkdir -p /usr/lib/swift
 chmod -R o+r /usr/lib/swift
 rm -rf "$GNUPGHOME" latest_toolchain.tar.gz.sig latest_toolchain.tar.gz 2>/dev/null
