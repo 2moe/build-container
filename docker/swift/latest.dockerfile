@@ -66,7 +66,6 @@ RUN cd /root; \
     "swift = '''" \
     "$(swift --version)" \
     "'''" \
-    "" \
     > version.toml
 
 # clean
