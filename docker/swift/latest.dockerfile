@@ -63,10 +63,14 @@ RUN cd /root; \
     "" \
     '[version]' \
     "ldd = '$(ldd --version 2>&1 | head -n 2 | grep -vi copyright | sed ":a;N;s/\n/ /g;ta")'" \
+    "git = '$(git --version 2>&1 | head -n 1)'" \
     "swift = '''" \
     "$(swift --version)" \
     "'''" \
     > version.toml
+# "" \
+#     '[other]' \
+#     'dependencies = ["binutils", "git", "gnupg2", "libc6-dev", "libcurl4-openssl-dev", "libedit2", "libgcc-9-dev", "libpython3.8", "libsqlite3-0", "libstdc++-9-dev", "libxml2-dev", "libz3-dev", "pkg-config", "tzdata", "zlib1g-dev"]' \
 
 # clean
 COPY --chmod=755 clean_deb_cache /tmp

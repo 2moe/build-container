@@ -1,6 +1,7 @@
 # Logs
 tmp
-/test
+# /test
+test
 logs
 *.log
 npm-debug.log*

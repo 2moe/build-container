@@ -26,6 +26,5 @@ curl -fsSL ${PLATFORM_WEBROOT}/${DOWNLOAD_DIR}/${download} -o latest_toolchain.t
 
 # - Unpack the toolchain, set libs permissions, and clean up.
 tar -xzf latest_toolchain.tar.gz --directory / ${ADDITIONAL_TAR_OPTIONS}
-# mkdir -p /usr/lib/swift
 chmod -R o+r /usr/lib/swift
 rm -rf "$GNUPGHOME" latest_toolchain.tar.gz.sig latest_toolchain.tar.gz 2>/dev/null
