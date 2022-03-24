@@ -58,5 +58,5 @@ jobs:
 
       - name: run arch arm64
         run: |
-        cd docker/arch
-        docker build -t archarm-202203 -f ../tmp.dockerfile  .
+          cd docker/arch
+          docker build -t archarm-202203 -f ../tmp.dockerfile  .
