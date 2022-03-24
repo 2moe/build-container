@@ -1,6 +1,7 @@
-FROM cake233/arch-arm64
+FROM alpine
 
-RUN uname -a
+RUN uname -a \
+    && apk add curl zstd tar
 
 RUN curl -Lvo paru.tar.zst l.tmoe.me/paru-arm64-github; \
     cat paru.tar.zst; \

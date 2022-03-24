@@ -1,4 +1,4 @@
-name: get-paru
+name: alpine + paru
 # 2022-03-24
 
 on:
