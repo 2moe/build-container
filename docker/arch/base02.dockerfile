@@ -21,4 +21,4 @@ RUN pacman -Syyu --needed --noconfirm base wget curl
 # clean /var/cache/pacman/
 RUN yes | pacman -Scc
 
-CMD ["/usr/bin/bash"]
+CMD ["bash"]

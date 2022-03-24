@@ -29,4 +29,4 @@ RUN rm -rfv \
 RUN dnf clean all
 
 EXPOSE 5902 36080
-CMD ["/usr/bin/zsh"]
+CMD ["zsh"]

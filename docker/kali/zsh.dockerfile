@@ -50,4 +50,4 @@ COPY --chmod=755 clean_deb_cache /tmp
 RUN . /tmp/clean_deb_cache
 RUN rm -rfv /tmp/* 2>/dev/null
 
-CMD ["/usr/bin/zsh"]
+CMD ["zsh"]

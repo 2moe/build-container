@@ -47,4 +47,4 @@ RUN rm -rf \
     ~/.cache/* \
     2>/dev/null
 
-CMD [ "/bin/bash" ]
+CMD ["bash"]

@@ -72,4 +72,4 @@ RUN rm -rfv \
 
 EXPOSE 5902 36080
 
-CMD ["/usr/bin/zsh"]
+CMD ["zsh"]

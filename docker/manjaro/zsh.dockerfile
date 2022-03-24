@@ -65,5 +65,5 @@ RUN rm -rfv \
     2>/dev/null; \
     yes | pacman -Scc
 
-CMD ["/usr/bin/zsh"]
+CMD ["zsh"]
 
