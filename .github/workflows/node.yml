@@ -1,5 +1,5 @@
-name: build node, ruby & php
-# begin_time = 2022-03-14 12:02:02+00:00
+name: build node, dotnet, ruby & php
+# begin_time = 2022-03-24 12:02:02+00:00
 
 on:
   push:
@@ -126,13 +126,13 @@ jobs:
             name: swift
             tag: latest
             arch: amd64
-            platform: "linux/amd64"            
+            platform: "linux/amd64"
 
           # - os: ubuntu-latest
           #   name: dotnet
           #   tag: latest
           #   arch: armv7
-          #   platform: "linux/arm/v7"          
+          #   platform: "linux/arm/v7"
 
           # - os: ubuntu-latest
           #   tag: latest

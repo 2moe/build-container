@@ -76,4 +76,4 @@ RUN cd /root; \
 COPY --chmod=755 clean_deb_cache /tmp
 RUN . /tmp/clean_deb_cache
 
-CMD [ "bash" ]
+CMD [ "swift" ]
