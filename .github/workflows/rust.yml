@@ -258,7 +258,7 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 18
+      zstd_level: 22
 
     strategy:
       fail-fast: false

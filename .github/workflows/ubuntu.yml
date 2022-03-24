@@ -164,7 +164,7 @@ jobs:
           docker push -a "${repo}"
 
       - name: docker run (zsh)
-        if: matrix.tag == 'zsh' || matrix.tag == 'dde' 
+        if: matrix.tag == 'zsh' || matrix.tag == 'dde'
         timeout-minutes: 1
         continue-on-error: true
         run: bash docker/action/docker_run docker zsh
@@ -260,7 +260,7 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 18
+      zstd_level: 19
 
     strategy:
       fail-fast: false
