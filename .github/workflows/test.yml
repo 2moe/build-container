@@ -57,6 +57,6 @@ jobs:
           platforms: ${{ matrix.platform }}
 
       - name: run arch arm64
-        runs:
-          using: "docker"
-          image: "docker/tmp.dockerfile"
+        run: |
+        cd docker/arch
+        docker build -t . -f ../tmp.dockerfile
