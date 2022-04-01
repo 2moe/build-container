@@ -1,5 +1,5 @@
 name: build manjaro images
-# begin_time = 2022-03-25 12:02:03+00:00
+# begin_time = 2022-04-01 11:02:03+00:00
 
 on:
   push:
