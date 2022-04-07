@@ -5,7 +5,7 @@ on:
   push:
     branches: [master]
     paths:
-      - ".github/workflows/go.yml"
+      - ".github/workflows/rebuild.yml"
 
 jobs:
   job1:
