@@ -23,11 +23,10 @@ release = "$container_release"
 arch = "$DEB_ARCH"
 platform = "$platform"
 x11_or_wayland = $X11
+syntax_version = "0.0.0-alpha.3"
 
 [file]
 name = "${Container_name}_${end_time_normal}.tar.zst"
-
-version = "0.0.0-alpha.2"
 
 # This value can be used to verify the integrity of the file
 sha256 = "${file_sha256}"
