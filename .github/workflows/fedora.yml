@@ -33,11 +33,6 @@ jobs:
             arch: arm64
             platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            tag: zsh
-            arch: armv7
-            platform: "linux/arm/v7"
-
           # - os: ubuntu-latest
           #   tag: latest
           #   arch: armv6
@@ -299,11 +294,6 @@ jobs:
             tag: lxqt
             arch: arm64
             platform: "linux/arm64"
-
-          - os: ubuntu-latest
-            tag: mate
-            arch: armv7
-            platform: "linux/arm/v7"
 
           # - os: ubuntu-latest
           #   tag: latest
