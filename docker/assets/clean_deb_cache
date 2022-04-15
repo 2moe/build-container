@@ -5,4 +5,12 @@ rm -fv /var/cache/apt/archives/* \
     ~/.cache/* \
     2>/dev/null
 
+dpkg_reconfigure_deb_frontend() {
+        # debconf-show debconf
+        echo "debconf	debconf/priority	select	low" | debconf-set-selections
+        echo "debconf	debconf/frontend	select	Dialog" | debconf-set-selections
+        DEBIAN_FRONTEND=noninteractive dpkg-reconfigure debconf
+    }
+
+dpkg_reconfigure_deb_frontend
 apt clean 2>/dev/null
