@@ -18,49 +18,49 @@ jobs:
       user: cake233
 
     steps:
-      - name: rust manifest
-        env:
-          name: rust
-        run: |
-          TODAY=$(date -u +%Y-%m-%d)
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in musl alpine alpine-${TODAY};do
-            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
-              ${{ env.user }}/${{ env.name }}-alpine-amd64 \
-              ${{ env.user }}/${{ env.name }}-alpine-arm64
-            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
-          done
-          for i in latest nightly ${TODAY};do
-            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
-              ${{ env.user }}/${{ env.name }}-amd64 \
-              ${{ env.user }}/${{ env.name }}-arm64 \
-              ${{ env.user }}/${{ env.name }}-armv7 \
-              ${{ env.user }}/${{ env.name }}-riscv64 \
-              ${{ env.user }}/${{ env.name }}-ppc64le \
-              ${{ env.user }}/${{ env.name }}-s390x \
-              ${{ env.user }}/${{ env.name }}-mips64le
-            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
-          done
+      # - name: rust manifest
+      #   env:
+      #     name: rust
+      #   run: |
+      #     TODAY=$(date -u +%Y-%m-%d)
+      #     echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+      #     for i in musl alpine alpine-${TODAY};do
+      #       docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+      #         ${{ env.user }}/${{ env.name }}-alpine-amd64 \
+      #         ${{ env.user }}/${{ env.name }}-alpine-arm64
+      #       docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+      #     done
+      #     for i in latest nightly ${TODAY};do
+      #       docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+      #         ${{ env.user }}/${{ env.name }}-amd64 \
+      #         ${{ env.user }}/${{ env.name }}-arm64 \
+      #         ${{ env.user }}/${{ env.name }}-armv7 \
+      #         ${{ env.user }}/${{ env.name }}-riscv64 \
+      #         ${{ env.user }}/${{ env.name }}-ppc64le \
+      #         ${{ env.user }}/${{ env.name }}-s390x \
+      #         ${{ env.user }}/${{ env.name }}-mips64le
+      #       docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+      #     done
 
       - name: arch manifest
         env:
           name: arch
         run: |
-          name=arch
+          # name=arch
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in kde xfce mate zsh;do
             case $i in
             xfce | zsh) 
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             *)
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             esac
@@ -76,15 +76,15 @@ jobs:
             case $i in
             kde | zsh) 
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-armv7 \
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7 \
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             *)
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             esac
@@ -98,8 +98,8 @@ jobs:
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in kde xfce mate lxqt zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
           done
 
@@ -113,22 +113,22 @@ jobs:
             case $i in
             zsh) 
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-386 \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-386 \
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             lxde)
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-386 \
-              ${{ env.user }}/alpine-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-386 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
             ;;
             *)
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             esac
@@ -142,9 +142,9 @@ jobs:
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in xfce zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
           done
 
@@ -156,9 +156,9 @@ jobs:
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in xfce zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/alpine-${i}-amd64 \
-              ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
           done
 
