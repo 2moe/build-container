@@ -28,8 +28,8 @@ jobs:
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
               ${{ env.user }}/alpine-${i}-amd64 \
               ${{ env.user }}/alpine-${i}-arm64 \
-              ${{ env.user }}/alpine-${i}-alpine-armv7 \
-              ${{ env.user }}/alpine-${i}-alpine-386
+              ${{ env.user }}/alpine-${i}-armv7 \
+              ${{ env.user }}/alpine-${i}-386
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
             *)
