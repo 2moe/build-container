@@ -486,16 +486,17 @@ jobs:
       user: cake233
 
     steps:
-      - name: create manifest
+      - name: rust manifest
         run: |
+          TODAY=$(date -u +%Y-%m-%d)
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in musl alpine nightly-musl nightly-alpine;do
+          for i in musl alpine alpine-${TODAY};do
             docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
               ${{ env.user }}/${{ env.name }}-alpine-amd64 \
               ${{ env.user }}/${{ env.name }}-alpine-arm64
             docker manifest push ${{ env.user }}/${{ env.name }}:${i}
           done
-          for i in latest nightly nightly-debian unstable;do
+          for i in latest nightly ${TODAY};do
             docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
               ${{ env.user }}/${{ env.name }}-amd64 \
               ${{ env.user }}/${{ env.name }}-arm64 \
