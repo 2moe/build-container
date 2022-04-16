@@ -1,5 +1,5 @@
-name: ubuntu
-# 2022-03-24
+name: manifest
+# 2022-04-16
 
 on:
   push:
@@ -10,270 +10,31 @@ on:
   #   types: started
 
 jobs:
-  job1:
-    # needs: [job0, job1]
-    runs-on: ${{ matrix.os }}
+  job3:
+    needs: [job1, job2]
+    runs-on: ubuntu-latest
     env:
-      name: ubuntu
+      name: rust
       user: cake233
-      platform: ${{ matrix.platform }}
-      arch: ${{ matrix.arch }}
-      zstd_level: 13
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            tag: kde
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            tag: xfce
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            tag: mate
-            arch: amd64
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            tag: lxqt
-            arch: amd64
-            platform: "linux/amd64"
-
-          - os: ubuntu-latest
-            tag: kde
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            tag: xfce
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            tag: mate
-            arch: arm64
-            platform: "linux/arm64"
-          - os: ubuntu-latest
-            tag: lxqt
-            arch: arm64
-            platform: "linux/arm64"
-
-          # - os: ubuntu-latest
-          #   tag: kde
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv6
-          #   platform: "linux/arm/v6"
-
-          # - os: ubuntu-latest
-          #   tag: mate
-          #   arch: 386
-          #   platform: "linux/386"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: riscv64
-          #   platform: "linux/riscv64"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: ppc64le
-          #   platform: "linux/ppc64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: s390x
-          #   platform: "linux/s390x"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips64le
-          #   platform: "linux/mips64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips32le
-          #   platform: "linux/mips32le"
-
-          # - os: self-hosted-debian
-          #   tag: hello
-          #   arch: amd64
-          #   platform: "linux/amd64"
-
-    # repeat...
     steps:
-      - name: set time env
+      - name: create manifest
         run: |
-          printf "%s\n" \
-            "time_begin=$(date -u --rfc-3339=ns)" \
-            "time_today=$(date -u --rfc-3339=date)" \
-            >> "$GITHUB_ENV"
-
-      - uses: actions/checkout@v2
-        with:
-          # repository: "2moe/xxx"
-          ref: "master"
-          fetch-depth: 1
-
-      - name: get architecture
-        env:
-          TARGETARCH: ${{ matrix.arch }}
-        run: bash docker/assets/get_arch
-
-      - name: get container os & set global env
-        env:
-          tag: ${{ matrix.tag }}
-        run: bash docker/action/get_container_os
-
-      - name: set up qemu-user & binfmt
-        id: qemu
-        uses: docker/setup-qemu-action@v1
-        if: matrix.arch != 'amd64' && matrix.arch != 'i386'
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: ${{ matrix.platform }}
-
-      - name: set container name(notag latest/base)
-        if: matrix.tag == 'base' || matrix.tag == 'latest'
-        env:
-          container: ${{ env.name }}-${{ matrix.arch }}
-        run: echo "Container_name=$container" >> "$GITHUB_ENV"
-
-      - name: set container name(normal)
-        if: matrix.tag != 'base' && matrix.tag != 'latest'
-        env:
-          container: ${{ env.name }}-${{ matrix.tag }}-${{ matrix.arch }}
-        run: echo "Container_name=$container" >> "$GITHUB_ENV"
-
-      - name: set repo (global env)
-        env:
-          repo: ${{ env.user }}/${{ env.Container_name }}
-          m_arch: ${{ matrix.arch }}
-        run: |
-          printf "%s\n" \
-            "repo=$repo" \
-            "zsh_repo=${user}/${name}-zsh-${m_arch}" \
-            >> "$GITHUB_ENV"
-
-      - name: build container
-        env:
-          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
-          tag: ${{ matrix.tag }}
-        run: bash docker/action/docker_build
-
-      - name: build base
-        if: matrix.tag == 'base'
-        env:
-          file: "../${{ env.name }}/${{ matrix.tag }}02.dockerfile"
-        run: |
-          docker run -d --name base_tmp ${{ env.repo }}:latest sh
-          docker cp base_tmp:/arch.tar.xz .
-          xz -dfv arch.tar.xz
-          mv arch.tar docker/assets
-          docker stop base_tmp
-          docker rm -f base_tmp
-          docker rmi -f ${repo}
-          bash docker/action/docker_build
-          rm -fv docker/assets/arch.tar
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          username: ${{ env.user }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      - name: docker push
-        run: |
-          docker push -a "${repo}"
-
-      - name: docker run (zsh)
-        if: matrix.tag == 'zsh'
-        timeout-minutes: 1
-        continue-on-error: true
-        run: bash docker/action/docker_run docker zsh
-
-      - name: docker run
-        if: matrix.tag != 'zsh'
-        timeout-minutes: 1
-        run: bash docker/action/docker_run
-
-      - name: docker export
-        run: bash docker/action/docker_export
-
-      - name: start zstd
-        # if: matrix.tag != 'base'
-        run: bash docker/action/compress_file $zstd_level
-
-      - name: docker build zstd image
-        # if: matrix.tag != 'base'
-        run: bash docker/action/build_zstd_image
-
-      - name: set end time
-        run: |
-          printf "%s\n" \
-            "end_time_normal=$(date -u +%Y-%m-%d_%H-%M)" \
-            "end_time=$(date -u --rfc-3339=ns)" \
-            >>"$GITHUB_ENV"
-
-      - name: write to toml file
-        env:
-          tag: ${{ matrix.tag }}
-          platform: ${{ matrix.platform }}
-        run: |
-          bash docker/action/write_to_toml
-
-      - name: cat i.toml
-        run: cat i.toml
-
-      - name: gen docker readme
-        env:
-          dir: docker/assets
-        run: |
-          bash docker/action/gen_docker_readme
-          cat docker-readme.md
-
-      - name: push README to Dockerhub
-        uses: christian-korneck/update-container-description-action@v1
-        env:
-          DOCKER_USER: ${{ env.user }}
-          DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
-        with:
-          destination_container_repo: ${{ env.repo }}
-          provider: dockerhub
-          # short_description: "Quickly install ${{ env.Container_name }}"
-          readme_file: "docker-readme.md"
-
-      - name: copy docker readme.md to home dir
-        run: |
-          cp docker-readme.md ~/${Container_name}.md
-          cp i.toml ~/${Container_name}.toml
-
-      - name: repo(index)
-        uses: actions/checkout@v2
-        with:
-          repository: "2cd/index"
-          ref: "master"
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-          fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
-      - name: create local changes
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git reset --hard origin/master
-          git pull --rebase --stat origin master --allow-unrelated-histories
-          mkdir -p doc/${name}
-          cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
-
-      - name: commit files
-        run: |
-          git add .
-          git commit -m "docs(docker): ${Container_name}.md" -a
-      - name: push changes
-        uses: ad-m/github-push-action@master
-        with:
-          repository: "2cd/index"
-          github_token: ${{ secrets.GH_TOKEN }}
-          branch: "master"
-#------------------------------------------------
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+          for i in latest nightly nightly-debian unstable;do
+            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+              ${{ env.user }}/${{ env.name }}-amd64 \
+              ${{ env.user }}/${{ env.name }}-arm64 \
+              ${{ env.user }}/${{ env.name }}-armv7 \
+              ${{ env.user }}/${{ env.name }}-riscv64 \
+              ${{ env.user }}/${{ env.name }}-ppc64le \
+              ${{ env.user }}/${{ env.name }}-s390x \
+              ${{ env.user }}/${{ env.name }}-mips64le
+            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+          done
+          for i in musl alpine nightly-musl nightly-alpine;do
+            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+              ${{ env.user }}/${{ env.name }}-amd64 \
+              ${{ env.user }}/${{ env.name }}-arm64 \
+            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+          done
