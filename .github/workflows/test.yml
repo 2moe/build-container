@@ -24,7 +24,7 @@ jobs:
           for i in musl alpine nightly-musl nightly-alpine;do
             docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
               ${{ env.user }}/${{ env.name }}-alpine-amd64 \
-              ${{ env.user }}/${{ env.name }}-alpine-arm64 \
+              ${{ env.user }}/${{ env.name }}-alpine-arm64
             docker manifest push ${{ env.user }}/${{ env.name }}:${i}
           done
           for i in latest nightly nightly-debian unstable;do
