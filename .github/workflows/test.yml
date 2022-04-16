@@ -19,6 +19,8 @@ jobs:
 
     steps:
       - name: rust manifest
+        env:
+          name: rust
         run: |
           TODAY=$(date -u +%Y-%m-%d)
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
@@ -41,6 +43,8 @@ jobs:
           done
 
       - name: arch manifest
+        env:
+          name: arch
         run: |
           name=arch
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
@@ -63,8 +67,10 @@ jobs:
           done
 
       - name: ubuntu manifest
+        env:
+          name: ubuntu
         run: |
-          name=ubuntu
+          # name=ubuntu
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in kde xfce mate lxqt zsh;do
             case $i in
@@ -85,8 +91,10 @@ jobs:
           done
 
       - name: fedora manifest
+        env:
+          name: fedora
         run: |
-          name=fedora
+          # name=fedora
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in kde xfce mate lxqt zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
@@ -96,8 +104,10 @@ jobs:
           done
 
       - name: debian manifest
+        env:
+          name: debian
         run: |
-          name=debian
+          # name=debian
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in kde xfce mate zsh lxde;do
             case $i in
@@ -125,8 +135,10 @@ jobs:
           done
 
       - name: kali manifest
+        env:
+          name: kali
         run: |
-          name=kali
+          # name=kali
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in xfce zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
@@ -137,8 +149,10 @@ jobs:
           done
 
       - name: manjaro manifest
+        env:
+          name: manjaro
         run: |
-          name=manjaro
+          # name=manjaro
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in xfce zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
@@ -149,8 +163,10 @@ jobs:
           done
 
       - name: code manifest
+        env:
+          name: code
         run: |
-          name=code
+          # name=code
           TODAY=$(date -u +%Y-%m-%d)
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in latest debian ${TODAY};do
@@ -162,8 +178,10 @@ jobs:
           done
 
       - name: swift manifest
+        env:
+          name: swift
         run: |
-          name=swift
+          # name=swift
           TODAY=$(date -u +%Y-%m-%d)
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in latest ubuntu ${TODAY};do
@@ -174,8 +192,10 @@ jobs:
           done
 
       - name: dotnet manifest
+        env:
+          name: dotnet
         run: |
-          name=dotnet
+          # name=dotnet
           TODAY=$(date -u +%Y-%m-%d)
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           for i in latest ${TODAY};do
