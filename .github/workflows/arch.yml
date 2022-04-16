@@ -785,9 +785,9 @@ jobs:
         run: |
           # name=arch
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in kde xfce mate zsh;do
+          for i in kde cutefish xfce mate zsh;do
             case $i in
-            xfce | zsh) 
+            xfce | cutefish | zsh) 
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
               ${{ env.user }}/${{ env.name }}-${i}-amd64 \
               ${{ env.user }}/${{ env.name }}-${i}-arm64 \
