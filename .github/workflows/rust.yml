@@ -477,4 +477,32 @@ jobs:
           repository: "2cd/index"
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
-#------------------------------------------------
+  #------------------------------------------------
+  job3:
+    needs: [job1, job2]
+    runs-on: ubuntu-latest
+    env:
+      name: rust
+      user: cake233
+
+    steps:
+      - name: create manifest
+        run: |
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+          for i in musl alpine nightly-musl nightly-alpine;do
+            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+              ${{ env.user }}/${{ env.name }}-alpine-amd64 \
+              ${{ env.user }}/${{ env.name }}-alpine-arm64
+            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+          done
+          for i in latest nightly nightly-debian unstable;do
+            docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+              ${{ env.user }}/${{ env.name }}-amd64 \
+              ${{ env.user }}/${{ env.name }}-arm64 \
+              ${{ env.user }}/${{ env.name }}-armv7 \
+              ${{ env.user }}/${{ env.name }}-riscv64 \
+              ${{ env.user }}/${{ env.name }}-ppc64le \
+              ${{ env.user }}/${{ env.name }}-s390x \
+              ${{ env.user }}/${{ env.name }}-mips64le
+            docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+          done
