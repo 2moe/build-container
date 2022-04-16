@@ -519,10 +519,10 @@ jobs:
       user: cake233
 
     steps:
-      - name: create manifest
+      - name: rust manifest
         run: |
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in kde xfce mate zsh;do
+          for i in kde xfce mate zsh; do
             case $i in
             mate| zsh) 
             # xfce:alpine
