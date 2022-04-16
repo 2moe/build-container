@@ -333,3 +333,37 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
 #------------------------------------------------
+manifest:
+  needs: [job1]
+  runs-on: ubuntu-latest
+  env:
+    user: cake233
+
+  steps:
+    - name: swift manifest
+      env:
+        name: swift
+      run: |
+        # name=swift
+        TODAY=$(date -u +%Y-%m-%d)
+        echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+        for i in latest ubuntu ${TODAY};do
+          docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+          ${{ env.user }}/${{ env.name }}-amd64 \
+          ${{ env.user }}/${{ env.name }}-arm64
+          docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+        done
+
+    - name: dotnet manifest
+      env:
+        name: dotnet
+      run: |
+        # name=dotnet
+        TODAY=$(date -u +%Y-%m-%d)
+        echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+        for i in latest ${TODAY};do
+          docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
+          ${{ env.user }}/${{ env.name }}-amd64 \
+          ${{ env.user }}/${{ env.name }}-arm64
+          docker manifest push ${{ env.user }}/${{ env.name }}:${i}
+        done
