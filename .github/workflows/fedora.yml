@@ -517,8 +517,8 @@ jobs:
 
     steps:
       - name: fedora manifest
-          env:
-            name: fedora
+        env:
+          name: fedora
           run: |
             # name=fedora
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin

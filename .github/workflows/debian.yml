@@ -519,8 +519,8 @@ jobs:
 
     steps:
       - name: debian manifest
-          env:
-            name: debian
+        env:
+          name: debian
           run: |
             # name=debian
             echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
