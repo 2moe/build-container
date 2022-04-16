@@ -508,4 +508,23 @@ jobs:
           repository: "2cd/index"
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
-#------------------------------------------------
+  #------------------------------------------------
+  job3:
+    needs: [job1, job2]
+    runs-on: ubuntu-latest
+    env:
+      user: cake233
+
+    steps:
+      - name: fedora manifest
+          env:
+            name: fedora
+          run: |
+            # name=fedora
+            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+            for i in kde xfce mate lxqt zsh;do
+              docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
+                ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+                ${{ env.user }}/${{ env.name }}-${i}-arm64
+              docker manifest push ${{ env.user }}/${i}:${{ env.name }}
+            done

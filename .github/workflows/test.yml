@@ -14,116 +14,9 @@ jobs:
     # needs: [job1, job2]
     runs-on: ubuntu-latest
     env:
-      # name: arch
       user: cake233
 
     steps:
-      # - name: rust manifest
-      #   env:
-      #     name: rust
-      #   run: |
-      #     TODAY=$(date -u +%Y-%m-%d)
-      #     echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-      #     for i in musl alpine alpine-${TODAY};do
-      #       docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
-      #         ${{ env.user }}/${{ env.name }}-alpine-amd64 \
-      #         ${{ env.user }}/${{ env.name }}-alpine-arm64
-      #       docker manifest push ${{ env.user }}/${{ env.name }}:${i}
-      #     done
-      #     for i in latest nightly ${TODAY};do
-      #       docker manifest create --amend ${{ env.user }}/${{ env.name }}:${i} \
-      #         ${{ env.user }}/${{ env.name }}-amd64 \
-      #         ${{ env.user }}/${{ env.name }}-arm64 \
-      #         ${{ env.user }}/${{ env.name }}-armv7 \
-      #         ${{ env.user }}/${{ env.name }}-riscv64 \
-      #         ${{ env.user }}/${{ env.name }}-ppc64le \
-      #         ${{ env.user }}/${{ env.name }}-s390x \
-      #         ${{ env.user }}/${{ env.name }}-mips64le
-      #       docker manifest push ${{ env.user }}/${{ env.name }}:${i}
-      #     done
-
-      - name: ubuntu manifest
-        env:
-          name: ubuntu
-        run: |
-          # name=ubuntu
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in kde xfce mate lxqt zsh;do
-            case $i in
-            kde | zsh) 
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-              ;;
-            *)
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-              ;;
-            esac
-          done
-
-      - name: fedora manifest
-        env:
-          name: fedora
-        run: |
-          # name=fedora
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in kde xfce mate lxqt zsh;do
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-          done
-
-      - name: debian manifest
-        env:
-          name: debian
-        run: |
-          # name=debian
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in kde xfce mate zsh lxde;do
-            case $i in
-            zsh) 
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-386 \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-              ;;
-            lxde)
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-386 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-            ;;
-            *)
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-              ;;
-            esac
-          done
-
-      - name: kali manifest
-        env:
-          name: kali
-        run: |
-          # name=kali
-          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-          for i in xfce zsh;do
-            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
-            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-          done
-
       - name: manjaro manifest
         env:
           name: manjaro
@@ -133,8 +26,7 @@ jobs:
           for i in xfce zsh;do
             docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
               ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
             docker manifest push ${{ env.user }}/${i}:${{ env.name }}
           done
 
