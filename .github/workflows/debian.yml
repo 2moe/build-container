@@ -516,35 +516,34 @@ jobs:
     runs-on: ubuntu-latest
     env:
       user: cake233
-
     steps:
       - name: debian manifest
         env:
           name: debian
-          run: |
-            # name=debian
-            echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
-            for i in kde xfce mate zsh lxde;do
-              case $i in
-              zsh) 
-              docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-                ${{ env.user }}/${{ env.name }}-${i}-386 \
-                ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-                ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-                ${{ env.user }}/${{ env.name }}-${i}-armv7
-              docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-                ;;
-              lxde)
-              docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-                ${{ env.user }}/${{ env.name }}-${i}-386 \
-                ${{ env.user }}/${{ env.name }}-${i}-armv7
-              docker manifest push ${{ env.user }}/${i}:${{ env.name }}
+        run: |
+          # name=debian
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+          for i in kde xfce mate zsh lxde;do
+            case $i in
+            zsh) 
+            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
+              ${{ env.user }}/${{ env.name }}-${i}-386 \
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
+            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
               ;;
-              *)
-              docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
-                ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-                ${{ env.user }}/${{ env.name }}-${i}-arm64
-              docker manifest push ${{ env.user }}/${i}:${{ env.name }}
-                ;;
-              esac
-            done
+            lxde)
+            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
+              ${{ env.user }}/${{ env.name }}-${i}-386 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
+            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
+            ;;
+            *)
+            docker manifest create --amend ${{ env.user }}/${i}:${{ env.name }} \
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64
+            docker manifest push ${{ env.user }}/${i}:${{ env.name }}
+              ;;
+            esac
+          done
