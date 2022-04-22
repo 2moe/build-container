@@ -9,7 +9,7 @@ ENV TMOE_CHROOT=true \
 
 RUN if [ -z $(command -v dnf) ];then ln -svf $(command -v yum) /usr/bin/dnf; fi
 RUN yes | dnf update -y
-RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils hostname
+RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils hostname ca-certificates
 RUN mkdir -p /run/dbus
 
 ARG OS
