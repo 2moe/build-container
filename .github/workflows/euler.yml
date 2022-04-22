@@ -14,7 +14,7 @@ jobs:
     env:
       name: ${{ matrix.name }}
       user: cake233
-      tag: base
+      # tag: base
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
       zstd_level: 19
@@ -26,28 +26,34 @@ jobs:
           - os: ubuntu-latest
             name: euler
             arch: amd64
+            tag: base
             platform: "linux/amd64"
           - os: ubuntu-latest
             name: euler
             arch: arm64
+            tag: base
             platform: "linux/arm64"
 
           - os: ubuntu-latest
             name: amazon
             arch: amd64
+            tag: base
             platform: "linux/amd64"
           - os: ubuntu-latest
             name: amazon
             arch: arm64
+            tag: base
             platform: "linux/arm64"
 
           - os: ubuntu-latest
             name: oracle
             arch: amd64
+            tag: base
             platform: "linux/amd64"
           - os: ubuntu-latest
             name: oracle
             arch: arm64
+            tag: base
             platform: "linux/arm64"
     # repeat...
     steps:
