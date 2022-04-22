@@ -13,6 +13,7 @@ ARG OS
 ARG TAG
 ARG ARCH
 COPY --chmod=755 gen_tool /tmp
+RUN mkdir -p $TMOE_DIR/environment
 RUN . /tmp/gen_tool
 
 WORKDIR /root
