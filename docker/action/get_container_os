@@ -219,10 +219,15 @@ check_version_of_docker_image() {
         "v2 = ${Version_02_date}" \
         "ver = ${Rootfs_version}"
     case "$name-$tag" in
-    *-base)
+    arch-base)
         NODE_1=false
         NODE_2=false
         NODE_3=false
+        ;;
+    *-base)
+        NODE_1=true
+        NODE_2=true
+        NODE_3=true
         ;;
     *)
         NODE_1=true
