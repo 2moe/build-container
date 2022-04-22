@@ -12,10 +12,9 @@ install_electron() {
     # https://github.com/electron/electron/releases/download/v18.1.0/electron-v18.1.0-linux-arm64.zip
     URL=https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-linux-${ARCH_TYPE_02}.zip
     echo $URL
+    curl -Lo ${ELECTRON_ZIP_FILE} $URL || exit 1
     mkdir -p /opt/electron
-    cd /opt
-    curl -Lo electron.zip $URL || exit 1
-    cd electron
+    cd /opt/electron
     unzip -o ${ELECTRON_ZIP_FILE}
     rm -fv ${ELECTRON_ZIP_FILE}
     chmod a+rx -v electron
