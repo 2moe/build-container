@@ -1,5 +1,5 @@
-name: build amazon images
-# begin_time = 2022-04-22 02:14
+name: build euler images
+# begin_time = 2022-04-22 04:49:55+00:00
 
 on:
   push:
@@ -23,14 +23,16 @@ jobs:
       # fail-fast: false
       matrix:
         include:
-          # - os: ubuntu-latest
-          #   name: euler
-          #   arch: amd64
-          #   platform: "linux/amd64"
-          # - os: ubuntu-latest
-          #   name: euler
-          #   arch: arm64
-          #   platform: "linux/arm64"
+          - os: ubuntu-latest
+            name: euler
+            arch: amd64
+            tag: base
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: euler
+            arch: arm64
+            tag: base
+            platform: "linux/arm64"
 
           - os: ubuntu-latest
             name: amazon

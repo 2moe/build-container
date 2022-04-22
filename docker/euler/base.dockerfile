@@ -7,7 +7,7 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
-RUN yes | dnf install -y sudo tar xz newt glibc-all-langpacks passwd
+RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils
 RUN mkdir -p /run/dbus
 
 ARG OS
@@ -15,6 +15,7 @@ ARG TAG
 ARG ARCH
 COPY --chmod=755 gen_tool /tmp
 RUN mkdir -p $TMOE_DIR/environment \
+    && cd $TMOE_DIR \
     && printf "%s\n" \
     "CONTAINER_TYPE=podman" \
     "CONTAINER_NAME=${OS}_nogui-${TAG}" \
