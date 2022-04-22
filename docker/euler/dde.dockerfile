@@ -27,7 +27,8 @@ RUN . /tmp/gen_tool
 
 # ARG AUTO_INSTALL_GUI=true
 # RUN bash /tmp/install-gui.sh
-RUN yes | dnf install -y dde tigervnc-server
+RUN yes | dnf install -y --skip-broken dde 2>/dev/null
+RUN yes | dnf install -y tigervnc-server
 
 RUN cd "${TMOE_DIR}" \
     && cd git/share/old-version/tools/gui \

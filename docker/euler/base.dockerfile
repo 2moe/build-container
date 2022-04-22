@@ -7,7 +7,7 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
-RUN yes | dnf install -y sudo tar xz newt
+RUN yes | dnf install -y sudo tar xz newt glibc-all-langpacks
 
 ARG OS
 ARG TAG
