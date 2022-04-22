@@ -8,6 +8,8 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
+RUN yes | dnf install -y git
+
 ARG URL="https://github.com/2moe/tmoe-linux"
 # set configuration
 RUN mkdir -p "${TMOE_DIR}" \
