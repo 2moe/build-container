@@ -6,55 +6,32 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/rebuild.yml"
-
 jobs:
-  job1:
+  #------------------------------------------------
+  job2:
     # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: ${{ matrix.name }}
+      name: euler
       user: cake233
-      # tag: base
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 19
+      zstd_level: 18
 
     strategy:
       # fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            name: euler
+            tag: dde
             arch: amd64
-            tag: base
             platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: euler
-            arch: arm64
-            tag: base
-            platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: amazon
-            arch: amd64
-            tag: base
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: amazon
+            tag: dde
             arch: arm64
-            tag: base
             platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            name: oracle
-            arch: amd64
-            tag: base
-            platform: "linux/amd64"
-          - os: ubuntu-latest
-            name: oracle
-            arch: arm64
-            tag: base
-            platform: "linux/arm64"
     # repeat...
     steps:
       - name: set time env
@@ -177,17 +154,6 @@ jobs:
           bash docker/action/gen_docker_readme
           cat docker-readme.md
 
-      # - name: push README to Dockerhub
-      #   uses: christian-korneck/update-container-description-action@v1
-      #   env:
-      #     DOCKER_USER: ${{ env.user }}
-      #     DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
-      #   with:
-      #     destination_container_repo: ${{ env.repo }}
-      #     provider: dockerhub
-      #     # short_description: "Quickly install ${{ env.Container_name }}"
-      #     readme_file: "docker-readme.md"
-
       - name: copy docker readme.md to home dir
         run: |
           cp docker-readme.md ~/${Container_name}.md
@@ -219,3 +185,4 @@ jobs:
           repository: "2cd/index"
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
+  # job3:

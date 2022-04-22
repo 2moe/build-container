@@ -32,7 +32,7 @@ RUN yes | dnf install -y tigervnc-server iproute
 
 RUN cd "${TMOE_DIR}" \
     && cd git/share/old-version/tools/gui \
-    && cp startvnc stopvnc x11vncpasswd /usr/local/bin \
+    && cp startvnc stopvnc startxsdl x11vncpasswd /usr/local/bin \
     && cd /etc/X11/xinit/ \
     && cp Xsession Xsession.bak \
     && echo "dbus-launch startdde" > Xsession \
