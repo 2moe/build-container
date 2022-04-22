@@ -1,0 +1,67 @@
+#!/usr/bin/env sh
+install_electron() {
+    case ${ARCH} in
+    amd64|x86_64) ARCH_TYPE_02='x64' ;;
+    arm64*|aarch64) ARCH_TYPE_02=arm64 ;;
+    armhf|armv7|arm) ARCH_TYPE_02='armv7l' ;;
+    i386|386) ARCH_TYPE_02='ia32' ;;
+    esac
+
+    [[ -n ${ELECTRON_VERSION} ]] || ELECTRON_VERSION=18.0.4
+    ELECTRON_ZIP_FILE="../electron.zip"
+    # https://github.com/electron/electron/releases/download/v18.1.0/electron-v18.1.0-linux-arm64.zip
+    URL=https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-linux-${ARCH_TYPE_02}.zip
+    echo $URL
+    mkdir -p /opt/electron
+    cd /opt
+    curl -Lo electron.zip $URL || exit 1
+    cd electron
+    unzip -o ${ELECTRON_ZIP_FILE}
+    rm -fv ${ELECTRON_ZIP_FILE}
+    chmod a+rx -v electron
+
+    dnf install -y libXScrnSaver unzip
+    printf "%s\n" "${GREEN}find ${YELLOW}${DOWNLOAD_PATH} ${BLUE}-type d -print${RESET} | ${GREEN}xargs ${BLUE}chmod -v a+rx${RESET}"
+    find . -type d -print | xargs chmod -v a+rx
+    find . -type f -print | xargs chmod a+r
+    chmod -v 755 .
+    chmod -v 4755 ./chrome-sandbox    
+}
+
+download_tmoe_electron_app() {
+    PKG_URL="https://packages.tmoe.me"
+    DOWNLOAD_PATH="/tmp/.${DEPENDENCY_01}_TEMP_FOLDER"
+    APPS_LNK_DIR=/usr/share/applications
+    [ -e "${DOWNLOAD_PATH}" ] && rm -rvf ${DOWNLOAD_PATH}
+    [ ! -e /opt ] && mkdir -pv /opt
+    mkdir -p ${DOWNLOAD_PATH}
+    cd ${DOWNLOAD_PATH}
+    curl -Lo app.tar.xz "${PKG_URL}/apps/${DEPENDENCY_01}/app.tar.xz" || echo "Download app.tar.xz failed"
+
+    cd ${DOWNLOAD_PATH}
+    tar -Jxvf app.tar.xz -C /opt
+    if [ -n "${OPT_APP_VERSION_TXT}" ]; then
+        [ -e ${OPT_APP_VERSION_TXT} ] || printf "%s\n" "${THE_LATEST_DEB_FILE}" >${OPT_APP_VERSION_TXT}
+    fi
+    if [ -e "/opt/${DEPENDENCY_01}" ]; then
+        printf "%s\n" "${GREEN}find ${YELLOW}/opt/${DEPENDENCY_01} ${BLUE}-type d -print${RESET} | ${GREEN}xargs ${BLUE}chmod -v a+rx${RESET}"
+        chmod -Rv 755 /opt/${DEPENDENCY_01}/usr/bin/ 2>/dev/null
+        find /opt/${DEPENDENCY_01} -type d -print | xargs chmod -v a+rx
+        find /opt/${DEPENDENCY_01} -type f -print | xargs chmod a+r
+        cd /opt/${DEPENDENCY_01}
+        pwd
+        # cp -vf .${APPS_LNK_DIR}/${DEPENDENCY_01}.desktop ${APPS_LNK_DIR}
+    else
+        cd /tmp
+    fi
+    rm -rfv ${DOWNLOAD_PATH}
+}
+
+install_electron_apps(){
+for DEPENDENCY_01 in obsidian electron-netease-cloud-music bilibili-web listen1 yesplaymusic; do
+    download_tmoe_electron_app
+done
+}
+
+install_electron
+install_electron_apps

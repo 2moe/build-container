@@ -111,3 +111,6 @@ old/
 .github/workflows/hello.yml
 .github/workflows/*.yaml
 # .github/workflows/test.yml
+
+# docker/assets/electron/install_apps
+# docker/euler/dde.dockerfile
