@@ -1,5 +1,5 @@
 name: build euler images
-# begin_time = 2022-04-22
+# begin_time = 2022-04-22 00:22
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - ".github/workflows/euler.yml"
 
 jobs:
-  job2:
+  job1:
     # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
@@ -16,19 +16,19 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 13
+      zstd_level: 19
 
     strategy:
       # fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
-            tag: dde
+            tag: base
             arch: amd64
             platform: "linux/amd64"
 
           - os: ubuntu-latest
-            tag: dde
+            tag: base
             arch: arm64
             platform: "linux/arm64"
 
@@ -64,6 +64,12 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: ${{ matrix.platform }}
+
+      - name: set container name(notag latest/base)
+        if: matrix.tag == 'base' || matrix.tag == 'latest'
+        env:
+          container: ${{ env.name }}-${{ matrix.arch }}
+        run: echo "Container_name=$container" >> "$GITHUB_ENV"
 
       - name: set container name(notag latest/base)
         if: matrix.tag == 'base' || matrix.tag == 'latest'
@@ -191,6 +197,151 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
   #------------------------------------------------
+  job2:
+    needs: [job1]
+    runs-on: ${{ matrix.os }}
+    env:
+      name: euler
+      user: cake233
+      platform: ${{ matrix.platform }}
+      arch: ${{ matrix.arch }}
+      zstd_level: 13
+
+    strategy:
+      # fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tag: dde
+            arch: amd64
+            platform: "linux/amd64"
+
+          - os: ubuntu-latest
+            tag: dde
+            arch: arm64
+            platform: "linux/arm64"
+
+    # repeat...
+    steps:
+      - name: set time env
+        run: |
+          printf "%s\n" \
+            "time_begin=$(date -u --rfc-3339=ns)" \
+            "time_today=$(date -u --rfc-3339=date)" \
+            >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v2
+        with:
+          # repository: "2moe/xxx"
+          ref: "master"
+          fetch-depth: 1
+
+      - name: get architecture
+        env:
+          TARGETARCH: ${{ matrix.arch }}
+        run: bash docker/assets/get_arch
+
+      - name: get container os & set global env
+        env:
+          tag: ${{ matrix.tag }}
+        run: bash docker/action/get_container_os
+
+      - name: set up qemu-user & binfmt
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        if: matrix.arch != 'amd64' && matrix.arch != 'i386'
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: ${{ matrix.platform }}
+
+      - name: set container name(notag latest/base)
+        if: matrix.tag == 'base' || matrix.tag == 'latest'
+        env:
+          container: ${{ env.name }}-${{ matrix.arch }}
+        run: echo "Container_name=$container" >> "$GITHUB_ENV"
+
+      - name: set container name(notag latest/base)
+        if: matrix.tag == 'base' || matrix.tag == 'latest'
+        env:
+          container: ${{ env.name }}-${{ matrix.arch }}
+        run: echo "Container_name=$container" >> "$GITHUB_ENV"
+
+      - name: set container name(normal)
+        if: matrix.tag != 'base' && matrix.tag != 'latest'
+        env:
+          container: ${{ env.name }}-${{ matrix.tag }}-${{ matrix.arch }}
+        run: echo "Container_name=$container" >> "$GITHUB_ENV"
+
+      - name: set repo (global env)
+        env:
+          repo: ${{ env.user }}/${{ env.Container_name }}
+          m_arch: ${{ matrix.arch }}
+        run: |
+          printf "%s\n" \
+            "repo=$repo" \
+            "zsh_repo=${user}/${name}-zsh-${m_arch}" \
+            >> "$GITHUB_ENV"
+
+      - name: build container
+        env:
+          file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
+          tag: ${{ matrix.tag }}
+        run: bash docker/action/docker_build
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ env.user }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: docker push
+        run: |
+          docker push -a "${repo}"
+
+      - name: docker run (zsh)
+        if: matrix.tag == 'zsh'
+        timeout-minutes: 1
+        continue-on-error: true
+        run: bash docker/action/docker_run docker zsh
+
+      - name: docker run
+        if: matrix.tag != 'zsh'
+        timeout-minutes: 1
+        run: bash docker/action/docker_run
+
+      - name: docker export
+        run: bash docker/action/docker_export
+
+      - name: start zstd
+        # if: matrix.tag != 'base'
+        run: bash docker/action/compress_file $zstd_level
+
+      - name: docker build zstd image
+        # if: matrix.tag != 'base'
+        run: bash docker/action/build_zstd_image
+
+      - name: set end time
+        run: |
+          printf "%s\n" \
+            "end_time_normal=$(date -u +%Y-%m-%d_%H-%M)" \
+            "end_time=$(date -u --rfc-3339=ns)" \
+            >>"$GITHUB_ENV"
+
+      - name: write to toml file
+        env:
+          tag: ${{ matrix.tag }}
+          platform: ${{ matrix.platform }}
+        run: |
+          bash docker/action/write_to_toml
+
+      - name: cat i.toml
+        run: cat i.toml
+
+      - name: gen docker readme
+        env:
+          dir: docker/assets
+        run: |
+          bash docker/action/gen_docker_readme
+          cat docker-readme.md
   # job3:
   #   needs: [job1, job2]
   #   runs-on: ubuntu-latest

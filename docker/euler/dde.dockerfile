@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 #---------------------------
 # FROM cake233/fedora-zsh-${TARGETARCH}${TARGETVARIANT}
-FROM openeuler/openeuler
+FROM cake233/euler-${TARGETARCH}${TARGETVARIANT}
 
 ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
@@ -27,8 +27,7 @@ RUN . /tmp/gen_tool
 
 # ARG AUTO_INSTALL_GUI=true
 # RUN bash /tmp/install-gui.sh
-RUN yes | dnf install -y sudo dde \
-    dnf install -y tigervnc-server newt tar xz
+RUN yes | dnf install -y dde tigervnc-server
 
 RUN cd "${TMOE_DIR}" \
     && cd git/share/old-version/tools/gui \
@@ -53,4 +52,4 @@ RUN rm -rfv \
 RUN dnf clean all
 
 EXPOSE 5902 36080
-CMD ["zsh"]
+CMD ["bash"]
