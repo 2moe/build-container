@@ -8,7 +8,7 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
-RUN yes | dnf install -y git
+RUN yes | dnf install -y git zsh
 
 ARG URL="https://github.com/2moe/tmoe-linux"
 # set configuration

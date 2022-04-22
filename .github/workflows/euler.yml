@@ -205,7 +205,7 @@ jobs:
       user: cake233
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 13
+      zstd_level: 18
 
     strategy:
       # fail-fast: false
@@ -342,6 +342,38 @@ jobs:
         run: |
           bash docker/action/gen_docker_readme
           cat docker-readme.md
+
+      - name: copy docker readme.md to home dir
+        run: |
+          cp docker-readme.md ~/${Container_name}.md
+          cp i.toml ~/${Container_name}.toml
+
+      - name: repo(index)
+        uses: actions/checkout@v2
+        with:
+          repository: "2cd/index"
+          ref: "master"
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+          fetch-depth: 1 # otherwise, there would be errors pushing refs to the destination repository.
+      - name: create local changes
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git reset --hard origin/master
+          git pull --rebase --stat origin master --allow-unrelated-histories
+          mkdir -p doc/${name}
+          cp ~/${Container_name}.md ~/${Container_name}.toml doc/${name}
+
+      - name: commit files
+        run: |
+          git add .
+          git commit -m "docs(docker): ${Container_name}.md" -a
+      - name: push changes
+        uses: ad-m/github-push-action@master
+        with:
+          repository: "2cd/index"
+          github_token: ${{ secrets.GH_TOKEN }}
+          branch: "master"
   # job3:
   #   needs: [job1, job2]
   #   runs-on: ubuntu-latest
