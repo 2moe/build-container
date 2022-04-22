@@ -1,5 +1,5 @@
-name: rebuild go
-# begin_time = 2022-03-16
+name: build euler images
+# begin_time = 2022-04-22 02:14
 
 on:
   push:
@@ -9,72 +9,46 @@ on:
 
 jobs:
   job1:
-    # needs: [job0, job1]
+    # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
       name: ${{ matrix.name }}
       user: cake233
+      tag: base
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 22
+      zstd_level: 19
 
     strategy:
-      fail-fast: false
+      # fail-fast: false
       matrix:
         include:
           # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
+          #   name: euler
           #   arch: amd64
           #   platform: "linux/amd64"
           # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
+          #   name: euler
           #   arch: arm64
           #   platform: "linux/arm64"
-          # - os: ubuntu-latest
-          #   name: code
-          #   tag: latest
-          #   arch: armv7
-          #   platform: "linux/arm/v7"
 
           - os: ubuntu-latest
-            name: go
-            tag: latest
+            name: amazon
             arch: amd64
             platform: "linux/amd64"
           - os: ubuntu-latest
-            name: go
-            tag: latest
+            name: amazon
             arch: arm64
             platform: "linux/arm64"
 
           - os: ubuntu-latest
-            name: go
-            tag: alpine
+            name: oracle
             arch: amd64
             platform: "linux/amd64"
           - os: ubuntu-latest
-            name: go
-            tag: alpine
+            name: oracle
             arch: arm64
             platform: "linux/arm64"
-          - os: ubuntu-latest
-            name: go
-            tag: alpine
-            arch: armv7
-            platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips32le
-          #   platform: "linux/mips32le"
-
-          # - os: self-hosted-debian
-          #   tag: hello
-          #   arch: amd64
-          #   platform: "linux/amd64"
-
     # repeat...
     steps:
       - name: set time env
@@ -114,6 +88,12 @@ jobs:
           container: ${{ env.name }}-${{ matrix.arch }}
         run: echo "Container_name=$container" >> "$GITHUB_ENV"
 
+      - name: set container name(notag latest/base)
+        if: matrix.tag == 'base' || matrix.tag == 'latest'
+        env:
+          container: ${{ env.name }}-${{ matrix.arch }}
+        run: echo "Container_name=$container" >> "$GITHUB_ENV"
+
       - name: set container name(normal)
         if: matrix.tag != 'base' && matrix.tag != 'latest'
         env:
@@ -130,56 +110,11 @@ jobs:
             "zsh_repo=${user}/${name}-zsh-${m_arch}" \
             >> "$GITHUB_ENV"
 
-      - name: go.dockerfile -> beta
-        if: matrix.name == 'go'
-        env:
-          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
-        run: |
-          TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220630));then
-            sed -E \
-                -e "s@( golang):(alpine)@\1:1.18-\2@" \
-                -e "s@( golang):latest@\1:1.18-bullseye@" \
-                -i ${{ env.file }}
-                # rc-bullseye, rc-alpine
-          fi
-
-      - name: jdk.dockerfile -> ea
-        if: matrix.name == 'jdk'
-        env:
-          file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
-        run: |
-          TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220922));then
-            VERSION=19
-          elif ((TODAY<=20230922));then
-            VERSION=20
-          fi
-
-          sed -E \
-                -e "s@( openjdk):jdk-(slim)@\1:${VERSION}-\2@" \
-                -i ${{ env.file }}
-
       - name: build container
         env:
           file: "../${{ env.name }}/${{ matrix.tag }}.dockerfile"
           tag: ${{ matrix.tag }}
         run: bash docker/action/docker_build
-
-      - name: build base
-        if: matrix.tag == 'base'
-        env:
-          file: "../${{ env.name }}/${{ matrix.tag }}02.dockerfile"
-        run: |
-          docker run -d --name base_tmp ${{ env.repo }}:latest sh
-          docker cp base_tmp:/arch.tar.xz .
-          xz -dfv arch.tar.xz
-          mv arch.tar docker/assets
-          docker stop base_tmp
-          docker rm -f base_tmp
-          docker rmi -f ${repo}
-          bash docker/action/docker_build
-          rm -fv docker/assets/arch.tar
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
@@ -236,16 +171,16 @@ jobs:
           bash docker/action/gen_docker_readme
           cat docker-readme.md
 
-      - name: push README to Dockerhub
-        uses: christian-korneck/update-container-description-action@v1
-        env:
-          DOCKER_USER: ${{ env.user }}
-          DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
-        with:
-          destination_container_repo: ${{ env.repo }}
-          provider: dockerhub
-          # short_description: "Quickly install ${{ env.Container_name }}"
-          readme_file: "docker-readme.md"
+      # - name: push README to Dockerhub
+      #   uses: christian-korneck/update-container-description-action@v1
+      #   env:
+      #     DOCKER_USER: ${{ env.user }}
+      #     DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
+      #   with:
+      #     destination_container_repo: ${{ env.repo }}
+      #     provider: dockerhub
+      #     # short_description: "Quickly install ${{ env.Container_name }}"
+      #     readme_file: "docker-readme.md"
 
       - name: copy docker readme.md to home dir
         run: |
