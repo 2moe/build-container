@@ -55,6 +55,17 @@ jobs:
             arch: arm64
             tag: base
             platform: "linux/arm64"
+            # cblmariner
+          - os: ubuntu-latest
+            name: cblmariner
+            arch: amd64
+            tag: base
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: cblmariner
+            arch: arm64
+            tag: base
+            platform: "linux/arm64"
     # repeat...
     steps:
       - name: set time env

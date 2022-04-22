@@ -7,31 +7,32 @@ on:
     paths:
       - ".github/workflows/rebuild.yml"
 jobs:
-  #------------------------------------------------
-  job2:
+  job1:
     # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: euler
+      name: ${{ matrix.name }}
       user: cake233
+      # tag: base
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
-      zstd_level: 18
+      zstd_level: 19
 
     strategy:
       # fail-fast: false
       matrix:
         include:
+          # cblmariner
           - os: ubuntu-latest
-            tag: dde
+            name: cblmariner
             arch: amd64
+            tag: base
             platform: "linux/amd64"
-
           - os: ubuntu-latest
-            tag: dde
+            name: cblmariner
             arch: arm64
+            tag: base
             platform: "linux/arm64"
-
     # repeat...
     steps:
       - name: set time env
@@ -154,6 +155,17 @@ jobs:
           bash docker/action/gen_docker_readme
           cat docker-readme.md
 
+      # - name: push README to Dockerhub
+      #   uses: christian-korneck/update-container-description-action@v1
+      #   env:
+      #     DOCKER_USER: ${{ env.user }}
+      #     DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
+      #   with:
+      #     destination_container_repo: ${{ env.repo }}
+      #     provider: dockerhub
+      #     # short_description: "Quickly install ${{ env.Container_name }}"
+      #     readme_file: "docker-readme.md"
+
       - name: copy docker readme.md to home dir
         run: |
           cp docker-readme.md ~/${Container_name}.md
@@ -185,4 +197,3 @@ jobs:
           repository: "2cd/index"
           github_token: ${{ secrets.GH_TOKEN }}
           branch: "master"
-  # job3:
