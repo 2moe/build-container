@@ -7,6 +7,8 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
+RUN if [ -z $(command -v dnf) ];then ln -svf $(command -v yum) /usr/bin/dnf; fi
+
 RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks
 RUN mkdir -p /run/dbus
 

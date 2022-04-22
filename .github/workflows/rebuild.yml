@@ -1,4 +1,4 @@
-name: build euler images
+name: build amazon images
 # begin_time = 2022-04-22 02:14
 
 on:
