@@ -12,8 +12,9 @@ jobs:
     # needs: [job1]
     runs-on: ${{ matrix.os }}
     env:
-      name: euler
+      name: ${{ matrix.name }}
       user: cake233
+      tag: base
       platform: ${{ matrix.platform }}
       arch: ${{ matrix.arch }}
       zstd_level: 19
@@ -23,15 +24,31 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            tag: base
+            name: euler
             arch: amd64
             platform: "linux/amd64"
-
           - os: ubuntu-latest
-            tag: base
+            name: euler
             arch: arm64
             platform: "linux/arm64"
 
+          - os: ubuntu-latest
+            name: amazon
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: amazon
+            arch: arm64
+            platform: "linux/arm64"
+
+          - os: ubuntu-latest
+            name: oracle
+            arch: amd64
+            platform: "linux/amd64"
+          - os: ubuntu-latest
+            name: oracle
+            arch: arm64
+            platform: "linux/arm64"
     # repeat...
     steps:
       - name: set time env
