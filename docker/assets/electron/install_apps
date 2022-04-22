@@ -6,7 +6,7 @@ install_electron() {
     armhf|armv7|arm) ARCH_TYPE_02='armv7l' ;;
     i386|386) ARCH_TYPE_02='ia32' ;;
     esac
-
+    dnf install -y --skip-broken libXScrnSaver unzip
     [[ -n ${ELECTRON_VERSION} ]] || ELECTRON_VERSION=18.0.4
     ELECTRON_ZIP_FILE="/tmp/electron.zip"
     # https://github.com/electron/electron/releases/download/v18.1.0/electron-v18.1.0-linux-arm64.zip
@@ -19,7 +19,6 @@ install_electron() {
     rm -fv ${ELECTRON_ZIP_FILE}
     chmod a+rx -v electron
 
-    dnf install -y --skip-broken libXScrnSaver unzip
     printf "%s\n" "${GREEN}find ${YELLOW}${DOWNLOAD_PATH} ${BLUE}-type d -print${RESET} | ${GREEN}xargs ${BLUE}chmod -v a+rx${RESET}"
     find /opt/electron -type d -print | xargs chmod -v a+rx
     find /opt/electron -type f -print | xargs chmod a+r
