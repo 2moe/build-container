@@ -1,4 +1,4 @@
-name: build dde images
+name: build cblmariner images
 # begin_time = 2022-04-22
 
 on:
