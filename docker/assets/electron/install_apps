@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 install_electron() {
     case ${ARCH} in
     amd64|x86_64) ARCH_TYPE_02='x64' ;;
@@ -8,7 +8,7 @@ install_electron() {
     esac
 
     [[ -n ${ELECTRON_VERSION} ]] || ELECTRON_VERSION=18.0.4
-    ELECTRON_ZIP_FILE="../electron.zip"
+    ELECTRON_ZIP_FILE="/tmp/electron.zip"
     # https://github.com/electron/electron/releases/download/v18.1.0/electron-v18.1.0-linux-arm64.zip
     URL=https://github.com/electron/electron/releases/download/v${ELECTRON_VERSION}/electron-v${ELECTRON_VERSION}-linux-${ARCH_TYPE_02}.zip
     echo $URL
@@ -20,12 +20,12 @@ install_electron() {
     rm -fv ${ELECTRON_ZIP_FILE}
     chmod a+rx -v electron
 
-    dnf install -y libXScrnSaver unzip
+    dnf install -y --skip-broken libXScrnSaver unzip
     printf "%s\n" "${GREEN}find ${YELLOW}${DOWNLOAD_PATH} ${BLUE}-type d -print${RESET} | ${GREEN}xargs ${BLUE}chmod -v a+rx${RESET}"
-    find . -type d -print | xargs chmod -v a+rx
-    find . -type f -print | xargs chmod a+r
-    chmod -v 755 .
-    chmod -v 4755 ./chrome-sandbox    
+    find /opt/electron -type d -print | xargs chmod -v a+rx
+    find /opt/electron -type f -print | xargs chmod a+r
+    chmod -v 755 /opt/electron
+    chmod -v 4755 /opt/electron/chrome-sandbox    
 }
 
 download_tmoe_electron_app() {
