@@ -7,6 +7,7 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
+RUN yes | dnf update -y
 RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils hostname
 RUN mkdir -p /run/dbus
 

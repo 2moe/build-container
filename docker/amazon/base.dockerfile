@@ -8,7 +8,7 @@ ENV TMOE_CHROOT=true \
     LANG="en_US.UTF-8"
 
 RUN if [ -z $(command -v dnf) ];then ln -svf $(command -v yum) /usr/bin/dnf; fi
-
+RUN yes | dnf update -y
 RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils hostname
 RUN mkdir -p /run/dbus
 
