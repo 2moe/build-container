@@ -13,8 +13,12 @@ ARG OS
 ARG TAG
 ARG ARCH
 COPY --chmod=755 gen_tool /tmp
-RUN mkdir -p $TMOE_DIR/environment
-RUN . /tmp/gen_tool
+RUN mkdir -p $TMOE_DIR/environment \
+    && printf "%s\n" \
+    "CONTAINER_TYPE=podman" \
+    "CONTAINER_NAME=${OS}_nogui-${TAG}" \
+    "ARCH=${ARCH}" \
+    >container.txt
 
 WORKDIR /root
 
