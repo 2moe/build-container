@@ -15,6 +15,14 @@ UBUNTU_CODENAME=kinetic
 EOF
 chmod 644 $RELEASE
 }
+set_new_lib_release() {
+    cat > /etc/lsb-release<<-'EOF'
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.10
+DISTRIB_CODENAME=kinetic
+DISTRIB_DESCRIPTION="Ubuntu Kinetic Kudu (development branch)"
+EOF
+}
 
 get_ubuntu_codename() {
     for i in /usr/lib/os-release /etc/os-release;do
@@ -34,6 +42,7 @@ get_ubuntu_codename() {
             sed -i -E "s@(VERSION_CODENAME)=kinetic@\1=devel@" $RELEASE
             sed -i "s@ jammy@ devel@" ${SOURCE_LIST}
         else
+            set_new_lib_release
             sed -i "s@ jammy@ kinetic@" ${SOURCE_LIST}
         fi
         ;;
