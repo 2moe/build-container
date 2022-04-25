@@ -22,8 +22,8 @@ os = "$container_os"
 release = "$container_release"
 arch = "$DEB_ARCH"
 platform = "$platform"
-x11_or_wayland = $X11
-syntax_version = "0.0.0-alpha.3"
+xorg_or_wayland = $X11
+syntax_version = "0.0.0-alpha.4"
 
 [file]
 name = "${Container_name}_${end_time_normal}.tar.zst"
@@ -111,6 +111,8 @@ write_extra_toml_data() {
     #     "LANG = \"${LOCALE}\"" \
     #     >>i.toml
 
+# 注意：測試期間，server.node2 current=true ;server.node3 current=true
+# 正式版需要將 current 改爲 false
     cat >server_tmp.toml <<-EOF
 end = ${end_time}
 
@@ -126,14 +128,14 @@ split = false
 
 [server.node2]
 name = "tmoe"
-current = false
+current = true
 previous = ${NODE_2}
 in_sync = false
 split = false
 
 [server.node3]
 name = "azure"
-current = false
+current = true
 previous = ${NODE_3}
 in_sync = false
 split = false
