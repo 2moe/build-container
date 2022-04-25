@@ -1,0 +1,41 @@
+set_new_os_release() {
+    cat >$RELEASE<<-'EOF'
+PRETTY_NAME="Ubuntu Kinetic Kudu (development branch)"
+NAME="Ubuntu"
+VERSION_ID="22.10"
+VERSION="Kinetic Kudu (development branch)"
+VERSION_CODENAME=kinetic
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=kinetic
+EOF
+chmod 644 $RELEASE
+}
+
+get_ubuntu_codename() {
+    for i in /usr/lib/os-release /etc/os-release;do
+        if [ -s $i ];then
+            RELEASE=$i        
+        fi
+    done 
+    RELEASE_CONTENT=$(cat $RELEASE)
+    Current_day=$(date -u +%Y%m%d)
+    if ((Current_day <= 20220515)); then
+        case $RELEASE_CONTENT in
+        *Jammy Jellyfish*) 
+        set_new_os_release 
+        if ((Current_day <= 20220430)); then
+            sed -i -E "s@(VERSION_CODENAME)=kinetic@\1=devel@" $RELEASE
+            sed -i "s@ jammy@ devel@" /etc/apt/sources.list
+        else
+            sed -i "s@ jammy@ kinetic@" /etc/apt/sources.list
+        fi
+        ;;
+        esac
+    fi
+}
+get_ubuntu_codename
