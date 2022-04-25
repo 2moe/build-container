@@ -33,10 +33,6 @@ ARG ARCH
 COPY --chmod=755 set_container_txt /tmp
 RUN . /tmp/set_container_txt
 
-# configure zsh
-COPY --chmod=755 configure_zsh /tmp
-RUN . /tmp/configure_zsh
-
 # clean
 COPY --chmod=755 clean_deb_cache /tmp
 RUN . /tmp/clean_deb_cache
