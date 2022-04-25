@@ -19,20 +19,22 @@ chmod 644 $RELEASE
 get_ubuntu_codename() {
     for i in /usr/lib/os-release /etc/os-release;do
         if [ -s $i ];then
-            RELEASE=$i        
+            RELEASE=$i
+            break
         fi
     done 
-    RELEASE_CONTENT=$(cat $RELEASE)
+    RELEASE_CONTENT="$(cat $RELEASE)"
+    SOURCE_LIST="/etc/apt/sources.list"
     Current_day=$(date -u +%Y%m%d)
     if ((Current_day <= 20220515)); then
-        case $RELEASE_CONTENT in
-        *Jammy Jellyfish*) 
+        case "${RELEASE_CONTENT}" in
+        *Jammy*Jellyfish*) 
         set_new_os_release 
         if ((Current_day <= 20220430)); then
             sed -i -E "s@(VERSION_CODENAME)=kinetic@\1=devel@" $RELEASE
-            sed -i "s@ jammy@ devel@" /etc/apt/sources.list
+            sed -i "s@ jammy@ devel@" ${SOURCE_LIST}
         else
-            sed -i "s@ jammy@ kinetic@" /etc/apt/sources.list
+            sed -i "s@ jammy@ kinetic@" ${SOURCE_LIST}
         fi
         ;;
         esac

@@ -8,6 +8,9 @@ ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux"
 
+COPY --chmod=755 ubuntu/devel /tmp
+RUN bash /tmp/devel
+
 # install dependencies
 COPY --chmod=755 install_deb_deps /tmp
 RUN . /tmp/install_deb_deps
