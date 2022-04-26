@@ -1,14 +1,17 @@
 
 # syntax=docker/dockerfile:1
 #---------------------------
-# cblmariner.azurecr.io/base/core:1.0
-FROM cblmariner2preview.azurecr.io/base/core:2.0
+FROM cblmariner.azurecr.io/base/core:1.0
+# FROM cblmariner2preview.azurecr.io/base/core:2.0
 
 ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
-RUN yes | yum install -y dnf
+
+RUN yes | yum install -y --skip-broken dnf
+RUN if [ -z $(command -v dnf) ];then ln -svf $(command -v yum) /usr/bin/dnf; fi
+
 RUN yes | dnf update -y
 RUN yes | dnf install -y --skip-broken sudo tar xz newt glibc-all-langpacks passwd shadow-utils hostname glibc-lang glibc-i18n ca-certificates
 RUN mkdir -p /run/dbus
