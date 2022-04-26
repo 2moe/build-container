@@ -7,7 +7,7 @@ ENV TMOE_CHROOT=true \
     TMOE_DIR="/usr/local/etc/tmoe-linux" \
     LANG="en_US.UTF-8"
 
-RUN yes | yum install -y --skip-broken dnf
+RUN yes | yum install -y --skip-broken dnf || echo "unable to install dnf"
 RUN if [ -z $(command -v dnf) ];then ln -svf $(command -v yum) /usr/bin/dnf; fi
 
 RUN yes | dnf update -y || echo "install failed"
