@@ -1,5 +1,5 @@
 name: build euler images
-# begin_time = 2022-04-26 02:23:01+00:00
+# begin_time = 2022-04-26 02:23:01
 
 on:
   push:
