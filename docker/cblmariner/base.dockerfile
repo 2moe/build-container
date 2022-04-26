@@ -2,8 +2,8 @@
 # syntax=docker/dockerfile:1
 #---------------------------
 # FROM cblmariner.azurecr.io/base/core:1.0
-# FROM cblmariner2preview.azurecr.io/base/core:2.0
-FROM cake233/cblmariner-${TARGETARCH}${TARGETVARIANT}
+FROM cblmariner2preview.azurecr.io/base/core:2.0
+# FROM cake233/cblmariner-${TARGETARCH}${TARGETVARIANT}
 
 ENV TMOE_CHROOT=true \
     TMOE_DOCKER=true \
