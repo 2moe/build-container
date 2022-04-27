@@ -38,15 +38,14 @@ get_ubuntu_codename() {
         case "${RELEASE_CONTENT}" in
         *Jammy*Jellyfish*) 
         set_new_os_release 
-        if ((Current_day <= 20220430)); then
-            sed -i -E "s@(VERSION_CODENAME)=kinetic@\1=devel@" $RELEASE
-            sed -i "s@ jammy@ devel@" ${SOURCE_LIST}
-        else
-            set_new_lib_release
-            sed -i "s@ jammy@ kinetic@" ${SOURCE_LIST}
-        fi
+        # if ((Current_day <= 20220430)); then
+        #     sed -i -E "s@(VERSION_CODENAME)=kinetic@\1=devel@" $RELEASE
+        # else
+        set_new_lib_release
+        # fi
         ;;
         esac
+        sed -i "s@ jammy@ kinetic@" ${SOURCE_LIST}
     fi
 }
 get_ubuntu_codename
