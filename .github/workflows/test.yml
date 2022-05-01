@@ -206,9 +206,9 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           docker manifest create --amend ${{ env.user }}/${{ env.name }}:latest \
-              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
-              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
-              ${{ env.user }}/${{ env.name }}-${i}-armv7
+              ${{ env.user }}/${{ env.name }}-amd64 \
+              ${{ env.user }}/${{ env.name }}-arm64 \
+              ${{ env.user }}/${{ env.name }}-armv7
           docker manifest push ${{ env.user }}/${{ env.name }}:latest
 
       - name: cat i.toml
