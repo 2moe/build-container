@@ -9,6 +9,9 @@ ENV TMOE_CHROOT=true \
 # install base-devel
 RUN pacman -Syu --noconfirm --needed base base-devel
 
+# remove runner user & group
+RUN if [ $(getent group runner) ]; then groupdel -f runner && userdel --remove --force runner ; rm -fv /etc/sudoers.d/runner 2>/dev/null; fi
+
 # install dependencies
 RUN pacman \
     -S \

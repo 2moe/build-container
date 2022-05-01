@@ -16,7 +16,20 @@ ENV LANG en_US.UTF-8
 WORKDIR /root
 
 # base
-RUN pacman -Syyu --needed --noconfirm base wget curl
+RUN pacman -Syyu --needed --noconfirm base base-devel wget curl sudo
+
+RUN groupadd -f \
+    --non-unique \
+    runner \
+    --gid 1002 \
+    && useradd -m \
+    --gid 1002 \
+    --uid 1002 \
+    --non-unique \
+    runner \
+    && echo "runner ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/runner \
+    && printf "%s\n" "root:root" | chpasswd \
+    && printf "%s\n" "runner:runner" | chpasswd
 
 # clean /var/cache/pacman/
 RUN yes | pacman -Scc

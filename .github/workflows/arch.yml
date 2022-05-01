@@ -201,6 +201,16 @@ jobs:
         run: |
           bash docker/action/write_to_toml
 
+      - name: arch base-devel manifest
+        if: matrix.tag = 'base' && env.name = 'arch'
+        run: |
+          echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
+          docker manifest create --amend ${{ env.user }}/${{ env.name }}:latest \
+              ${{ env.user }}/${{ env.name }}-${i}-amd64 \
+              ${{ env.user }}/${{ env.name }}-${i}-arm64 \
+              ${{ env.user }}/${{ env.name }}-${i}-armv7
+          docker manifest push ${{ env.user }}/${{ env.name }}:latest
+
       - name: cat i.toml
         run: cat i.toml
 
@@ -283,46 +293,6 @@ jobs:
             tag: zsh
             arch: armv7
             platform: "linux/arm/v7"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: armv6
-          #   platform: "linux/arm/v6"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: 386
-          #   platform: "linux/386"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: riscv64
-          #   platform: "linux/riscv64"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: ppc64le
-          #   platform: "linux/ppc64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: s390x
-          #   platform: "linux/s390x"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips64le
-          #   platform: "linux/mips64le"
-
-          # - os: ubuntu-latest
-          #   tag: latest
-          #   arch: mips32le
-          #   platform: "linux/mips32le"
-
-          # - os: self-hosted-debian
-          #   tag: hello
-          #   arch: amd64
-          #   platform: "linux/amd64"
 
     # repeat...
     steps:
