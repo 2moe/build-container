@@ -202,7 +202,7 @@ jobs:
           bash docker/action/write_to_toml
 
       - name: arch base-devel manifest
-        if: matrix.tag = 'base' && env.name = 'arch'
+        if: matrix.tag == 'base' && env.name == 'arch'
         run: |
           echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ env.user }} --password-stdin
           docker manifest create --amend ${{ env.user }}/${{ env.name }}:latest \
