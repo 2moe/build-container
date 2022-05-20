@@ -8,7 +8,10 @@ pub struct Doc {
 
 impl std::fmt::Display for Doc {
     /// Formats Doc struct
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(
+        &self,
+        f: &mut std::fmt::Formatter<'_>,
+    ) -> std::fmt::Result {
         let s = &self.doc;
         s.fmt(f)
     }
@@ -23,11 +26,11 @@ impl Doc {
         Doc { doc: doc.unwrap() }
     }
 
-    pub fn from_str(s: &str) -> Doc {
-        let doc = s.parse::<Document>();
-        assert!(doc.is_ok());
-        Doc { doc: doc.unwrap() }
-    }
+    // pub fn from_str(s: &str) -> Doc {
+    //     let doc = s.parse::<Document>();
+    //     assert!(doc.is_ok());
+    //     Doc { doc: doc.unwrap() }
+    // }
 
     pub fn running<F>(&mut self, func: F) -> &mut Self
     where

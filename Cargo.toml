@@ -1,20 +1,18 @@
-cargo-features = ["strip"]
-
 [package]
 name = "get-arch-url"
 version = "0.0.1"
 edition = "2021"
-license = "gpl-2.0-or-later"
-authors = ["2moe"]
+license = "Apache-2.0"
+authors = ["Moe Master <m@tmoe.me>"]
 description = """
 A simple program to get the latest arch rootfs url.
 """
 
 
 [dependencies]
-toml_edit = "0.3.1"
+toml_edit = "0.14.4"
 error-chain = "0.12.4"
-nom = "7.0.0"
+nom = "7.1.1"
 lazy_static = "1.4.0"
 
 [dependencies.reqwest]
@@ -30,7 +28,7 @@ features = ["rt-multi-thread", "macros"]
 [profile.release]
 opt-level = 3
 debug = false
-lto = true
+lto = "thin"
 strip = "symbols"
 # codegen-units = 1
 panic = "abort"

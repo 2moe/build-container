@@ -1,8 +1,7 @@
 /*!
 Usage:
 ```
-ARCH=arm64
-get-arch-url
+ARCH=arm64 get-arch-url
 ```
 */
 pub mod download;
