@@ -67,4 +67,4 @@ RUN rm -rfv \
     2>/dev/null
 RUN dnf clean all
 
-CMD [ "/usr/bin/zsh" ]
+CMD [ "zsh" ]

@@ -11,6 +11,8 @@ ENV TMOE_CHROOT=true \
 # COPY --chmod=755 ubuntu/devel /tmp
 # RUN bash /tmp/devel
 
+RUN LIST=/etc/apt/sources.list.d/proposed.list \
+    && if [ -e $LIST ]; then mv -f $LIST ${LIST}.bak; fi
 # install dependencies
 COPY --chmod=755 install_deb_deps /tmp
 RUN . /tmp/install_deb_deps
