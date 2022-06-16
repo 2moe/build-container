@@ -204,10 +204,10 @@ jobs:
           file: "docker/${{ env.name }}/${{ matrix.tag }}.dockerfile"
         run: |
           TODAY="$(date -u +%Y%m%d)"
-          if ((TODAY<=20220922));then
-            VERSION=19
-          elif ((TODAY<=20230922));then
+          if ((TODAY<=20230922));then
             VERSION=20
+          elif ((TODAY<=20240922));then
+            VERSION=21
           fi
 
           sed -E \
