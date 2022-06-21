@@ -1,5 +1,5 @@
 name: build fedora images
-# begin_time = 2022-06-14 12:02:01+00:00
+# begin_time = 2022-06-21 12:02:01+00:00
 
 on:
   push:
