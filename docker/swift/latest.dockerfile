@@ -18,7 +18,7 @@ ENV TMOE_CHROOT=true \
 
 # https://wiki.ubuntu.com/Minimal
 # minimize -> unminimize 
-RUN yes | unminimize 2>/dev/null
+RUN yes | unminimize; return 0
 
 # install dependencies
 COPY --chmod=755 install_deb_deps /tmp
