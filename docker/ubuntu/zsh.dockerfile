@@ -13,6 +13,11 @@ ENV TMOE_CHROOT=true \
 
 RUN LIST=/etc/apt/sources.list.d/proposed.list \
     && if [ -e $LIST ]; then mv -f $LIST ${LIST}.bak; fi
+
+# https://wiki.ubuntu.com/Minimal
+# minimize -> unminimize 
+RUN yes | unminimize
+
 # install dependencies
 COPY --chmod=755 install_deb_deps /tmp
 RUN . /tmp/install_deb_deps
