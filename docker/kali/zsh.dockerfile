@@ -21,7 +21,8 @@ RUN apt install -y \
     aria2 \
     zstd \
     systemd \
-    aptitude
+    aptitude \
+    whiptail
 
 RUN apt install -y \
     --no-install-recommends \

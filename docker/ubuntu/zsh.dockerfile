@@ -11,12 +11,13 @@ ENV TMOE_CHROOT=true \
 # COPY --chmod=755 ubuntu/devel /tmp
 # RUN bash /tmp/devel
 
-RUN LIST=/etc/apt/sources.list.d/proposed.list \
-    && if [ -e $LIST ]; then mv -f $LIST ${LIST}.bak; fi
+RUN LIST=/etc/apt/sources.list.d/proposed.list &&
+    if [ -e $LIST ]; then mv -f $LIST ${LIST}.bak; fi
 
 # https://wiki.ubuntu.com/Minimal
-# minimize -> unminimize 
-RUN yes | unminimize; return 0
+# minimize -> unminimize
+RUN yes | unminimize
+return 0
 
 # install dependencies
 COPY --chmod=755 install_deb_deps /tmp
@@ -31,7 +32,8 @@ RUN apt install -y \
     aria2 \
     zstd \
     systemd \
-    aptitude
+    aptitude \
+    whiptail
 
 RUN apt install -y \
     --no-install-recommends \
@@ -59,5 +61,3 @@ RUN . /tmp/clean_deb_cache
 RUN rm -rfv /tmp/* 2>/dev/null
 
 CMD ["zsh"]
-
-
