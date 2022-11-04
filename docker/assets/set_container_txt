@@ -31,6 +31,9 @@ fix_whiptail_0_52_21() {
     $is_whiptail_0_52_21 && {
         _file="wrapper.tar.gz"
         _arch=$(get_dpkg_arch)
+        case $_arch in
+        riscv64*) return 1 ;;
+        esac
         curl -Lo $_file "https://packages.tmoe.me/patch/debian/w/whiptail/whiptail-wrapper_0.52.21_$_arch.tar.gz"
         tar -zxvf $_file -C /
         /usr/local/sbin/whiptail-wrapper --init
