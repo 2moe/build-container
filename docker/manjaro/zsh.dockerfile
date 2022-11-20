@@ -36,6 +36,8 @@ RUN pacman \
     curl \
     libnewt
 
+RUN pacman -S --noconfirm --needed openssl-1.1 2>/dev/null
+
 ARG OS
 ARG TAG
 ARG ARCH
