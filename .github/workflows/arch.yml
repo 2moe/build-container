@@ -265,7 +265,7 @@ jobs:
           branch: "master"
   #------------------------------------------------------
   job2:
-    continue-on-error: true
+    continue-on-error: false
     needs: job1
     runs-on: ${{ matrix.os }}
     env:
