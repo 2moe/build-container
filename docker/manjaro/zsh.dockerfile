@@ -33,7 +33,8 @@ RUN pacman \
     iproute \
     zsh \
     wget \
-    curl
+    curl \
+    libnewt
 
 ARG OS
 ARG TAG

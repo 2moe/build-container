@@ -1,4 +1,4 @@
-set -ex
+set -x
 
 printf "%s\n" "root:root" | chpasswd
 ln -svf /usr/share/zoneinfo/UTC /etc/localtime

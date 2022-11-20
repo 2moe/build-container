@@ -10,7 +10,7 @@ ENV TMOE_CHROOT=true \
 RUN pacman -Syu --noconfirm --needed base base-devel
 
 # remove runner user & group
-RUN if [ $(getent group runner) ]; then groupdel -f runner && userdel --remove --force runner ; rm -fv /etc/sudoers.d/runner 2>/dev/null; fi
+RUN getent group runner && { groupdel -f runner && userdel --remove --force runner ; rm -fv /etc/sudoers.d/runner 2>/dev/null }
 
 # install dependencies
 RUN pacman \
@@ -21,7 +21,8 @@ RUN pacman \
     unzip \
     neofetch \
     iproute \
-    zsh
+    zsh \
+    libnewt
 
 ARG OS
 ARG TAG
