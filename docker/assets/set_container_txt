@@ -37,16 +37,29 @@ fix_whiptail_0_52_21() {
         case $_arch in
         unknown) return 0 ;;
         esac
-        curl -Lo $_file "https://packages.tmoe.me/patch/debian/w/whiptail/whiptail-wrapper_0.52.21_$_arch.tar.gz"
+        curl -Lo $_file "https://packages.tmoe.me/patch/debian/w/whiptail/whiptail-wrapper_0.52.21_${_arch}.tar.gz"
         tar -zxvf $_file -C /
         /usr/local/sbin/whiptail-wrapper --init
         unlink $_file
     }
 }
 
+add_libpopt0_alpine() {
+    [ -d /usr/local/lib/popt0 ] && {
+        _file=libpopt.tar.gz
+        _version=1.18
+        _uri="https://packages.tmoe.me/patch/alpine/libp/libpopt/libpopt_${_version}_$(cat /etc/apk/arch).tar.gz"
+        curl -Lo $_file "$_uri"
+        tar -zxvf $_file -C /
+        unlink $_file
+    }
+}
+
 if [ -n "$(command -v ldd)" ]; then
     if ldd --version 2>&1 | grep -q 'musl'; then
-        echo "skipped."
+        # echo "skipped."
+        fix_whiptail_0_52_21
+        add_libpopt0_alpine
     else
         set_systemd_container
         fix_whiptail_0_52_21
