@@ -57,9 +57,9 @@ add_libpopt0_alpine() {
 
 if [ -n "$(command -v ldd)" ]; then
     if ldd --version 2>&1 | grep -q 'musl'; then
-        # echo "skipped."
-        fix_whiptail_0_52_21
-        add_libpopt0_alpine
+        echo "skipped."
+        # fix_whiptail_0_52_21
+        # add_libpopt0_alpine
     else
         set_systemd_container
         fix_whiptail_0_52_21
