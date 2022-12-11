@@ -28,46 +28,17 @@ get_dpkg_arch() {
     *) echo unknown ;;
     esac
 }
-fix_whiptail_0_52_21() {
-    is_whiptail_0_52_21=$(whiptail --version 2>/dev/null | awk '{b = match($3, /^0\.52\.21$/)} END {print (b)?"true": "false"}' 2>/dev/null)
-    $is_whiptail_0_52_21 && {
-        _file="wrapper.tar.gz"
-        _arch=$(get_dpkg_arch)
-        # amd64, arm64, riscv64, armhf, armel, i386, ppc64el, s390x, mips64el, mips
-        case $_arch in
-        unknown) return 0 ;;
-        esac
-        curl -Lo $_file "https://packages.tmoe.me/patch/debian/w/whiptail/whiptail-wrapper_0.52.21_${_arch}.tar.gz"
-        tar -zxvf $_file -C /
-        /usr/local/sbin/whiptail-wrapper --init
-        unlink $_file
-    }
-}
-
-add_libpopt0_alpine() {
-    [ -d /usr/local/lib/popt0 ] && {
-        _file=libpopt.tar.gz
-        _version=1.18
-        _uri="https://packages.tmoe.me/patch/alpine/libp/libpopt/libpopt_${_version}_$(cat /etc/apk/arch).tar.gz"
-        curl -Lo $_file "$_uri"
-        tar -zxvf $_file -C /
-        unlink $_file
-    }
-}
 
 if [ -n "$(command -v ldd)" ]; then
     if ldd --version 2>&1 | grep -q 'musl'; then
         echo "skipped."
-        # fix_whiptail_0_52_21
-        # add_libpopt0_alpine
     else
         set_systemd_container
-        fix_whiptail_0_52_21
     fi
 fi
 
 mkdir -pv "$TMOE_DIR"
-cd "$TMOE_DIR"
+cd "$TMOE_DIR" || exit 1
 printf "%s\n" \
     "CONTAINER_TYPE=podman" \
     "CONTAINER_NAME=${OS}_nogui-${TAG}" \
