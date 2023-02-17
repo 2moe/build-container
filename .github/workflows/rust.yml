@@ -32,10 +32,10 @@ jobs:
             arch: arm64
             platform: "linux/arm64"
 
-          - os: ubuntu-latest
-            tag: latest
-            arch: riscv64
-            platform: "linux/riscv64"
+          # - os: ubuntu-latest
+          #   tag: latest
+          #   arch: riscv64
+          #   platform: "linux/riscv64"
 
           - os: ubuntu-latest
             tag: latest
@@ -501,9 +501,9 @@ jobs:
               ${{ env.user }}/${{ env.name }}-amd64 \
               ${{ env.user }}/${{ env.name }}-arm64 \
               ${{ env.user }}/${{ env.name }}-armv7 \
-              ${{ env.user }}/${{ env.name }}-riscv64 \
               ${{ env.user }}/${{ env.name }}-ppc64le \
               ${{ env.user }}/${{ env.name }}-s390x \
               ${{ env.user }}/${{ env.name }}-mips64le
             docker manifest push ${{ env.user }}/${{ env.name }}:${i}
           done
+        # ${{ env.user }}/${{ env.name }}-riscv64 \
