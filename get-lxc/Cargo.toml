@@ -1,0 +1,84 @@
+[package]
+authors = ["Moe<m@tmoe.me>"]
+description = "Get the latest lxc rootfs"
+edition = "2021"
+license = "Apache-2.0"
+name = "get-lxc"
+version = "0.0.0-alpha.1"
+
+[features]
+ahash = ["glossa/ahash"]
+default = ["ahash"]
+
+[[bin]]
+name = "get-lxc"
+path = "src/main.rs"
+
+[build-dependencies]
+glossa-codegen = "0.0.1-alpha.4"
+
+[dependencies]
+anyhow = "1.0.70"
+flate2 = "1.0.25"
+getset = "0.1.2"
+phf = "0.11.1"
+ron = "0.8.0"
+thiserror = "1.0.40"
+toml = "0.7.3"
+toml_edit = "0.19.8"
+
+[dependencies.clap]
+features = ["derive", "unicode"]
+version = "4.2.4"
+
+[dependencies.crossterm]
+default-features = false
+version = "0.26.1"
+
+[dependencies.envpath]
+features = ["rand", "serde"]
+git = "https://github.com/2moe/envpath"
+
+[dependencies.flexi_logger]
+default-features = false
+features = ["colors"]
+version = "0.25.3"
+
+[dependencies.get_lxc_core]
+path = "../core"
+
+[dependencies.glossa]
+default-features = false
+features = ["log"]
+git = "https://github.com/2moe/glossa"
+# path = "../../../sa/privary/glossa/glossa"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0.160"
+
+[dependencies.tar]
+default-features = false
+version = "0.4.38"
+
+[dependencies.time]
+default-features = false
+features = ["local-offset", "serde-well-known"]
+version = "0.3.20"
+
+[dependencies.tinystr]
+default-features = false
+features = ["serde", "std", "alloc"]
+version = "0.7.1"
+
+[dependencies.tokio]
+default-features = false
+features = ["macros", "rt-multi-thread", "fs"]
+version = "1.27.0"
+
+
+[package.metadata.deb]
+# depends = "$auto"
+depends = ""
+priority = "optional"
+section = "utility"

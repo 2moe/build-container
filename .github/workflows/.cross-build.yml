@@ -1,0 +1,325 @@
+name: Cross build
+
+on:
+  push:
+    branches:
+      - utils
+    paths:
+      - ".github/workflows/cross-build.yml"
+      - assets/ci/get-lxc.dockerfile
+
+jobs:
+  get_repo_info:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.get_bin_name.outputs.name }}
+      ver: ${{ steps.get_ver.outputs.ver }}
+    env:
+      pkg: get-lxc
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: get tomlyre
+        run: docker run -i --rm -v $PWD:/local -w /data ghcr.io/2moe/tomlyre:x86_64-unknown-linux-musl cp tomlyre /local
+
+      - name: get version
+        id: get_ver
+        run: echo "ver=v$(./tomlyre get ${{env.pkg}}/Cargo.toml -k package.version)" >> $GITHUB_OUTPUT
+
+      - name: get name
+        id: get_bin_name
+        run: echo "name=$(./tomlyre get ${{env.pkg}}/Cargo.toml -k bin.0.name)" >> $GITHUB_OUTPUT
+  cross:
+    needs: get_repo_info
+    strategy:
+      # max-parallel: 2
+      fail-fast: false
+      matrix:
+        include:
+          # - target: wasm32-wasi
+          #   os: ubuntu-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: riscv64gc-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: i586-unknown-linux-musl
+            os: ubuntu-latest
+          - target: armv7-unknown-linux-musleabihf
+            os: ubuntu-latest
+          - target: armv5te-unknown-linux-musleabi
+            os: ubuntu-latest
+          - target: mipsel-unknown-linux-musl
+            os: ubuntu-latest
+          - target: mips64el-unknown-linux-muslabi64
+            os: ubuntu-latest
+          - target: powerpc64le-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: s390x-unknown-linux-gnu
+            os: ubuntu-latest
+
+          - target: x86_64-linux-android
+            os: ubuntu-latest
+          - target: aarch64-linux-android
+            os: ubuntu-latest
+          - target: thumbv7neon-linux-androideabi
+            os: ubuntu-latest
+          - target: arm-linux-androideabi
+            os: ubuntu-latest
+          - target: i686-linux-android
+            os: ubuntu-latest
+
+          - target: x86_64-unknown-netbsd
+            os: ubuntu-latest
+          - target: x86_64-unknown-freebsd
+            os: ubuntu-latest
+          - target: x86_64-unknown-illumos
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+
+    runs-on: ${{matrix.os}}
+    outputs: 
+      archive: ${{ steps.archive_output.outputs.archive }}
+    env:
+      VER: ${{ needs.get_repo_info.outputs.ver }}
+      PROF: fat
+      PKG_NAME: ${{ needs.get_repo_info.outputs.name }}
+      DIR: target/${{matrix.target}}
+      DEB_DIR: target/${{matrix.target}}/debian
+      DEB_WORKDIR: cli
+      BUILD_DIR: target/${{matrix.target}}/fat
+      BIN: target/${{matrix.target}}/fat/${{ needs.get_repo_info.outputs.name }}
+      DK_DIR: assets/ci
+      DK_FILE: assets/ci/${{ needs.get_repo_info.outputs.name }}.dockerfile
+      IS_X64: ${{ startsWith(matrix.target, 'x86_64') }}
+      BLAKE3_URL: https://github.com/BLAKE3-team/BLAKE3/releases/download/1.3.3/
+      HASH_CFG_FILE: ${{ format('_{0}.yaml', matrix.target) }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: cache rust deps
+        if: (!startsWith(matrix.os, 'ubuntu')) || startsWith(matrix.target, 'wasm')
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: cache rust deps(cross build)
+        if: startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.target, 'wasm')
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ matrix.target }}-rust-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          target: ${{matrix.target}}
+
+      - name: login to ghcr
+        if: startsWith(matrix.os, 'ubuntu')
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: get cross
+        if: startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.target, 'wasm')
+        run: |
+          docker run -i --rm -v $PWD:/local ghcr.io/2moe/cross:glibc cp /bin/cross /bin/cross-util /local
+          sudo mv -vf cross-util /usr/local/bin
+
+      - name: static build linux bin
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android')
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
+        run: |
+          case ${{matrix.target}} in
+              x86_64* | i[3-6]86* | aarch64*) ;;
+              *) export RUSTFLAGS="$RUSTFLAGS -C lto=thin" ;;
+          esac
+          ./cross r --profile ${{env.PROF}} -v --target ${{matrix.target}} -- -h
+      
+      - name: cross build bsd & android bin
+        if: contains(matrix.target, 'bsd') || contains(matrix.target, 'illumos') || contains(matrix.target, 'android')
+        run: |
+          case ${{matrix.target}} in
+              x86_64* | i[3-6]86* | aarch64*) ;;
+              *) export RUSTFLAGS="-C lto=thin" ;;
+          esac
+          ./cross b --profile ${{env.PROF}} -v --target ${{matrix.target}}
+
+      - name: normal build
+        if: (!startsWith(matrix.os, 'ubuntu')) || startsWith(matrix.target, 'wasm')
+        run: cargo b --profile ${{env.PROF}} -v --target ${{matrix.target}}
+
+      - name: cp bin file
+        id: cp_bin_file
+        if: contains(matrix.target, 'linux')
+        run: cp ${{env.BIN}} ${{env.DK_DIR}}
+
+      - name: push to ghcr
+        # if: matrix.target == 'x86_64-unknown-linux-musl'
+        if: contains(matrix.target, 'linux')
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{env.DK_DIR}}
+          file: ${{ env.DK_FILE }}
+          push: true
+          build-args: |
+            PKG=${{ env.PKG_NAME }}
+          tags: ghcr.io/${{ github.actor }}/${{ env.PKG_NAME }}:${{matrix.target}}
+
+      - name: get cargo-deb
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android')
+        run: docker run -i --rm -v $PWD/${{env.DEB_WORKDIR}}:/local ghcr.io/2moe/cargo-deb:latest cp /bin/cargo-deb /local
+
+      - name: pack deb
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android')
+        working-directory: ${{env.DEB_WORKDIR}}
+        # deb_file=$(find ${{env.DEB_DIR}} -maxdepth 1 -type f -name '*.deb' -print -quit)
+        run: |
+          deb_file=$(./cargo-deb --no-build --no-strip --profile ${{env.PROF}} --target ${{matrix.target}} | tail -n1)
+
+          archive=$(awk -v file=$deb_file 'BEGIN { FS = "/"; split(file, arr, "/"); name = arr[length(arr)]; gsub("~", ".", name); print name }')
+
+          cp -v "$deb_file" "../$archive"
+          echo "archive=$archive" >> $GITHUB_ENV
+
+      - name: pack bsd & android
+        env:
+          archive: ${{ format('{0}.tar.xz', matrix.target) }}
+        if: contains(matrix.target, 'bsd') || contains(matrix.target, 'illumos') || contains(matrix.target, 'android')
+        run: |
+          tar -C ${{env.BUILD_DIR}} -c ${{env.PKG_NAME}} | xz -z -T0 -9 -e -v -c - >${{env.archive}}
+          echo "archive=${{env.archive}}" >> $GITHUB_ENV
+
+      - name: pack apple darwin
+        shell: zsh {0}
+        # env:
+        #   archive: ${{ format('{0}.tar.bz2', matrix.target) }}
+        if: contains(matrix.target, 'apple')
+        run: |
+          if (${{env.IS_X64}}) {
+              bz2_file="macOS_intel-x64.tar.bz2"
+          } else {
+              bz2_file="macOS_apple-silicon-arm64.tar.bz2"
+          }
+          tar -C ${{env.BUILD_DIR}} -c ${{env.PKG_NAME}} | bzip2 -z -9 -c - >$bz2_file
+          echo "archive=$bz2_file" >> $GITHUB_ENV
+
+      - name: pack wasm
+        env:
+          file: ${{ format('{0}.wasm', env.BIN) }}
+          archive: "wasm32-wasi.wasm.zst"
+        if: startsWith(matrix.target, 'wasm')
+        run: |
+          zstd --ultra -22 -v -o ${{env.archive}} ${{env.file}}
+          echo archive="${{env.archive}}" >> $GITHUB_ENV
+
+      - name: pack windows
+        env:
+          file: ${{ format('{0}.exe', env.BIN) }}
+          file_name: ${{ format('{0}.exe', env.PKG_NAME) }}
+          archive: "win_x64.exe.zip"
+          arm64_archive: "win_arm64.exe.zip"
+          x86_archive: "win_x86.exe.zip"
+          IS_X86: ${{ contains(fromJSON('["i686-pc-windows-msvc", "i586-pc-windows-msvc"]'), matrix.target) }}
+        if: contains(matrix.target, 'windows')
+        run: |
+          $is_x64 = [bool]::Parse("${{env.IS_X64}}")
+          $is_x86 = [bool]::Parse("${{env.IS_X86}}")
+          Write-Output $is_x64 $is_x86
+          Copy-Item -Path ${{env.file}} -Destination . -Force
+
+          $zip_file = switch ($true) {
+            {$is_x64} {"${{env.archive}}"; break}
+            {$is_x86} {"${{env.x86_archive}}"; break}
+            default {"${{env.arm64_archive}}"; break}
+          }
+
+          7z a -tzip -mm=Deflate64 -mmt -mx9 $zip_file ${{env.file_name}}
+          Write-Output archive="$zip_file" >> $env:GITHUB_ENV
+
+      - name: get blake3 bin (linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        env:
+          url: ${{ format('{0}b3sum_linux_x64_bin', env.BLAKE3_URL) }}
+        run: curl -Lo b3sum ${{env.url}}
+
+      - name: get blake3 bin (darwin)
+        if: startsWith(matrix.os, 'macos')
+        env:
+          url: ${{ format('{0}b3sum_macos_x64_bin', env.BLAKE3_URL) }}
+        run: curl -Lo b3sum ${{env.url}}
+
+      - name: get blake3 bin (windows)
+        if: startsWith(matrix.os, 'windows')
+        env:
+          url: ${{ format('{0}b3sum_windows_x64_bin.exe', env.BLAKE3_URL) }}
+        run: curl -Lo b3sum.exe ${{env.url}}
+
+      - name: get blake3 hash (windows)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+          $b3_hash = .\b3sum.exe ${{env.archive}} --no-names
+          Write-Output ARCHIVE_HASH="$b3_hash" >> $env:GITHUB_ENV
+
+      - name: get blake3 hash (unix)
+        if: (!startsWith(matrix.os, 'windows'))
+        run: |
+          chmod +x b3sum
+          b3_hash=$(./b3sum ${{env.archive}} --no-names)
+          echo ARCHIVE_HASH="$b3_hash" >> $GITHUB_ENV
+
+      - name: create hash cfg file
+        id: hash_cfg
+        env:
+          file: ${{ env.HASH_CFG_FILE }}
+        run: |
+          echo "target: ${{matrix.target}}
+          version: ${{env.VER}}
+          file: ${{ env.archive }}
+          digest-algorithm: blake3
+          hex: ${{env.ARCHIVE_HASH}}
+          url: ${{ format('https://github.com/{0}/releases/download/{1}/{2}', github.repository, env.VER, env.archive) }}" > ${{env.file}}
+
+      - name: archive >> OUTPUT
+        if: matrix.target == 'aarch64-unknown-linux-musl'
+        id: archive_output
+        run: echo archive=${{ env.archive }} >> $GITHUB_OUTPUT
+
+      - name: Create a release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        # if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ env.archive }}
+            ${{ env.HASH_CFG_FILE }}
+          tag_name: ${{ env.VER }}
+          fail_on_unmatched_files: true
+          prerelease: true
