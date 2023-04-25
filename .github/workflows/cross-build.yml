@@ -307,10 +307,10 @@ jobs:
           hex: ${{env.ARCHIVE_HASH}}
           url: ${{ format('https://github.com/{0}/releases/download/{1}/{2}', github.repository, env.VER, env.archive) }}" > ${{env.file}}
 
-      - name: archive >> OUTPUT
-        if: matrix.target == 'aarch64-unknown-linux-musl'
-        id: archive_output
-        run: echo archive=${{ env.archive }} >> $GITHUB_OUTPUT
+      # - name: archive >> OUTPUT
+      #   if: matrix.target == 'aarch64-unknown-linux-musl'
+      #   id: archive_output
+      #   run: echo archive=${{ env.archive }} >> $GITHUB_OUTPUT
 
       - name: Create a release
         id: create_release
