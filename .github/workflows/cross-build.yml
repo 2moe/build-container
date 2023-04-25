@@ -120,6 +120,8 @@ jobs:
             ~/.cargo
             target/
           key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-
 
       - name: cache rust deps(cross build)
         if: startsWith(matrix.os, 'ubuntu') && !startsWith(matrix.target, 'wasm')
@@ -129,6 +131,8 @@ jobs:
             ~/.cargo
             target/
           key: ${{ matrix.target }}-rust-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ matrix.target }}-rust-
 
       - name: install rust
         uses: actions-rs/toolchain@v1
