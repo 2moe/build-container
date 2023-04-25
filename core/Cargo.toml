@@ -31,9 +31,9 @@ crossterm = { version = "0.26.1", default-features = false }
 
 # The complex "conditional compilation" is used here to specify the platforms on which the `rustls-tls` feature is enabled.
 # This is necessary because `rustls` depends on `ring`, which does not support all platforms.
-# [(windows| darwin) * (x86_64 | aarch64)] || [windows * x86] || [(some unix-like) * (x86_64 | aarch64 | armv(5-7) | i(5-6)86)]
+# [(darwin) * (x86_64 | aarch64)] || [windows * (x86_64|x86)] || [(some unix-like) * (x86_64 | aarch64 | armv(5-7) | i(5-6)86)]
 # https://github.com/briansmith/ring/blob/main/build.rs
-[target.'cfg(any(all(any(windows, target_os = "macos", target_os = "ios"), any(target_arch = "x86_64", target_arch = "aarch64")), all(windows, target_arch = "x86"), all(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "fuchsia", target_os = "illumos", target_os = "netbsd", target_os = "openbsd", target_os = "redox", target_os = "solaris"), any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm", target_arch = "x86"))))'.dependencies]
+[target.'cfg(any(all(any(target_os = "macos", target_os = "ios"), any(target_arch = "x86_64", target_arch = "aarch64")), all(windows, any(target_arch = "x86_64", target_arch = "x86")), all(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "fuchsia", target_os = "illumos", target_os = "netbsd", target_os = "openbsd", target_os = "redox", target_os = "solaris"), any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm", target_arch = "x86"))))'.dependencies]
 reqwest = { version = "0.11.16", default-features = false, optional = true, features = [
     # "rustls-tls",
     "rustls-tls-native-roots",
@@ -43,7 +43,7 @@ reqwest = { version = "0.11.16", default-features = false, optional = true, feat
 
 # About the `native-tls-vendored`: This feature enables the use of the native-tls but with vendored dependencies, meaning that all of the necessary native libraries are bundled into the reqwest crate itself. This avoids the need to install the native TLS libraries separately on the target system.
 # In 2023-02, if we use `native-tls`, instead of `native-tls-vendored`, then we have to install `libssl-dev` manually on debian (mipsel, riscv64, s390x) before compiling.
-[target.'cfg(not(any(all(any(windows, target_os = "macos", target_os = "ios"), any(target_arch = "x86_64", target_arch = "aarch64")), all(windows, target_arch = "x86"), all(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "fuchsia", target_os = "illumos", target_os = "netbsd", target_os = "openbsd", target_os = "redox", target_os = "solaris"), any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm", target_arch = "x86")))))'.dependencies]
+[target.'cfg(not(any(all(any(target_os = "macos", target_os = "ios"), any(target_arch = "x86_64", target_arch = "aarch64")), all(windows, any(target_arch = "x86_64", target_arch = "x86")), all(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "fuchsia", target_os = "illumos", target_os = "netbsd", target_os = "openbsd", target_os = "redox", target_os = "solaris"), any(target_arch = "x86_64", target_arch = "aarch64", target_arch = "arm", target_arch = "x86")))))'.dependencies]
 reqwest = { version = "0.11.16", default-features = false, optional = true, features = [
     # "native-tls",
     "native-tls-vendored",

@@ -19,3 +19,8 @@ fn main() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn get_os_arch() {
+    eprintln!("{}", std::env::consts::ARCH)
+}
