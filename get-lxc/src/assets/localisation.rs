@@ -1,4 +1,4 @@
-// Version: 0.0.0-alpha.1
+// Version: 0.0.0-alpha.2
 #![allow(dead_code)]
 
 use super::{lang_id_consts, HashMap, LangID};
@@ -40,7 +40,7 @@ pub(super) const fn get_en_map_dir() -> L10nMap {
 /// ```no_run
 /// let msg = loader.get_or_default("cli", "dir");
 ///
-/// assert_eq!(msg, "the name of the file path");
+/// assert_eq!(msg, "Location of the directory where the files need to be saved");
 /// ```
 pub(super) const fn get_en_map_cli() -> L10nMap {
     ::phf::Map {
@@ -49,7 +49,7 @@ pub(super) const fn get_en_map_cli() -> L10nMap {
         (0, 0),
     ],
     entries: &[
-        ("dir", r##"the name of the file path"##),
+        ("dir", r##"Location of the directory where the files need to be saved"##),
     ],
 }
 }
@@ -100,7 +100,7 @@ pub(super) const fn get_zh_map_dir() -> L10nMap {
 /// ```no_run
 /// let msg = loader.get_or_default("cli", "dir");
 ///
-/// assert_eq!(msg, "文件路径的名称");
+/// assert_eq!(msg, "需要保存的文件的目录位置");
 /// ```
 pub(super) const fn get_zh_map_cli() -> L10nMap {
     ::phf::Map {
@@ -109,7 +109,7 @@ pub(super) const fn get_zh_map_cli() -> L10nMap {
         (0, 0),
     ],
     entries: &[
-        ("dir", r##"文件路径的名称"##),
+        ("dir", r##"需要保存的文件的目录位置"##),
     ],
 }
 }

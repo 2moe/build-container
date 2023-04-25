@@ -96,14 +96,13 @@ pub(crate) struct Cli {
     #[arg(short, long = "fname", alias = "filename", id = "file_name", value_hint = clap::ValueHint::FilePath)]
     filename: Option<PathBuf>,
 
-    /// Skip verify the file digest
+    // Skip verify the file digest
     // #[arg(long)]
     // skip_verify: bool,
-
-    /// Set the style of the table
+    // Set the style of the table
     // #[arg(short, long, value_name = "raw, def")]
     // style: Option<String>,
-
+    /// Container image source for mirror
     #[arg(short, long, value_name = "us, uk, nju, bfsu, tuna", value_hint = clap::ValueHint::Url)]
     mirror: Option<String>,
 
