@@ -9,6 +9,7 @@ on:
     branches: [master]
     paths:
       - ".github/workflows/arch.yml"
+      - docker/arch/base.dockerfile
 
 jobs:
   job1:

@@ -20,7 +20,7 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 COPY --chmod=755 get_arch /tmp
 RUN . ./get_arch \
-    && get-lxc -o arch -c current --var default -a $DEB_ARCH --src gh -m us -t 2 -d . -f arch.tar.xz
+    && get-lxc -o arch -c current --var default -a $ARCH --src gh -m us -t 2 -d . -f arch.tar.xz
 
 RUN mv arch.tar.xz /
 
