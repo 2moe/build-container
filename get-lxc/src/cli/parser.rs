@@ -409,7 +409,8 @@ fn check_lxc_index() -> (bool, LxcIndex) {
         .get_time()
         .get_last_update();
     let now = OffsetDateTime::now_utc();
-    let need_to_update = last_update.saturating_add(time::Duration::hours(8)) <= now;
+    let need_to_update =
+        last_update.saturating_add(time::Duration::hours(12)) <= now;
 
     (need_to_update, index_cfg)
 }

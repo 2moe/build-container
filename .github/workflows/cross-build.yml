@@ -61,44 +61,44 @@ jobs:
           - target: s390x-unknown-linux-gnu
             os: ubuntu-latest
 
-          # - target: x86_64-linux-android
-          #   os: ubuntu-latest
-          # - target: aarch64-linux-android
-          #   os: ubuntu-latest
-          # - target: thumbv7neon-linux-androideabi
-          #   os: ubuntu-latest
-          # - target: arm-linux-androideabi
-          #   os: ubuntu-latest
-          # - target: i686-linux-android
-          #   os: ubuntu-latest
+          - target: x86_64-linux-android
+            os: ubuntu-latest
+          - target: aarch64-linux-android
+            os: ubuntu-latest
+          - target: thumbv7neon-linux-androideabi
+            os: ubuntu-latest
+          - target: arm-linux-androideabi
+            os: ubuntu-latest
+          - target: i686-linux-android
+            os: ubuntu-latest
 
-          # - target: x86_64-unknown-netbsd
-          #   os: ubuntu-latest
-          # - target: x86_64-unknown-freebsd
-          #   os: ubuntu-latest
-          # - target: x86_64-unknown-illumos
-          #   os: ubuntu-latest
-          # - target: x86_64-apple-darwin
-          #   os: macos-latest
-          # - target: aarch64-apple-darwin
-          #   os: macos-latest
-          # - target: x86_64-pc-windows-msvc
-          #   os: windows-latest
+          - target: x86_64-unknown-netbsd
+            os: ubuntu-latest
+          - target: x86_64-unknown-freebsd
+            os: ubuntu-latest
+          - target: x86_64-unknown-illumos
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
           - target: aarch64-pc-windows-msvc
             os: windows-latest
-          # - target: i686-pc-windows-msvc
-            # os: windows-latest
+          - target: i686-pc-windows-msvc
+            os: windows-latest
 
     runs-on: ${{matrix.os}}
     outputs: 
       archive: ${{ steps.archive_output.outputs.archive }}
     env:
+      DEB_WORKDIR: get-lxc
       VER: ${{ needs.get_repo_info.outputs.ver }}
-      PROF: fat
       PKG_NAME: ${{ needs.get_repo_info.outputs.name }}
       DIR: target/${{matrix.target}}
       DEB_DIR: target/${{matrix.target}}/debian
-      DEB_WORKDIR: cli
+      PROF: fat
       BUILD_DIR: target/${{matrix.target}}/fat
       BIN: target/${{matrix.target}}/fat/${{ needs.get_repo_info.outputs.name }}
       DK_DIR: assets/ci
