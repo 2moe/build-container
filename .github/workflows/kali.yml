@@ -1,5 +1,5 @@
 name: build kali images
-# begin_time = 2023-06-15 12:02:02+00:00
+# begin_time = 2023-06-22 12:02:04+00:00
 
 on:
   push:
