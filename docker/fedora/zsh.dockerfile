@@ -10,15 +10,17 @@ ENV TMOE_CHROOT=true \
 
 # modify dnf conf
 RUN sed -E \
-    -e 's@^(gpgcheck)=.*@\1=0@g' \
     -e '$a\fastestmirror=True' \
-    -e '$a\max_parallel_downloads=3' \
+    -e '$a\max_parallel_downloads=5' \
     -i "${DNF_RC}"; \
     cat "${DNF_RC}"
 
 # install dependencies
-RUN yes | dnf update -y; \
-    dnf install -y \
+RUN yes | dnf update
+
+RUN [ -e /usr/bin/dnf ] || ln -svf /usr/bin/dnf5 /usr/bin/dnf
+
+RUN dnf install -y \
     --skip-broken \
     glibc-all-langpacks \
     glibc-minimal-langpack \
