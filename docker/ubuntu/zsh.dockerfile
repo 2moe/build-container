@@ -22,7 +22,9 @@ RUN yes | unminimize ; return 0
 COPY --chmod=755 install_deb_deps /tmp
 RUN . /tmp/install_deb_deps
 
-RUN apt install -y software-properties-common
+RUN apt install -y \
+    software-properties-common \
+    tzdata
 
 RUN apt install -y \
     locales-all \
